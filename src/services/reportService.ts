@@ -223,7 +223,7 @@ class ReportService {
         return this.reports;
       }
 
-      return (data || []).map(item => item.config as ReportConfig);
+      return (data || []).map((item: any) => item.config as ReportConfig);
 
     } catch (error) {
       console.error('Erro ao carregar relatórios:', error);
@@ -716,19 +716,19 @@ class ReportService {
   // DADOS MOCK
   // ============================================================================
 
-  private getMockTimeSeriesData(chart: ChartConfig): { data: number[]; labels: string[] } {
+  private getMockTimeSeriesData(_chart: ChartConfig): { data: number[]; labels: string[] } {
     const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
     const data = [65, 59, 80, 81, 56, 55];
     return { data, labels };
   }
 
-  private getMockPieData(chart: ChartConfig): { data: number[]; labels: string[] } {
+  private getMockPieData(_chart: ChartConfig): { data: number[]; labels: string[] } {
     const labels = ['Consulta', 'Exame', 'Procedimento', 'Outros'];
     const data = [40, 30, 20, 10];
     return { data, labels };
   }
 
-  private getMockScatterData(chart: ChartConfig): { data: Array<{ x: number; y: number }> } {
+  private getMockScatterData(_chart: ChartConfig): { data: Array<{ x: number; y: number }> } {
     const data = [
       { x: 1, y: 2 },
       { x: 2, y: 3 },
@@ -739,7 +739,7 @@ class ReportService {
     return { data };
   }
 
-  private getMockTableData(chart: ChartConfig): { data: Record<string, unknown>[] } {
+  private getMockTableData(_chart: ChartConfig): { data: Record<string, unknown>[] } {
     const data = [
       { id: 1, nome: 'Item 1', valor: 100 },
       { id: 2, nome: 'Item 2', valor: 200 },

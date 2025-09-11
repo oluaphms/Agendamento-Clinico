@@ -32,7 +32,7 @@ export const CLINIC_VALIDATIONS = {
       { required: true, minLength: 2, maxLength: 100 },
       {
         pattern: /^[a-zA-ZÀ-ÿ\s]+$/,
-        custom: value =>
+        custom: (value: any) =>
           !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)
             ? 'Nome deve conter apenas letras'
             : null,

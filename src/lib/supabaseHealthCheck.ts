@@ -14,7 +14,7 @@ export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
   
   try {
     // Fazer uma consulta simples para testar a conectividade
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('usuarios')
       .select('id')
       .limit(1);

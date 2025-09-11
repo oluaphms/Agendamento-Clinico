@@ -299,7 +299,7 @@ export function filterByPermissions<T extends { id: string; [key: string]: any }
 export function canViewField(
   userPermissions: UserPermissions,
   resource: string,
-  field: string
+  _field: string
 ): boolean {
   // Campos sensíveis que requerem permissões especiais
   const sensitiveFields: Record<string, string[]> = {
@@ -324,7 +324,7 @@ export function canViewField(
 export function canEditField(
   userPermissions: UserPermissions,
   resource: string,
-  field: string
+  _field: string
 ): boolean {
   return hasPermission(userPermissions, `${resource}:write` as Permission).hasPermission;
 }

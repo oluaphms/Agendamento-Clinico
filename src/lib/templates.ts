@@ -617,7 +617,7 @@ export class TemplateManager {
     return [];
   }
 
-  private async renderTemplate(template: TemplateConfig, data: any[], instanceData: TemplateData): Promise<string> {
+  private async renderTemplate(template: TemplateConfig, data: any[], _instanceData: TemplateData): Promise<string> {
     // Simular renderização do template
     // Em produção, isso usaria uma biblioteca como Handlebars ou similar
     console.log('Renderizando template:', template.name, 'com dados:', data);

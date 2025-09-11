@@ -162,7 +162,10 @@ export function createModalAriaProps(
 /**
  * Cria propriedades ARIA para um formulário
  */
-export function createFormAriaProps(formId: string, hasErrors: boolean = false) {
+export function createFormAriaProps(
+  formId: string,
+  hasErrors: boolean = false
+) {
   return {
     role: A11Y.roles.form,
     'aria-invalid': hasErrors,
@@ -180,7 +183,7 @@ export function createInputAriaProps(
   helperTextId?: string
 ) {
   const describedBy = [errorId, helperTextId].filter(Boolean).join(' ');
-  
+
   return {
     'aria-labelledby': labelId,
     'aria-describedby': describedBy || undefined,
@@ -247,16 +250,21 @@ export function createListItemAriaProps(itemId: string) {
 /**
  * Hook para gerenciar foco em modais
  */
-export function useModalFocus(modalRef: React.RefObject<HTMLElement>, isOpen: boolean) {
+export function useModalFocus(
+  modalRef: React.RefObject<HTMLElement>,
+  isOpen: boolean
+) {
   useEffect(() => {
     if (!isOpen || !modalRef.current) return;
 
     const focusableElements = modalRef.current.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
+
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     if (firstElement) {
       firstElement.focus();
@@ -342,7 +350,10 @@ export function useArrowKeys(
 /**
  * Valida se um elemento tem contraste adequado
  */
-export function validateContrast(foreground: string, background: string): boolean {
+export function validateContrast(
+  foreground: string,
+  background: string
+): boolean {
   // Implementação simplificada - em produção, use uma biblioteca como color-contrast
   const getLuminance = (color: string) => {
     const rgb = color.match(/\d+/g)?.map(Number) || [0, 0, 0];
@@ -355,8 +366,10 @@ export function validateContrast(foreground: string, background: string): boolea
 
   const fgLuminance = getLuminance(foreground);
   const bgLuminance = getLuminance(background);
-  const contrast = (Math.max(fgLuminance, bgLuminance) + 0.05) / (Math.min(fgLuminance, bgLuminance) + 0.05);
-  
+  const contrast =
+    (Math.max(fgLuminance, bgLuminance) + 0.05) /
+    (Math.min(fgLuminance, bgLuminance) + 0.05);
+
   return contrast >= 4.5; // WCAG AA standard
 }
 
@@ -374,6 +387,6 @@ export function validateFocusVisible(element: HTMLElement): boolean {
   const computedStyle = window.getComputedStyle(element);
   const outline = computedStyle.outline;
   const boxShadow = computedStyle.boxShadow;
-  
+
   return outline !== 'none' || boxShadow !== 'none';
 }

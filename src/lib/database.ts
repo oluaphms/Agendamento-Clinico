@@ -1,10 +1,10 @@
 // Banco de dados local mock para desenvolvimento
 import { mockData } from './mockData';
 import {
-  hashPassword,
+  // hashPassword,
   verifyPassword,
   migratePassword,
-  needsMigration,
+  // needsMigration,
 } from './passwordUtils';
 
 interface QueryOptions {

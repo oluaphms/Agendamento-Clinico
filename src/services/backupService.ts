@@ -333,7 +333,7 @@ class BackupService {
         return [];
       }
 
-      return (data || []).map(item => item.backup_data as BackupData);
+      return (data || []).map((item: any) => item.backup_data as BackupData);
 
     } catch (error) {
       console.error('Erro ao listar backups:', error);
@@ -452,7 +452,7 @@ class BackupService {
     return {};
   }
 
-  private async restoreFiles(files: Record<string, string>): Promise<void> {
+  private async restoreFiles(_files: Record<string, string>): Promise<void> {
     // Implementar restauração de arquivos se necessário
   }
 

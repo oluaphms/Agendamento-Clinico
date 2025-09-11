@@ -19,7 +19,7 @@ export const limparTodosAgendamentos = async (): Promise<{ success: boolean; mes
     if (agendamentos.data && agendamentos.data.length > 0) {
       // Deletar todos os agendamentos
       for (const agendamento of agendamentos.data) {
-        await localDb.from('agendamentos').delete().eq('id', agendamento.id);
+        await localDb.from('agendamentos').delete().eq('id', (agendamento as any).id);
       }
       
       console.log(`✅ ${agendamentos.data.length} agendamentos removidos do banco de dados`);
@@ -90,7 +90,7 @@ export const limparAgendamentosPorPeriodo = async (
     // Deletar agendamentos do período
     let removidos = 0;
     for (const agendamento of agendamentos.data) {
-      await localDb.from('agendamentos').delete().eq('id', agendamento.id);
+      await localDb.from('agendamentos').delete().eq('id', (agendamento as any).id);
       removidos++;
     }
 
@@ -137,7 +137,7 @@ export const limparAgendamentosPorStatus = async (
     // Deletar agendamentos com o status
     let removidos = 0;
     for (const agendamento of agendamentos.data) {
-      await localDb.from('agendamentos').delete().eq('id', agendamento.id);
+      await localDb.from('agendamentos').delete().eq('id', (agendamento as any).id);
       removidos++;
     }
 

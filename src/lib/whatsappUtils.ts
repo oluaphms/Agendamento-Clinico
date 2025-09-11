@@ -20,7 +20,7 @@ interface Agendamento {
 // ============================================================================
 
 export const enviarLembreteWhatsApp = (agendamento: Agendamento) => {
-  const { pacientes, profissionais, servicos } = agendamento;
+  const { pacientes } = agendamento;
   
   if (!pacientes?.telefone) {
     return { success: false, message: 'Telefone do paciente não encontrado' };
