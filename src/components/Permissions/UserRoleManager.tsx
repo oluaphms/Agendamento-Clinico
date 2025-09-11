@@ -1,0 +1,284 @@
+// ============================================================================
+// COMPONENTE DE GERENCIAMENTO DE ROLES DE USUÁRIO
+// ============================================================================
+
+import React, { useState, useEffect } from 'react';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useAuthStore } from '../../stores/authStore';
+import { UserRole, Role } from '../../types/permissions';
+import { Button } from '../../design-system/Components';
+import toast from 'react-hot-toast';
+
+// ============================================================================
+// TIPOS E INTERFACES
+// ============================================================================
+
+interface UserRoleManagerProps {
+  userId?: string;
+  onClose?: () => void;
+}
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
+export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ 
+  userId: propUserId, 
+  onClose 
+}) => {
+  // ============================================================================
+  // ESTADOS
+  // ============================================================================
+  
+  const [selectedUserId, setSelectedUserId] = useState<string>(propUserId || '');
+  const [selectedRoleId, setSelectedRoleId] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  
+  const { user } = useAuthStore();
+  const {
+    roles,
+    userRoles,
+    loading: permissionsLoading,
+    error,
+    assignRoleToUser,
+    removeRoleFromUser,
+    refreshData,
+    clearError,
+  } = usePermissions();
+
+  // ============================================================================
+  // EFEITOS
+  // ============================================================================
+  
+  useEffect(() => {
+    if (propUserId) {
+      setSelectedUserId(propUserId);
+    }
+  }, [propUserId]);
+
+  // ============================================================================
+  // FUNÇÕES AUXILIARES
+  // ============================================================================
+  
+  const handleAssignRole = async () => {
+    if (!selectedUserId || !selectedRoleId) {
+      toast.error('Selecione um usuário e uma role');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await assignRoleToUser(selectedUserId, selectedRoleId);
+      toast.success('Role atribuída com sucesso!');
+      setSelectedRoleId('');
+    } catch (error) {
+      toast.error('Erro ao atribuir role');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveRole = async (userRole: UserRole) => {
+    if (window.confirm(`Tem certeza que deseja remover a role "${userRole.role.name}" do usuário?`)) {
+      setLoading(true);
+      try {
+        await removeRoleFromUser(userRole.user_id, userRole.role_id);
+        toast.success('Role removida com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao remover role');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const getUserRoles = (userId: string) => {
+    return userRoles.filter(ur => ur.user_id === userId);
+  };
+
+  const getAvailableRoles = (userId: string) => {
+    const userRolesList = getUserRoles(userId);
+    const assignedRoleIds = userRolesList.map(ur => ur.role_id);
+    return roles.filter(role => !assignedRoleIds.includes(role.id));
+  };
+
+  // ============================================================================
+  // RENDERIZAÇÃO
+  // ============================================================================
+  
+  if (permissionsLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Gerenciamento de Roles de Usuário
+        </h2>
+        {onClose && (
+          <Button
+            onClick={onClose}
+            variant="outline"
+            size="sm"
+          >
+            Fechar
+          </Button>
+        )}
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={clearError}
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* User Selection */}
+      {!propUserId && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Selecionar Usuário
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                ID do Usuário
+              </label>
+              <input
+                type="text"
+                value={selectedUserId}
+                onChange={(e) => setSelectedUserId(e.target.value)}
+                placeholder="Digite o ID do usuário"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <Button
+              onClick={() => refreshData()}
+              variant="outline"
+              size="sm"
+            >
+              Atualizar Dados
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Role Assignment */}
+      {selectedUserId && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Atribuir Role
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Role
+              </label>
+              <select
+                value={selectedRoleId}
+                onChange={(e) => setSelectedRoleId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Selecione uma role</option>
+                {getAvailableRoles(selectedUserId).map(role => (
+                  <option key={role.id} value={role.id}>
+                    {role.name} - {role.description}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button
+              onClick={handleAssignRole}
+              disabled={!selectedRoleId || loading}
+              variant="primary"
+              size="sm"
+            >
+              {loading ? 'Atribuindo...' : 'Atribuir Role'}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Current User Roles */}
+      {selectedUserId && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Roles Atuais do Usuário
+          </h3>
+          {getUserRoles(selectedUserId).length === 0 ? (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                Nenhuma role atribuída a este usuário
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {getUserRoles(selectedUserId).map(userRole => (
+                <div
+                  key={userRole.id}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">
+                        {userRole.role.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {userRole.role.description}
+                      </p>
+                      <div className="mt-2">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          Atribuída em: {new Date(userRole.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleRemoveRole(userRole)}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-800"
+                      disabled={loading}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                  
+                  {/* Permissions */}
+                  <div className="mt-3">
+                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Permissões:
+                    </h5>
+                    <div className="flex flex-wrap gap-1">
+                      {userRole.role.permissions.map(permission => (
+                        <span
+                          key={permission.id}
+                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-full text-xs"
+                        >
+                          {permission.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};

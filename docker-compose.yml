@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # Aplicação principal
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - app-network
+
+  # Aplicação em produção
+  app-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    profiles:
+      - production
+
+  # Nginx para produção
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+    networks:
+      - app-network
+    profiles:
+      - production
+
+  # PostgreSQL local (opcional, para desenvolvimento sem Supabase)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: clinica
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - app-network
+    profiles:
+      - local-db
+
+  # Redis para cache (opcional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    profiles:
+      - cache
+
+  # Mailhog para testes de email (opcional)
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - app-network
+    profiles:
+      - email-test
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+
+# Comandos úteis:
+# 
+# Desenvolvimento:
+# docker-compose up app
+# 
+# Produção:
+# docker-compose --profile production up app-prod
+# 
+# Com banco local:
+# docker-compose --profile local-db up app postgres
+# 
+# Com cache:
+# docker-compose --profile cache up app redis
+# 
+# Com testes de email:
+# docker-compose --profile email-test up app mailhog
+# 
+# Parar todos os serviços:
+# docker-compose down
+# 
+# Rebuild:
+# docker-compose build --no-cache
+# 
+# Logs:
+# docker-compose logs -f app
