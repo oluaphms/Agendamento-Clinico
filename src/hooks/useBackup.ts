@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 // HOOK PRINCIPAL
 // ============================================================================
 
-export function useBackup() {
+function useBackup() {
   const [status, setStatus] = useState<BackupStatus>({
     isRunning: false,
     totalBackups: 0,
@@ -305,7 +305,7 @@ export function useBackup() {
 /**
  * Hook para gerenciar apenas o status do backup
  */
-export function useBackupStatus() {
+function useBackupStatus() {
   const [status, setStatus] = useState<BackupStatus>({
     isRunning: false,
     totalBackups: 0,
@@ -330,7 +330,7 @@ export function useBackupStatus() {
 /**
  * Hook para gerenciar apenas a configuração do backup
  */
-export function useBackupConfig() {
+function useBackupConfig() {
   const [config, setConfig] = useState<BackupConfig>(backupService.getConfig());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -363,7 +363,7 @@ export function useBackupConfig() {
 /**
  * Hook para gerenciar apenas a lista de backups
  */
-export function useBackupList() {
+function useBackupList() {
   const [backups, setBackups] = useState<BackupData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

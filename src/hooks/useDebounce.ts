@@ -33,11 +33,7 @@ function useDebounce<T>(
   delay: number = 500,
   options: UseDebounceOptions = {}
 ): T {
-  const {
-    leading = false,
-    trailing = true,
-    maxWait,
-  } = options;
+  const { leading = false, trailing = true, maxWait } = options;
 
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -51,33 +47,39 @@ function useDebounce<T>(
     lastInvokeTime.current = Date.now();
   }, []);
 
-  const shouldInvoke = useCallback((time: number) => {
-    const timeSinceLastCall = time - (lastCallTime.current || 0);
-    const timeSinceLastInvoke = time - lastInvokeTime.current;
+  const shouldInvoke = useCallback(
+    (time: number) => {
+      const timeSinceLastCall = time - (lastCallTime.current || 0);
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
 
-    return (
-      lastCallTime.current === undefined ||
-      timeSinceLastCall >= delay ||
-      (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
-    );
-  }, [delay, maxWait]);
+      return (
+        lastCallTime.current === undefined ||
+        timeSinceLastCall >= delay ||
+        (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
+      );
+    },
+    [delay, maxWait]
+  );
 
   const leadingEdgeInvoke = useCallback((val: T, time: number) => {
     lastInvokeTime.current = time;
     setDebouncedValue(val);
   }, []);
 
-  const timerExpired = useCallback((val: T, time: number) => {
-    const timeSinceLastCall = time - (lastCallTime.current || 0);
-    const timeSinceLastInvoke = time - lastInvokeTime.current;
+  const timerExpired = useCallback(
+    (val: T, time: number) => {
+      const timeSinceLastCall = time - (lastCallTime.current || 0);
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
 
-    if (
-      timeSinceLastCall >= delay &&
-      (maxWait === undefined || timeSinceLastInvoke >= maxWait)
-    ) {
-      invokeFunc(val);
-    }
-  }, [delay, maxWait, invokeFunc]);
+      if (
+        timeSinceLastCall >= delay &&
+        (maxWait === undefined || timeSinceLastInvoke >= maxWait)
+      ) {
+        invokeFunc(val);
+      }
+    },
+    [delay, maxWait, invokeFunc]
+  );
 
   useEffect(() => {
     const time = Date.now();
@@ -119,7 +121,17 @@ function useDebounce<T>(
         clearTimeout(maxTimeoutRef.current);
       }
     };
-  }, [value, delay, leading, trailing, maxWait, shouldInvoke, leadingEdgeInvoke, timerExpired, invokeFunc]);
+  }, [
+    value,
+    delay,
+    leading,
+    trailing,
+    maxWait,
+    shouldInvoke,
+    leadingEdgeInvoke,
+    timerExpired,
+    invokeFunc,
+  ]);
 
   return debouncedValue;
 }
@@ -133,11 +145,7 @@ function useDebounceCallback<T extends (...args: any[]) => any>(
   delay: number = 500,
   options: UseDebounceCallbackOptions = {}
 ): T {
-  const {
-    leading = false,
-    trailing = true,
-    maxWait,
-  } = options;
+  const { leading = false, trailing = true, maxWait } = options;
 
   const timeoutRef = useRef<NodeJS.Timeout>();
   const maxTimeoutRef = useRef<NodeJS.Timeout>();
@@ -148,45 +156,57 @@ function useDebounceCallback<T extends (...args: any[]) => any>(
   const result = useRef<ReturnType<T>>();
   const leadingEdge = useRef<boolean>(false);
 
-  const invokeFunc = useCallback((time: number) => {
-    const args = lastArgs.current;
-    const thisArg = lastThis.current;
+  const invokeFunc = useCallback(
+    (time: number) => {
+      const args = lastArgs.current;
+      const thisArg = lastThis.current;
 
-    lastArgs.current = undefined;
-    lastThis.current = undefined;
-    lastInvokeTime.current = time;
-    result.current = callback.apply(thisArg, args as Parameters<T>);
-    return result.current;
-  }, [callback]);
+      lastArgs.current = undefined;
+      lastThis.current = undefined;
+      lastInvokeTime.current = time;
+      result.current = callback.apply(thisArg, args as Parameters<T>);
+      return result.current;
+    },
+    [callback]
+  );
 
-  const shouldInvoke = useCallback((time: number) => {
-    const timeSinceLastCall = time - (lastCallTime.current || 0);
-    const timeSinceLastInvoke = time - lastInvokeTime.current;
+  const shouldInvoke = useCallback(
+    (time: number) => {
+      const timeSinceLastCall = time - (lastCallTime.current || 0);
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
 
-    return (
-      lastCallTime.current === undefined ||
-      timeSinceLastCall >= delay ||
-      (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
-    );
-  }, [delay, maxWait]);
+      return (
+        lastCallTime.current === undefined ||
+        timeSinceLastCall >= delay ||
+        (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
+      );
+    },
+    [delay, maxWait]
+  );
 
-  const leadingEdgeInvoke = useCallback((time: number) => {
-    lastInvokeTime.current = time;
-    leadingEdge.current = true;
-    return invokeFunc(time);
-  }, [invokeFunc]);
-
-  const timerExpired = useCallback((time: number) => {
-    const timeSinceLastCall = time - (lastCallTime.current || 0);
-    const timeSinceLastInvoke = time - lastInvokeTime.current;
-
-    if (
-      timeSinceLastCall >= delay &&
-      (maxWait === undefined || timeSinceLastInvoke >= maxWait)
-    ) {
+  const leadingEdgeInvoke = useCallback(
+    (time: number) => {
+      lastInvokeTime.current = time;
+      leadingEdge.current = true;
       return invokeFunc(time);
-    }
-  }, [delay, maxWait, invokeFunc]);
+    },
+    [invokeFunc]
+  );
+
+  const timerExpired = useCallback(
+    (time: number) => {
+      const timeSinceLastCall = time - (lastCallTime.current || 0);
+      const timeSinceLastInvoke = time - lastInvokeTime.current;
+
+      if (
+        timeSinceLastCall >= delay &&
+        (maxWait === undefined || timeSinceLastInvoke >= maxWait)
+      ) {
+        return invokeFunc(time);
+      }
+    },
+    [delay, maxWait, invokeFunc]
+  );
 
   const debounced = useCallback(
     function (this: any, ...args: Parameters<T>) {
@@ -225,7 +245,16 @@ function useDebounceCallback<T extends (...args: any[]) => any>(
 
       return result.current;
     } as T,
-    [delay, leading, trailing, maxWait, shouldInvoke, leadingEdgeInvoke, timerExpired, invokeFunc]
+    [
+      delay,
+      leading,
+      trailing,
+      maxWait,
+      shouldInvoke,
+      leadingEdgeInvoke,
+      timerExpired,
+      invokeFunc,
+    ]
   );
 
   // Cleanup
@@ -250,30 +279,21 @@ function useDebounceCallback<T extends (...args: any[]) => any>(
 /**
  * Hook para debounce de busca
  */
-function useSearchDebounce(
-  searchTerm: string,
-  delay: number = 300
-): string {
+function useSearchDebounce(searchTerm: string, delay: number = 300): string {
   return useDebounce(searchTerm, delay);
 }
 
 /**
  * Hook para debounce de input
  */
-function useInputDebounce(
-  value: string,
-  delay: number = 500
-): string {
+function useInputDebounce(value: string, delay: number = 500): string {
   return useDebounce(value, delay);
 }
 
 /**
  * Hook para debounce de scroll
  */
-function useScrollDebounce(
-  callback: () => void,
-  delay: number = 100
-): void {
+function useScrollDebounce(callback: () => void, delay: number = 100): void {
   const debouncedCallback = useDebounceCallback(callback, delay);
 
   useEffect(() => {
@@ -289,10 +309,7 @@ function useScrollDebounce(
 /**
  * Hook para debounce de resize
  */
-function useResizeDebounce(
-  callback: () => void,
-  delay: number = 250
-): void {
+function useResizeDebounce(callback: () => void, delay: number = 250): void {
   const debouncedCallback = useDebounceCallback(callback, delay);
 
   useEffect(() => {
@@ -335,11 +352,7 @@ function createDebouncedFunction<T extends (...args: any[]) => any>(
   let result: ReturnType<T>;
   let leadingEdge = false;
 
-  const {
-    leading = false,
-    trailing = true,
-    maxWait,
-  } = options;
+  const { leading = false, trailing = true, maxWait } = options;
 
   const invokeFunc = (time: number) => {
     const args = lastArgs;
