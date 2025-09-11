@@ -186,7 +186,7 @@ export async function fetchRevenueMetrics(): Promise<MetricData> {
 
     if (error) throw error;
 
-    const monthlyRevenue = payments?.reduce((sum, payment) => sum + payment.valor, 0) || 0;
+    const monthlyRevenue = payments?.reduce((sum: any, payment: any) => sum + payment.valor, 0) || 0;
     const previousMonth = await getPreviousMonthRevenue();
     const change = monthlyRevenue - previousMonth;
     const changePercent = previousMonth > 0 ? (change / previousMonth) * 100 : 0;
@@ -249,14 +249,14 @@ export async function fetchWaitTimeMetrics(): Promise<MetricData> {
 
     if (error) throw error;
 
-    const waitTimes = appointments?.map(apt => {
+    const waitTimes = appointments?.map((apt: any) => {
       const scheduled = new Date(apt.data_agendamento);
       const started = new Date(apt.data_inicio);
       return (started.getTime() - scheduled.getTime()) / (1000 * 60); // em minutos
     }) || [];
 
     const averageWaitTime = waitTimes.length > 0 
-      ? waitTimes.reduce((sum, time) => sum + time, 0) / waitTimes.length 
+      ? waitTimes.reduce((sum: any, time: any) => sum + time, 0) / waitTimes.length 
       : 0;
 
     const previousWeek = await getPreviousWeekWaitTime();
@@ -293,7 +293,7 @@ export async function fetchSatisfactionMetrics(): Promise<MetricData> {
     if (error) throw error;
 
     const satisfaction = feedback?.length > 0 
-      ? (feedback.reduce((sum, f) => sum + f.nota, 0) / feedback.length) * 20 // converter para porcentagem
+      ? (feedback.reduce((sum: any, f: any) => sum + f.nota, 0) / feedback.length) * 20 // converter para porcentagem
       : 0;
 
     const previousMonth = await getPreviousMonthSatisfaction();
@@ -403,7 +403,7 @@ async function getPreviousMonthRevenue(): Promise<number> {
       .eq('status', 'pago');
 
     if (error) throw error;
-    return data?.reduce((sum, payment) => sum + payment.valor, 0) || 0;
+    return data?.reduce((sum: any, payment: any) => sum + payment.valor, 0) || 0;
   } catch {
     return 0;
   }
@@ -425,14 +425,14 @@ async function getPreviousWeekWaitTime(): Promise<number> {
 
     if (error) throw error;
 
-    const waitTimes = data?.map(apt => {
+    const waitTimes = data?.map((apt: any) => {
       const scheduled = new Date(apt.data_agendamento);
       const started = new Date(apt.data_inicio);
       return (started.getTime() - scheduled.getTime()) / (1000 * 60);
     }) || [];
 
     return waitTimes.length > 0 
-      ? waitTimes.reduce((sum, time) => sum + time, 0) / waitTimes.length 
+      ? waitTimes.reduce((sum: any, time: any) => sum + time, 0) / waitTimes.length 
       : 0;
   } catch {
     return 0;
@@ -458,7 +458,7 @@ async function getPreviousMonthSatisfaction(): Promise<number> {
     if (error) throw error;
 
     return data?.length > 0 
-      ? (data.reduce((sum, f) => sum + f.nota, 0) / data.length) * 20
+      ? (data.reduce((sum: any, f: any) => sum + f.nota, 0) / data.length) * 20
       : 0;
   } catch {
     return 0;
@@ -528,7 +528,7 @@ export async function fetchRevenueChartData(period: '7d' | '30d' | '90d' = '30d'
 
     // Agrupar por dia
     const dailyRevenue = new Map<string, number>();
-    data?.forEach(payment => {
+    data?.forEach((payment: any) => {
       const date = new Date(payment.data_pagamento).toISOString().split('T')[0];
       const current = dailyRevenue.get(date) || 0;
       dailyRevenue.set(date, current + payment.valor);
@@ -583,7 +583,7 @@ export async function fetchAppointmentsChartData(period: '7d' | '30d' | '90d' = 
 
     // Agrupar por dia e status
     const dailyAppointments = new Map<string, { total: number; completed: number }>();
-    data?.forEach(apt => {
+    data?.forEach((apt: any) => {
       const date = new Date(apt.data_agendamento).toISOString().split('T')[0];
       const current = dailyAppointments.get(date) || { total: 0, completed: 0 };
       current.total++;

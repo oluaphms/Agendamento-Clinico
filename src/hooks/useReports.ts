@@ -244,8 +244,8 @@ function useReports() {
     filters.forEach(filter => {
       switch (filter.operator) {
         case 'between':
-          appliedFilters.startDate = filter.value[0];
-          appliedFilters.endDate = filter.value[1];
+          appliedFilters.startDate = (filter.value as any)[0];
+          appliedFilters.endDate = (filter.value as any)[1];
           break;
         case 'in':
           appliedFilters[filter.field] = filter.value;

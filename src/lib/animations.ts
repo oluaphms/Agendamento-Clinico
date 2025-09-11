@@ -4,7 +4,7 @@
 // Configurações centralizadas para animações e transições
 // ============================================================================
 
-import { Variants, Transition } from 'framer-motion';
+import { Variants } from 'framer-motion';
 
 // ============================================================================
 // CONFIGURAÇÕES DE TRANSIÇÃO
