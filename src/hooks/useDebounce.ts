@@ -28,7 +28,7 @@ interface UseDebounceCallbackOptions {
 // HOOK PRINCIPAL
 // ============================================================================
 
-export function useDebounce<T>(
+function useDebounce<T>(
   value: T,
   delay: number = 500,
   options: UseDebounceOptions = {}
@@ -128,7 +128,7 @@ export function useDebounce<T>(
 // HOOK PARA DEBOUNCE DE CALLBACK
 // ============================================================================
 
-export function useDebounceCallback<T extends (...args: any[]) => any>(
+function useDebounceCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number = 500,
   options: UseDebounceCallbackOptions = {}
@@ -250,7 +250,7 @@ export function useDebounceCallback<T extends (...args: any[]) => any>(
 /**
  * Hook para debounce de busca
  */
-export function useSearchDebounce(
+function useSearchDebounce(
   searchTerm: string,
   delay: number = 300
 ): string {
@@ -260,7 +260,7 @@ export function useSearchDebounce(
 /**
  * Hook para debounce de input
  */
-export function useInputDebounce(
+function useInputDebounce(
   value: string,
   delay: number = 500
 ): string {
@@ -270,7 +270,7 @@ export function useInputDebounce(
 /**
  * Hook para debounce de scroll
  */
-export function useScrollDebounce(
+function useScrollDebounce(
   callback: () => void,
   delay: number = 100
 ): void {
@@ -289,7 +289,7 @@ export function useScrollDebounce(
 /**
  * Hook para debounce de resize
  */
-export function useResizeDebounce(
+function useResizeDebounce(
   callback: () => void,
   delay: number = 250
 ): void {
@@ -308,7 +308,7 @@ export function useResizeDebounce(
 /**
  * Hook para debounce de API calls
  */
-export function useApiDebounce<T extends (...args: any[]) => Promise<any>>(
+function useApiDebounce<T extends (...args: any[]) => Promise<any>>(
   apiCall: T,
   delay: number = 500
 ): T {
@@ -322,7 +322,7 @@ export function useApiDebounce<T extends (...args: any[]) => Promise<any>>(
 /**
  * Cria uma função debounced
  */
-export function createDebouncedFunction<T extends (...args: any[]) => any>(
+function createDebouncedFunction<T extends (...args: any[]) => any>(
   func: T,
   delay: number = 500,
   options: UseDebounceCallbackOptions = {}
