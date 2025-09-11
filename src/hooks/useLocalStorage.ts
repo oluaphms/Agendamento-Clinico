@@ -24,15 +24,12 @@ interface UseLocalStorageOptions {
 // HOOK PRINCIPAL
 // ============================================================================
 
-export function useLocalStorage<T>(
+function useLocalStorage<T>(
   key: string,
   initialValue: T,
   options: UseLocalStorageOptions = {}
 ) {
-  const {
-    serializer = JSON,
-    syncAcrossTabs = true,
-  } = options;
+  const { serializer = JSON, syncAcrossTabs = true } = options;
 
   // Estado para armazenar o valor
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -49,7 +46,8 @@ export function useLocalStorage<T>(
   const setValue = useCallback(
     (value: SetValue<T>) => {
       try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
+        const valueToStore =
+          value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
         window.localStorage.setItem(key, serializer.stringify(valueToStore));
       } catch (error) {
@@ -97,7 +95,7 @@ export function useLocalStorage<T>(
 /**
  * Hook para gerenciar preferências do usuário
  */
-export function useUserPreferences() {
+function useUserPreferences() {
   const [preferences, setPreferences, removePreferences] = useLocalStorage(
     'user-preferences',
     {
@@ -112,7 +110,7 @@ export function useUserPreferences() {
   const updatePreference = useCallback(
     <K extends keyof typeof preferences>(
       key: K,
-      value: typeof preferences[K]
+      value: (typeof preferences)[K]
     ) => {
       setPreferences(prev => ({ ...prev, [key]: value }));
     },
@@ -129,7 +127,7 @@ export function useUserPreferences() {
 /**
  * Hook para gerenciar histórico de navegação
  */
-export function useNavigationHistory() {
+function useNavigationHistory() {
   const [history, setHistory, removeHistory] = useLocalStorage(
     'navigation-history',
     [] as string[]
@@ -159,7 +157,7 @@ export function useNavigationHistory() {
 /**
  * Hook para gerenciar favoritos
  */
-export function useFavorites() {
+function useFavorites() {
   const [favorites, setFavorites, removeFavorites] = useLocalStorage(
     'favorites',
     [] as string[]
@@ -208,14 +206,11 @@ export function useFavorites() {
 /**
  * Hook para gerenciar cache de dados
  */
-export function useDataCache<T>(key: string, ttl: number = 5 * 60 * 1000) {
-  const [cache, setCache, removeCache] = useLocalStorage(
-    `cache-${key}`,
-    {
-      data: null as T | null,
-      timestamp: 0,
-    }
-  );
+function useDataCache<T>(key: string, ttl: number = 5 * 60 * 1000) {
+  const [cache, setCache, removeCache] = useLocalStorage(`cache-${key}`, {
+    data: null as T | null,
+    timestamp: 0,
+  });
 
   const setCachedData = useCallback(
     (data: T) => {
@@ -229,13 +224,13 @@ export function useDataCache<T>(key: string, ttl: number = 5 * 60 * 1000) {
 
   const getCachedData = useCallback((): T | null => {
     if (!cache.data || !cache.timestamp) return null;
-    
+
     const isExpired = Date.now() - cache.timestamp > ttl;
     if (isExpired) {
       removeCache();
       return null;
     }
-    
+
     return cache.data;
   }, [cache, ttl, removeCache]);
 
@@ -254,7 +249,7 @@ export function useDataCache<T>(key: string, ttl: number = 5 * 60 * 1000) {
 /**
  * Hook para gerenciar formulários com persistência
  */
-export function usePersistentForm<T extends Record<string, unknown>>(
+function usePersistentForm<T extends Record<string, unknown>>(
   key: string,
   initialValues: T
 ) {
@@ -301,7 +296,7 @@ export function usePersistentForm<T extends Record<string, unknown>>(
 /**
  * Verifica se o localStorage está disponível
  */
-export function isLocalStorageAvailable(): boolean {
+function isLocalStorageAvailable(): boolean {
   try {
     const test = '__localStorage_test__';
     window.localStorage.setItem(test, test);
@@ -315,7 +310,7 @@ export function isLocalStorageAvailable(): boolean {
 /**
  * Obtém o tamanho usado pelo localStorage
  */
-export function getLocalStorageSize(): number {
+function getLocalStorageSize(): number {
   let total = 0;
   for (const key in window.localStorage) {
     if (window.localStorage.hasOwnProperty(key)) {
@@ -328,14 +323,14 @@ export function getLocalStorageSize(): number {
 /**
  * Limpa todos os dados do localStorage
  */
-export function clearAllLocalStorage(): void {
+function clearAllLocalStorage(): void {
   window.localStorage.clear();
 }
 
 /**
  * Obtém todas as chaves do localStorage
  */
-export function getAllLocalStorageKeys(): string[] {
+function getAllLocalStorageKeys(): string[] {
   return Object.keys(window.localStorage);
 }
 

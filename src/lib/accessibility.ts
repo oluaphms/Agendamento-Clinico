@@ -4,6 +4,8 @@
 // Funções e constantes para melhorar a acessibilidade da aplicação
 // ============================================================================
 
+import { useState, useCallback, useRef, useEffect } from 'react';
+
 // ============================================================================
 // CONSTANTES DE ACESSIBILIDADE
 // ============================================================================
@@ -246,7 +248,7 @@ export function createListItemAriaProps(itemId: string) {
  * Hook para gerenciar foco em modais
  */
 export function useModalFocus(modalRef: React.RefObject<HTMLElement>, isOpen: boolean) {
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen || !modalRef.current) return;
 
     const focusableElements = modalRef.current.querySelectorAll(
@@ -285,7 +287,7 @@ export function useModalFocus(modalRef: React.RefObject<HTMLElement>, isOpen: bo
  * Hook para gerenciar escape key
  */
 export function useEscapeKey(onEscape: () => void) {
-  React.useEffect(() => {
+  useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onEscape();
@@ -306,7 +308,7 @@ export function useArrowKeys(
   onArrowLeft: () => void,
   onArrowRight: () => void
 ) {
-  React.useEffect(() => {
+  useEffect(() => {
     const handleArrowKeys = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowUp':

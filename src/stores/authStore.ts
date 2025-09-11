@@ -322,24 +322,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         ) {
           const {
             data: { subscription: authSubscription },
-          } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session && (session as any).user) {
-              set({
-                user: (session as any).user,
-                session: session as any,
-                loading: false,
-              });
+          } = supabase.auth.onAuthStateChange(
+            async (event: any, session: any) => {
+              if (event === 'SIGNED_IN' && session && (session as any).user) {
+                set({
+                  user: (session as any).user,
+                  session: session as any,
+                  loading: false,
+                });
 
-              // Buscar dados adicionais do usuário
-              await get().fetchUserProfile((session as any).user.id);
-            } else if (event === 'SIGNED_OUT') {
-              set({
-                user: null,
-                session: null,
-                loading: false,
-              });
+                // Buscar dados adicionais do usuário
+                await get().fetchUserProfile((session as any).user.id);
+              } else if (event === 'SIGNED_OUT') {
+                set({
+                  user: null,
+                  session: null,
+                  loading: false,
+                });
+              }
             }
-          });
+          );
           subscription = authSubscription;
         }
 

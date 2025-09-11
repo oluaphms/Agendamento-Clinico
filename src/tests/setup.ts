@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Mock do localStorage
 const localStorageMock = {
@@ -6,8 +6,10 @@ const localStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
-}
-global.localStorage = localStorageMock
+  length: 0,
+  key: jest.fn(),
+} as Storage;
+global.localStorage = localStorageMock;
 
 // Mock do window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -22,21 +24,21 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
   })),
-})
+});
 
 // Mock do ResizeObserver
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-}))
+}));
 
 // Mock do IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-}))
+}));
 
 // Mock do Supabase
 jest.mock('@/lib/supabase', () => ({
@@ -59,7 +61,7 @@ jest.mock('@/lib/supabase', () => ({
       single: jest.fn(),
     })),
   },
-}))
+}));
 
 // Mock do react-hot-toast
 jest.mock('react-hot-toast', () => ({
@@ -68,7 +70,7 @@ jest.mock('react-hot-toast', () => ({
     error: jest.fn(),
     loading: jest.fn(),
   },
-}))
+}));
 
 // Mock do react-router-dom
 jest.mock('react-router-dom', () => ({
@@ -76,4 +78,4 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
   useLocation: () => ({ pathname: '/', state: null }),
   useParams: () => ({}),
-}))
+}));

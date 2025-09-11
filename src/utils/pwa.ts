@@ -16,10 +16,10 @@ interface PWAConfig {
   updateCheckInterval: number;
 }
 
-interface InstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
+// interface InstallPromptEvent extends Event {
+//   prompt(): Promise<void>;
+//   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+// }
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -92,16 +92,20 @@ export class PWAManager {
   private async registerServiceWorker(): Promise<void> {
     try {
       // Verificar se estamos em desenvolvimento
-      const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
+      const isDev =
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+
       if (isDev) {
         // Em desenvolvimento, registrar o service worker mas com configurações especiais
-        console.log('🔧 Service Worker enabled in development mode with HMR protection');
-        
+        console.log(
+          '🔧 Service Worker enabled in development mode with HMR protection'
+        );
+
         // Aguardar um pouco para garantir que o Vite HMR esteja funcionando
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      
+
       this.registration = await navigator.serviceWorker.register('/sw.js');
       console.log('✅ Service Worker registered successfully');
 
@@ -110,7 +114,10 @@ export class PWAManager {
         const newWorker = this.registration!.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (
+              newWorker.state === 'installed' &&
+              navigator.serviceWorker.controller
+            ) {
               this.updateAvailable = true;
               this.showUpdateNotification();
             }
@@ -119,10 +126,9 @@ export class PWAManager {
       });
 
       // Escutar mensagens do service worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', event => {
         this.handleServiceWorkerMessage(event);
       });
-
     } catch (error) {
       console.error('❌ Service Worker registration failed:', error);
     }
@@ -130,7 +136,7 @@ export class PWAManager {
 
   private handleServiceWorkerMessage(event: MessageEvent): void {
     const { data } = event;
-    
+
     switch (data.type) {
       case 'UPDATE_AVAILABLE':
         this.updateAvailable = true;
@@ -149,7 +155,7 @@ export class PWAManager {
   // ============================================================================
 
   private setupInstallPrompt(): void {
-    window.addEventListener('beforeinstallprompt', (event) => {
+    window.addEventListener('beforeinstallprompt', event => {
       event.preventDefault();
       this.deferredPrompt = event as BeforeInstallPromptEvent;
       this.showInstallButton();
@@ -170,7 +176,7 @@ export class PWAManager {
     try {
       await this.deferredPrompt.prompt();
       const choiceResult = await this.deferredPrompt.userChoice;
-      
+
       if (choiceResult.outcome === 'accepted') {
         console.log('✅ User accepted the install prompt');
         return true;
@@ -230,22 +236,27 @@ export class PWAManager {
     }
   }
 
-  async showNotification(title: string, options?: NotificationOptions): Promise<void> {
-    if (!this.config.enableNotifications || Notification.permission !== 'granted') {
+  async showNotification(
+    title: string,
+    options?: NotificationOptions
+  ): Promise<void> {
+    if (
+      !this.config.enableNotifications ||
+      Notification.permission !== 'granted'
+    ) {
       return;
     }
 
     const defaultOptions: NotificationOptions = {
       icon: '/icons/icon-192x192.png',
       badge: '/icons/badge-72x72.png',
-      vibrate: [200, 100, 200],
       requireInteraction: false,
       ...options,
     };
 
     try {
       const notification = new Notification(title, defaultOptions);
-      
+
       notification.addEventListener('click', () => {
         window.focus();
         notification.close();
@@ -255,7 +266,6 @@ export class PWAManager {
       setTimeout(() => {
         notification.close();
       }, 5000);
-
     } catch (error) {
       console.error('Error showing notification:', error);
     }
@@ -265,16 +275,6 @@ export class PWAManager {
     this.showNotification('Atualização Disponível', {
       body: 'Uma nova versão do sistema está disponível. Clique para atualizar.',
       requireInteraction: true,
-      actions: [
-        {
-          action: 'update',
-          title: 'Atualizar',
-        },
-        {
-          action: 'dismiss',
-          title: 'Depois',
-        },
-      ],
     });
   }
 
@@ -289,7 +289,10 @@ export class PWAManager {
   // ============================================================================
 
   private setupBackgroundSync(): void {
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+    if (
+      'serviceWorker' in navigator &&
+      'sync' in window.ServiceWorkerRegistration.prototype
+    ) {
       // Background sync está disponível
       console.log('✅ Background sync is supported');
     } else {
@@ -297,12 +300,16 @@ export class PWAManager {
     }
   }
 
-  async registerBackgroundSync(tag: string, data?: any): Promise<void> {
-    if (!this.registration || !('sync' in window.ServiceWorkerRegistration.prototype)) {
+  async registerBackgroundSync(tag: string, _data?: any): Promise<void> {
+    if (
+      !this.registration ||
+      !('sync' in window.ServiceWorkerRegistration.prototype)
+    ) {
       return;
     }
 
     try {
+      // @ts-ignore - sync pode não estar disponível em todos os navegadores
       await this.registration.sync.register(tag);
       console.log(`✅ Background sync registered: ${tag}`);
     } catch (error) {
@@ -327,13 +334,15 @@ export class PWAManager {
 
     try {
       // Verificar se estamos em desenvolvimento
-      const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
+      const isDev =
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+
       if (isDev) {
         // Em desenvolvimento, não verificar atualizações
         return false;
       }
-      
+
       await this.registration.update();
       return this.updateAvailable;
     } catch (error) {
@@ -397,7 +406,7 @@ export class PWAManager {
       await navigator.share(data);
       return true;
     } catch (error) {
-      if (error.name !== 'AbortError') {
+      if ((error as any).name !== 'AbortError') {
         console.error('Error sharing:', error);
       }
       return false;
@@ -550,7 +559,7 @@ export const usePWA = (config?: PWAConfig) => {
     canInstall,
     isInstalled,
     showInstallPrompt: () => pwaManager.showInstallPrompt(),
-    showNotification: (title: string, options?: NotificationOptions) => 
+    showNotification: (title: string, options?: NotificationOptions) =>
       pwaManager.showNotification(title, options),
     share: (data: ShareData) => pwaManager.share(data),
     copyToClipboard: (text: string) => pwaManager.copyToClipboard(text),

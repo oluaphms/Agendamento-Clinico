@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { permissionService, Permission, Role, UserRole, PermissionCheck } from '../services/permissionService';
+import { PermissionService, Permission } from '../services/permissionService';
 
 // ============================================================================
 // TIPOS E INTERFACES
@@ -275,7 +275,7 @@ export const usePermissions = (): UsePermissionsReturn => {
     if (!user?.id) return false;
     
     return userRoles.some(userRole => 
-      userRole.role.permissions.some(permission => 
+      userRole.role.permissions.some((permission: any) => 
         permission.resource === resource && permission.action === action
       )
     );

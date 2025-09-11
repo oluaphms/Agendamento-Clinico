@@ -176,7 +176,7 @@ export const withProfiler = <P extends object>(
   Component: React.ComponentType<P>,
   componentName: string
 ): React.ComponentType<P> => {
-  return React.memo((props: P) => {
+  const MemoizedComponent = React.memo((props: P) => {
     const monitor = PerformanceMonitor.getInstance();
     const endTimer = monitor.startComponentTimer(componentName);
 
@@ -186,6 +186,8 @@ export const withProfiler = <P extends object>(
 
     return React.createElement(Component, props);
   });
+
+  return MemoizedComponent as unknown as React.ComponentType<P>;
 };
 
 // ============================================================================

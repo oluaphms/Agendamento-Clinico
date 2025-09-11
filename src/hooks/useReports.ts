@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 // HOOK PRINCIPAL
 // ============================================================================
 
-export function useReports() {
+function useReports() {
   const [reports, setReports] = useState<ReportConfig[]>([]);
   const [generatedReports, setGeneratedReports] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -336,7 +336,7 @@ export function useReports() {
 /**
  * Hook para gerenciar apenas a lista de relatórios
  */
-export function useReportList() {
+function useReportList() {
   const [reports, setReports] = useState<ReportConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -371,7 +371,7 @@ export function useReportList() {
 /**
  * Hook para gerenciar um relatório específico
  */
-export function useReport(reportId: string) {
+function useReport(reportId: string) {
   const [report, setReport] = useState<ReportConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -408,7 +408,7 @@ export function useReport(reportId: string) {
 /**
  * Hook para gerenciar geração de relatórios
  */
-export function useReportGeneration() {
+function useReportGeneration() {
   const [currentReport, setCurrentReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

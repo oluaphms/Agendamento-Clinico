@@ -22,7 +22,7 @@ export const createLazyComponent = <T extends ComponentType<any>>(
   importFn: () => Promise<{ default: T }>,
   options: LazyComponentOptions = {}
 ): T => {
-  const { fallback, preload = false, chunkName } = options;
+  const { preload = false, chunkName } = options;
 
   // Criar o componente lazy
   const LazyComponent = lazy(importFn);
@@ -39,7 +39,7 @@ export const createLazyComponent = <T extends ComponentType<any>>(
     (LazyComponent as any).displayName = `Lazy(${chunkName})`;
   }
 
-  return LazyComponent as T;
+  return LazyComponent as unknown as T;
 };
 
 // ============================================================================
@@ -80,9 +80,12 @@ export class ComponentPreloader {
     timeout: number = 2000
   ): void {
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        this.preloadComponent(importFn, componentName);
-      }, { timeout });
+      requestIdleCallback(
+        () => {
+          this.preloadComponent(importFn, componentName);
+        },
+        { timeout }
+      );
     } else {
       setTimeout(() => {
         this.preloadComponent(importFn, componentName);
@@ -107,7 +110,9 @@ export class ChunkLoader {
       return await importFn();
     } catch (error) {
       if (retries > 0) {
-        console.warn(`Chunk load failed, retrying... (${retries} attempts left)`);
+        console.warn(
+          `Chunk load failed, retrying... (${retries} attempts left)`
+        );
         await new Promise(resolve => setTimeout(resolve, this.retryDelay));
         return this.loadChunk(importFn, retries - 1);
       }
@@ -125,11 +130,12 @@ export const analyzeBundle = () => {
     // Adicionar informações de bundle no desenvolvimento
     const scripts = document.querySelectorAll('script[src]');
     const styles = document.querySelectorAll('link[rel="stylesheet"]');
-    
+
     console.group('📦 Bundle Analysis');
     console.log('Scripts:', scripts.length);
     console.log('Stylesheets:', styles.length);
-    console.log('Total size estimate:', 
+    console.log(
+      'Total size estimate:',
       Array.from(scripts).reduce((total, script) => {
         const src = script.getAttribute('src');
         return total + (src?.includes('chunk') ? 1 : 0);
@@ -155,13 +161,11 @@ export const createIntersectionLazy = <T extends ComponentType<any>>(
 
   const LazyComponent = lazy(() => {
     return new Promise<{ default: T }>((resolve, reject) => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             observer.disconnect();
-            importFn()
-              .then(resolve)
-              .catch(reject);
+            importFn().then(resolve).catch(reject);
           }
         });
       }, defaultOptions);
@@ -179,7 +183,7 @@ export const createIntersectionLazy = <T extends ComponentType<any>>(
     });
   });
 
-  return LazyComponent as T;
+  return LazyComponent as unknown as T;
 };
 
 // ============================================================================
@@ -188,15 +192,15 @@ export const createIntersectionLazy = <T extends ComponentType<any>>(
 
 export const measureComponentLoad = (componentName: string) => {
   const startTime = performance.now();
-  
+
   return () => {
     const endTime = performance.now();
     const loadTime = endTime - startTime;
-    
+
     if (import.meta.env.DEV) {
       console.log(`🚀 ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
     }
-    
+
     // Enviar métricas para analytics se disponível
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'component_load', {
