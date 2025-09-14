@@ -4,8 +4,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePermissions } from '../../hooks/usePermissions';
-import { useAuthStore } from '../../stores/authStore';
-import { UserRole, Role } from '../../types/permissions';
+// import { useAuthStore } from '../../stores/authStore';
+// import { UserRole, Role } from '../../types/permissions';
+
+// Definindo tipos locais para evitar conflitos
+interface Role {
+  id: string;
+  name: string;
+  description: string;
+  permissions: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserRole {
+  id: string;
+  userId: string;
+  roleId: string;
+  role: Role;
+  created_at: string;
+  updated_at: string;
+}
 import { Button } from '../../design-system/Components';
 import toast from 'react-hot-toast';
 
@@ -34,7 +53,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   
-  const { user } = useAuthStore();
+  // const { user } = useAuthStore();
   const {
     roles,
     userRoles,
@@ -82,7 +101,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
     if (window.confirm(`Tem certeza que deseja remover a role "${userRole.role.name}" do usuário?`)) {
       setLoading(true);
       try {
-        await removeRoleFromUser(userRole.user_id, userRole.role_id);
+        await removeRoleFromUser((userRole as any).userId || (userRole as any).user_id, (userRole as any).roleId || (userRole as any).role_id);
         toast.success('Role removida com sucesso!');
       } catch (error) {
         toast.error('Erro ao remover role');
@@ -204,7 +223,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
             <Button
               onClick={handleAssignRole}
               disabled={!selectedRoleId || loading}
-              variant="primary"
+              variant="default"
               size="sm"
             >
               {loading ? 'Atribuindo...' : 'Atribuir Role'}
@@ -235,19 +254,19 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">
-                        {userRole.role.name}
+                        {(userRole as any).role?.name || 'Role não encontrada'}
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {userRole.role.description}
+                        {(userRole as any).role?.description || 'Descrição não disponível'}
                       </p>
                       <div className="mt-2">
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          Atribuída em: {new Date(userRole.created_at).toLocaleDateString()}
+                          Atribuída em: {new Date((userRole as any).created_at || Date.now()).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                     <Button
-                      onClick={() => handleRemoveRole(userRole)}
+                      onClick={() => handleRemoveRole(userRole as any)}
                       variant="outline"
                       size="sm"
                       className="text-red-600 hover:text-red-800"
@@ -263,12 +282,12 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
                       Permissões:
                     </h5>
                     <div className="flex flex-wrap gap-1">
-                      {userRole.role.permissions.map(permission => (
+                      {((userRole as any).role?.permissions || []).map((permission: any) => (
                         <span
-                          key={permission.id}
+                          key={permission.id || permission}
                           className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-full text-xs"
                         >
-                          {permission.name}
+                          {permission.name || permission}
                         </span>
                       ))}
                     </div>

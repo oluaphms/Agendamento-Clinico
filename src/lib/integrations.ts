@@ -65,7 +65,7 @@ export const INTEGRATION_TYPES = {
     timeout: 5000,
     retries: 3,
   },
-  
+
   WHATSAPP_API: {
     id: 'whatsapp-api',
     name: 'WhatsApp Business API',
@@ -74,7 +74,7 @@ export const INTEGRATION_TYPES = {
     timeout: 10000,
     retries: 2,
   },
-  
+
   EMAIL_SERVICE: {
     id: 'email-service',
     name: 'Serviço de Email',
@@ -83,7 +83,7 @@ export const INTEGRATION_TYPES = {
     timeout: 10000,
     retries: 3,
   },
-  
+
   SMS_SERVICE: {
     id: 'sms-service',
     name: 'Serviço de SMS',
@@ -92,7 +92,7 @@ export const INTEGRATION_TYPES = {
     timeout: 10000,
     retries: 2,
   },
-  
+
   PAYMENT_GATEWAY: {
     id: 'payment-gateway',
     name: 'Gateway de Pagamento',
@@ -102,7 +102,7 @@ export const INTEGRATION_TYPES = {
     retries: 3,
     enabled: true,
   },
-  
+
   // Webhooks
   WEBHOOK_GENERAL: {
     id: 'webhook-general',
@@ -130,23 +130,24 @@ export class IntegrationService {
   // ============================================================================
   // MÉTODOS DE REQUISIÇÃO
   // ============================================================================
-  
+
   async request<T = any>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<IntegrationResponse<T>> {
     try {
       const url = `${this.config.baseUrl}${endpoint}`;
-      const headers = this.buildHeaders(options.headers);
-      
+      const headers = this.buildHeaders(
+        options.headers as Record<string, string>
+      );
+
       const response = await fetch(url, {
         ...options,
         headers,
-        timeout: this.config.timeout || 10000,
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         return {
           success: false,
@@ -169,7 +170,10 @@ export class IntegrationService {
     }
   }
 
-  async get<T = any>(endpoint: string, useCache = true): Promise<IntegrationResponse<T>> {
+  async get<T = any>(
+    endpoint: string,
+    useCache = true
+  ): Promise<IntegrationResponse<T>> {
     if (useCache) {
       const cached = this.getFromCache<T>(endpoint);
       if (cached) {
@@ -178,7 +182,7 @@ export class IntegrationService {
     }
 
     const response = await this.request<T>(endpoint, { method: 'GET' });
-    
+
     if (response.success && useCache) {
       this.setCache(endpoint, response.data);
     }
@@ -186,7 +190,10 @@ export class IntegrationService {
     return response;
   }
 
-  async post<T = any>(endpoint: string, data: any): Promise<IntegrationResponse<T>> {
+  async post<T = any>(
+    endpoint: string,
+    data: any
+  ): Promise<IntegrationResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -194,7 +201,10 @@ export class IntegrationService {
     });
   }
 
-  async put<T = any>(endpoint: string, data: any): Promise<IntegrationResponse<T>> {
+  async put<T = any>(
+    endpoint: string,
+    data: any
+  ): Promise<IntegrationResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -209,7 +219,7 @@ export class IntegrationService {
   // ============================================================================
   // MÉTODOS DE CACHE
   // ============================================================================
-  
+
   private getFromCache<T>(key: string): T | null {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -226,8 +236,10 @@ export class IntegrationService {
   // ============================================================================
   // MÉTODOS DE AUTENTICAÇÃO
   // ============================================================================
-  
-  private buildHeaders(customHeaders?: Record<string, string>): Record<string, string> {
+
+  private buildHeaders(
+    customHeaders?: Record<string, string>
+  ): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...this.config.headers,
@@ -243,7 +255,9 @@ export class IntegrationService {
           break;
         case 'basic':
           if (this.config.auth.username && this.config.auth.password) {
-            const credentials = btoa(`${this.config.auth.username}:${this.config.auth.password}`);
+            const credentials = btoa(
+              `${this.config.auth.username}:${this.config.auth.password}`
+            );
             headers.Authorization = `Basic ${credentials}`;
           }
           break;
@@ -261,7 +275,7 @@ export class IntegrationService {
   // ============================================================================
   // MÉTODOS DE CONFIGURAÇÃO
   // ============================================================================
-  
+
   updateConfig(newConfig: Partial<IntegrationConfig>): void {
     this.config = { ...this.config, ...newConfig };
   }
@@ -292,21 +306,23 @@ export class IntegrationService {
  */
 export class CEPIntegrationService extends IntegrationService {
   constructor() {
-    super(INTEGRATION_TYPES.CEP_API);
+    super({ ...INTEGRATION_TYPES.CEP_API, enabled: true });
   }
 
-  async getCEP(cep: string): Promise<IntegrationResponse<{
-    cep: string;
-    logradouro: string;
-    complemento: string;
-    bairro: string;
-    localidade: string;
-    uf: string;
-    ibge: string;
-    gia: string;
-    ddd: string;
-    siafi: string;
-  }>> {
+  async getCEP(cep: string): Promise<
+    IntegrationResponse<{
+      cep: string;
+      logradouro: string;
+      complemento: string;
+      bairro: string;
+      localidade: string;
+      uf: string;
+      ibge: string;
+      gia: string;
+      ddd: string;
+      siafi: string;
+    }>
+  > {
     const cleanCEP = cep.replace(/\D/g, '');
     return this.get(`/${cleanCEP}/json/`);
   }
@@ -319,6 +335,7 @@ export class WhatsAppIntegrationService extends IntegrationService {
   constructor(accessToken: string) {
     super({
       ...INTEGRATION_TYPES.WHATSAPP_API,
+      enabled: true,
       auth: {
         type: 'bearer',
         token: accessToken,
@@ -340,13 +357,13 @@ export class WhatsAppIntegrationService extends IntegrationService {
 
     if (templateId) {
       data.type = 'template';
-      data.template = {
-        name: templateId,
-        language: { code: 'pt_BR' },
-      };
+      // data.template = {
+      // name: templateId,
+      // language: { code: 'pt_BR' },
+      // };
     }
 
-    return this.post(`/${this.config.baseUrl.split('/').pop()}/messages`, data);
+    return this.post(`/messages`, data);
   }
 
   async sendTemplate(
@@ -364,13 +381,16 @@ export class WhatsAppIntegrationService extends IntegrationService {
         components: [
           {
             type: 'body',
-            parameters: parameters.map(param => ({ type: 'text', text: param })),
+            parameters: parameters.map(param => ({
+              type: 'text',
+              text: param,
+            })),
           },
         ],
       },
     };
 
-    return this.post(`/${this.config.baseUrl.split('/').pop()}/messages`, data);
+    return this.post(`/messages`, data);
   }
 }
 
@@ -381,6 +401,7 @@ export class EmailIntegrationService extends IntegrationService {
   constructor(apiKey: string) {
     super({
       ...INTEGRATION_TYPES.EMAIL_SERVICE,
+      enabled: true,
       auth: {
         type: 'apikey',
         token: apiKey,
@@ -440,6 +461,7 @@ export class SMSIntegrationService extends IntegrationService {
   constructor(accountSid: string, authToken: string) {
     super({
       ...INTEGRATION_TYPES.SMS_SERVICE,
+      enabled: true,
       auth: {
         type: 'basic',
         username: accountSid,
@@ -459,7 +481,7 @@ export class SMSIntegrationService extends IntegrationService {
       From: from || '+1234567890',
     });
 
-    return this.post(`/Accounts/${this.config.auth?.username}/Messages.json`, data);
+    return this.post(`/Messages.json`, data);
   }
 }
 
@@ -558,7 +580,7 @@ export class IntegrationManager {
 
   async testAllIntegrations(): Promise<Record<string, boolean>> {
     const results: Record<string, boolean> = {};
-    
+
     for (const [id, _integration] of this.integrations) {
       results[id] = await this.testIntegration(id);
     }
@@ -580,7 +602,9 @@ export const integrationManager = new IntegrationManager();
 /**
  * Inicializa todas as integrações configuradas
  */
-export function initializeIntegrations(configs: Record<string, IntegrationConfig>): void {
+export function initializeIntegrations(
+  configs: Record<string, IntegrationConfig>
+): void {
   Object.entries(configs).forEach(([id, config]) => {
     let service: IntegrationService;
 
@@ -606,7 +630,7 @@ export function createWebhookHandler(
   return async (req: Request): Promise<Response> => {
     try {
       const payload = await req.json();
-      
+
       // Verificar assinatura se fornecida
       if (secret && payload.signature) {
         // Implementar verificação de assinatura

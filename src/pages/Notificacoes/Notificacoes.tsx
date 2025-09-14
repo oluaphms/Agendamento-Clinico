@@ -18,25 +18,16 @@ import {
   User,
   Calendar,
   DollarSign,
-  Shield,
-  Settings,
   Trash2,
   Check,
-  Filter,
-  Search,
   RefreshCw,
   Archive,
   Star,
   StarOff,
-  Mail,
   Phone,
-  MessageCircle,
   Eye,
-  EyeOff,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useThemeStore } from '@/stores/themeStore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/design-system';
+import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';
 
@@ -231,7 +222,6 @@ const MOCK_NOTIFICACOES: Notificacao[] = [
 // ============================================================================
 
 const Notificacoes: React.FC = () => {
-  const { isDark } = useThemeStore();
   const [loading, setLoading] = useState(false);
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>(MOCK_NOTIFICACOES);
   const [filtros, setFiltros] = useState<Filtros>({

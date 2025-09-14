@@ -7,11 +7,8 @@ import {
   Shield,
   Database,
   Palette,
-  Globe,
   Save,
   RefreshCw,
-  CheckCircle,
-  AlertCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useThemeStore } from '@/stores/themeStore';

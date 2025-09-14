@@ -63,7 +63,13 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
   // ESTADOS
   // ============================================================================
   
-  const [focusManager] = useState(() => initializeAccessibility(config));
+  const [focusManager] = useState(() => initializeAccessibility({
+    enableFocusManagement: config.enableFocusManagement ?? true,
+    enableKeyboardNavigation: config.enableKeyboardNavigation ?? true,
+    enableScreenReader: config.enableScreenReader ?? true,
+    enableHighContrast: config.enableHighContrast ?? false,
+    enableReducedMotion: config.enableReducedMotion ?? false,
+  }));
   const isReducedMotion = useReducedMotion();
   const isHighContrast = useHighContrast();
   const [announceMessage, setAnnounceMessage] = useState<string>('');

@@ -4,7 +4,26 @@
 
 import React, { useState } from 'react';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Role, Permission } from '../../types/permissions';
+// import { Role, Permission } from '../../types/permissions';
+
+// Definindo tipos locais para evitar conflitos
+interface Role {
+  id: string;
+  name: string;
+  description: string;
+  permissions: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// interface Permission {
+//   id: string;
+//   name: string;
+//   description: string;
+//   resource: string;
+//   action: string;
+//   category: string;
+// }
 import { Button } from '../../design-system/Components';
 import toast from 'react-hot-toast';
 
@@ -30,7 +49,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
   // ============================================================================
   // ESTADOS
   // ============================================================================
-  
+
   const [showForm, setShowForm] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [formData, setFormData] = useState<RoleFormData>({
@@ -38,7 +57,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
     description: '',
     permissions: [],
   });
-  
+
   const {
     roles,
     permissions,
@@ -53,7 +72,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
   // ============================================================================
   // FUNÇÕES AUXILIARES
   // ============================================================================
-  
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -69,19 +88,19 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
     setFormData({
       name: role.name,
       description: role.description,
-      permissions: role.permissions.map(p => p.id),
+      permissions: role.permissions.map((p: any) => p.id || p),
     });
     setShowForm(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const roleData = {
         name: formData.name,
         description: formData.description,
-        permissions: permissions.filter(p => formData.permissions.includes(p.id)),
+        permissions: formData.permissions,
       };
 
       if (editingRole) {
@@ -99,7 +118,9 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
   };
 
   const handleDelete = async (role: Role) => {
-    if (window.confirm(`Tem certeza que deseja excluir a role "${role.name}"?`)) {
+    if (
+      window.confirm(`Tem certeza que deseja excluir a role "${role.name}"?`)
+    ) {
       try {
         await deleteRole(role.id);
         toast.success('Role excluída com sucesso!');
@@ -121,36 +142,28 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
   // ============================================================================
   // RENDERIZAÇÃO
   // ============================================================================
-  
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      <div className='flex items-center justify-center p-8'>
+        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500'></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className='flex items-center justify-between'>
+        <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
           Gerenciamento de Roles
         </h2>
-        <div className="flex space-x-2">
-          <Button
-            onClick={() => setShowForm(true)}
-            variant="primary"
-            size="sm"
-          >
+        <div className='flex space-x-2'>
+          <Button onClick={() => setShowForm(true)} variant='default' size='sm'>
             Nova Role
           </Button>
           {onClose && (
-            <Button
-              onClick={onClose}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={onClose} variant='outline' size='sm'>
               Fechar
             </Button>
           )}
@@ -159,12 +172,12 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4'>
+          <div className='flex items-center justify-between'>
+            <p className='text-red-800 dark:text-red-200'>{error}</p>
             <button
               onClick={clearError}
-              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+              className='text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200'
             >
               ✕
             </button>
@@ -174,52 +187,62 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
+          <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
             {editingRole ? 'Editar Role' : 'Nova Role'}
           </h3>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
+
+          <form onSubmit={handleSubmit} className='space-y-4'>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Nome
               </label>
               <input
-                type="text"
+                type='text'
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                onChange={e =>
+                  setFormData(prev => ({ ...prev, name: e.target.value }))
+                }
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white'
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Descrição
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white'
                 rows={3}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Permissões
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-3">
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-3'>
                 {permissions.map(permission => (
-                  <label key={permission.id} className="flex items-center space-x-2">
+                  <label
+                    key={permission.id}
+                    className='flex items-center space-x-2'
+                  >
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       checked={formData.permissions.includes(permission.id)}
                       onChange={() => handlePermissionToggle(permission.id)}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className='rounded border-gray-300 text-primary-600 focus:ring-primary-500'
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                    <span className='text-sm text-gray-700 dark:text-gray-300'>
                       {permission.name}
                     </span>
                   </label>
@@ -227,11 +250,11 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="flex space-x-2">
-              <Button type="submit" variant="primary">
+            <div className='flex space-x-2'>
+              <Button type='submit' variant='default'>
                 {editingRole ? 'Atualizar' : 'Criar'}
               </Button>
-              <Button type="button" onClick={resetForm} variant="outline">
+              <Button type='button' onClick={resetForm} variant='outline'>
                 Cancelar
               </Button>
             </div>
@@ -240,57 +263,57 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
       )}
 
       {/* Roles List */}
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {roles.map(role => (
           <div
             key={role.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+            className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'
           >
-            <div className="flex items-center justify-between">
+            <div className='flex items-center justify-between'>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
                   {role.name}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
+                <p className='text-gray-600 dark:text-gray-400 mt-1'>
                   {role.description}
                 </p>
-                <div className="mt-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                <div className='mt-2'>
+                  <span className='text-sm text-gray-500 dark:text-gray-400'>
                     {role.permissions.length} permissões
                   </span>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className='flex space-x-2'>
                 <Button
                   onClick={() => handleEdit(role)}
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                 >
                   Editar
                 </Button>
                 <Button
                   onClick={() => handleDelete(role)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-800"
+                  variant='outline'
+                  size='sm'
+                  className='text-red-600 hover:text-red-800'
                 >
                   Excluir
                 </Button>
               </div>
             </div>
-            
+
             {/* Permissions List */}
-            <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className='mt-4'>
+              <h4 className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Permissões:
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {role.permissions.map(permission => (
+              <div className='flex flex-wrap gap-2'>
+                {role.permissions.map((permission: any) => (
                   <span
-                    key={permission.id}
-                    className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
+                    key={permission.id || permission}
+                    className='px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs'
                   >
-                    {permission.name}
+                    {permission.name || permission}
                   </span>
                 ))}
               </div>

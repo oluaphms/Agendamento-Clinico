@@ -4,7 +4,7 @@
 // Contexto centralizado para gerenciar estado global da aplicação
 // ============================================================================
 
-import React, {
+import {
   createContext,
   useContext,
   useState,

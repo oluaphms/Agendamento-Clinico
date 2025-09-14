@@ -58,11 +58,11 @@ export const localDb = {
             cpf: usuario.cpf,
             email: usuario.email || `${usuario.cpf}@clinica.local`,
             nivel_acesso: usuario.nivel_acesso,
-            status: usuario.status || 'ativo',
+            status: 'ativo',
             primeiro_acesso: usuario.primeiro_acesso || false,
-            created_at: usuario.created_at || new Date().toISOString(),
-            updated_at: usuario.updated_at || new Date().toISOString(),
-            ultimo_acesso: usuario.ultimo_acesso,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            ultimo_acesso: new Date().toISOString(),
           })));
         }
         
@@ -145,11 +145,11 @@ export const localDb = {
         let senhaValida = false;
         let precisaMigrar = false;
 
-        if (usuario.senha_hash) {
+        if (usuario.senha) {
           // Usar hash se disponível
           const { isValid, needsUpdate } = verifyPassword(
             credentials.password,
-            usuario.senha_hash
+            usuario.senha
           );
           senhaValida = isValid;
           precisaMigrar = needsUpdate || false;
@@ -169,7 +169,7 @@ export const localDb = {
         // Migrar senha se necessário
         if (precisaMigrar && usuario.senha) {
           const { hash } = migratePassword(usuario.senha);
-          usuario.senha_hash = hash;
+          // usuario.senha_hash = hash;
           // Salvar no localStorage para persistência
           const storedUsers = JSON.parse(
             localStorage.getItem('pendingUsers') || '[]'
@@ -195,9 +195,9 @@ export const localDb = {
             cpf: usuario.cpf,
             nivel_acesso: usuario.nivel_acesso,
             primeiro_acesso: usuario.primeiro_acesso || false,
-            telefone: usuario.telefone || '',
-            cargo: usuario.cargo || 'Funcionário',
-            status: usuario.status || 'ativo',
+            telefone: '',
+            cargo: 'Funcionário',
+            status: 'ativo',
           },
         };
 

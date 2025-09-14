@@ -19,6 +19,8 @@ export interface GridProps {
   children: React.ReactNode;
   className?: string;
   as?: keyof JSX.IntrinsicElements;
+  md?: GridCols;
+  lg?: GridCols;
 }
 
 export interface GridItemProps {

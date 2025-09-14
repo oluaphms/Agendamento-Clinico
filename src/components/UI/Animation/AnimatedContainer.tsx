@@ -38,7 +38,6 @@ const AnimatedContainer: React.FC<AnimatedContainerProps> = ({
   duration = 0.3,
   stagger = false,
   className = '',
-  as: Component = 'div',
 }) => {
   // ============================================================================
   // CONFIGURAÇÕES DE ANIMAÇÃO
@@ -117,7 +116,6 @@ const AnimatedContainer: React.FC<AnimatedContainerProps> = ({
   if (stagger) {
     return (
       <motion.div
-        as={Component}
         className={className}
         variants={variants}
         initial="hidden"
@@ -133,7 +131,6 @@ const AnimatedContainer: React.FC<AnimatedContainerProps> = ({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        as={Component}
         className={className}
         variants={variants}
         initial="hidden"

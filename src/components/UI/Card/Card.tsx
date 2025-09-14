@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { utilityClasses } from '@/lib/design-tokens';
+// import { utilityClasses } from '@/lib/design-tokens';
 
 // ============================================================================
 // TIPOS E INTERFACES

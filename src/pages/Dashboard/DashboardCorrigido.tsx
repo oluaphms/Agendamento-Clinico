@@ -112,7 +112,7 @@ const Dashboard: React.FC = () => {
           .eq('status', 'realizado');
 
         const receitaMes =
-          agendamentosMesData?.reduce((total, ag) => {
+          agendamentosMesData?.reduce((total: number, ag: any) => {
             return total + (ag.servicos?.preco || 0);
           }, 0) || 0;
 
@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
           totalProfissionais,
           totalServicos,
           agendamentosHoje,
-          receitaMes,
+          receitaMes: receitaMes || 0,
           ordensServico,
           ordensConcluidas,
           ordensPendentes,
@@ -156,7 +156,13 @@ const Dashboard: React.FC = () => {
       // Carregar dados do Supabase usando views otimizadas
       try {
         // Carregar estatísticas usando views
-        const [pacientesResult, profissionaisResult, servicosResult, agendamentosResult, receitaResult] = await Promise.all([
+        const [
+          pacientesResult,
+          profissionaisResult,
+          servicosResult,
+          agendamentosResult,
+          receitaResult,
+        ] = await Promise.all([
           supabase.from('dashboard_pacientes').select('*').single(),
           supabase.from('dashboard_profissionais').select('*').single(),
           supabase.from('dashboard_servicos').select('*').single(),
@@ -166,18 +172,23 @@ const Dashboard: React.FC = () => {
 
         setStats({
           totalPacientes: pacientesResult.data?.total_pacientes || 0,
-          totalProfissionais: profissionaisResult.data?.total_profissionais || 0,
+          totalProfissionais:
+            profissionaisResult.data?.total_profissionais || 0,
           totalServicos: servicosResult.data?.total_servicos || 0,
           agendamentosHoje: agendamentosResult.data?.agendamentos_hoje || 0,
           receitaMes: receitaResult.data?.receita_mes_atual || 0,
           ordensServico: agendamentosResult.data?.agendamentos_mes_atual || 0,
-          ordensConcluidas: agendamentosResult.data?.agendamentos_realizados_mes || 0,
-          ordensPendentes: agendamentosResult.data?.agendamentos_pendentes_hoje || 0,
+          ordensConcluidas:
+            agendamentosResult.data?.agendamentos_realizados_mes || 0,
+          ordensPendentes:
+            agendamentosResult.data?.agendamentos_pendentes_hoje || 0,
         });
-
       } catch (viewError) {
-        console.warn('Erro ao carregar views, tentando queries diretas:', viewError);
-        
+        console.warn(
+          'Erro ao carregar views, tentando queries diretas:',
+          viewError
+        );
+
         // Fallback para queries diretas se as views não existirem
         const hoje = new Date().toISOString().split('T')[0];
         const inicioMes = new Date(
@@ -215,16 +226,18 @@ const Dashboard: React.FC = () => {
         // Receita do mês
         const { data: agendamentosMes } = await supabase
           .from('agendamentos')
-          .select(`
+          .select(
+            `
             *,
             servicos (preco)
-          `)
+          `
+          )
           .gte('data', inicioMes)
           .eq('status', 'realizado');
 
         const receitaMes =
           agendamentosMes?.reduce(
-            (total, ag) => total + (ag.servicos?.preco || 0),
+            (total: number, ag: any) => total + (ag.servicos?.preco || 0),
             0
           ) || 0;
 
@@ -263,7 +276,7 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error);
-      
+
       // Definir valores padrão em caso de erro
       setStats({
         totalPacientes: 0,
@@ -296,11 +309,12 @@ const Dashboard: React.FC = () => {
       // Carregar dados do Supabase usando funções otimizadas
       try {
         // Usar funções RPC para gráficos
-        const [evolucaoResult, distribuicaoResult, ordensResult] = await Promise.all([
-          supabase.rpc('get_evolucao_pacientes'),
-          supabase.rpc('get_distribuicao_servicos'),
-          supabase.rpc('get_ordens_semana'),
-        ]);
+        const [evolucaoResult, distribuicaoResult, ordensResult] =
+          await Promise.all([
+            supabase.rpc('get_evolucao_pacientes'),
+            supabase.rpc('get_distribuicao_servicos'),
+            supabase.rpc('get_ordens_semana'),
+          ]);
 
         if (evolucaoResult.data) {
           setDadosGraficoPacientes(evolucaoResult.data);
@@ -313,17 +327,18 @@ const Dashboard: React.FC = () => {
         if (ordensResult.data) {
           setDadosGraficoOrdens(ordensResult.data);
         }
-
       } catch (rpcError) {
-        console.warn('Erro ao carregar funções RPC, usando queries diretas:', rpcError);
-        
+        console.warn(
+          'Erro ao carregar funções RPC, usando queries diretas:',
+          rpcError
+        );
+
         // Fallback para queries diretas
         // ... (código de fallback existente)
       }
-
     } catch (error) {
       console.error('Erro ao carregar dados dos gráficos:', error);
-      
+
       // Usar dados padrão em caso de erro
       setDadosGraficoPacientes([
         { mes: 'Jan', pacientes: 0 },

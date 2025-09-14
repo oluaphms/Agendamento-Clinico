@@ -9,31 +9,9 @@ import {
   Users,
   UserCheck,
   Clock,
-  Settings,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  Search,
-  Filter,
   RefreshCw,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Lock,
-  Unlock,
   Key,
   Crown,
-  Star,
-  Zap,
-  Activity,
-  BarChart3,
-  FileText,
-  MessageCircle,
-  Database,
-  Bell,
-  Calendar,
-  Stethoscope,
 } from 'lucide-react';
 import {
   PermissionManager,
@@ -41,8 +19,7 @@ import {
   UserRoleManager,
   PendingUsersManager,
 } from '../../components/Permissions';
-import { useThemeStore } from '../../stores/themeStore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/design-system';
+import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';
 
@@ -69,7 +46,6 @@ export const Permissions: React.FC = () => {
     totalPermissions: 0,
     pendingUsers: 0,
   });
-  const { isDark } = useThemeStore();
 
   // ============================================================================
   // EFEITOS
@@ -143,15 +119,6 @@ export const Permissions: React.FC = () => {
     return <IconComponent className='h-5 w-5' />;
   };
 
-  const getTabColor = (color: string) => {
-    const colors = {
-      blue: 'text-blue-600 bg-blue-100 dark:bg-blue-900',
-      green: 'text-green-600 bg-green-100 dark:bg-green-900',
-      purple: 'text-purple-600 bg-purple-100 dark:bg-purple-900',
-      orange: 'text-orange-600 bg-orange-100 dark:bg-orange-900',
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
 
   const renderTabContent = () => {
     switch (activeTab) {

@@ -160,9 +160,9 @@ export default function MenuRaioX({ isOpen = false, onClose }: MenuRaioXProps) {
    */
   const handleNavigation = (path: string) => {
     console.log('🔄 MenuRaioX - Navegando para:', path);
-    console.log('👤 Usuário atual:', user?.email);
-    console.log('📊 User metadata:', user?.user_metadata);
-    console.log('🎯 User role:', user?.user_metadata?.nivel_acesso);
+    // console.log('👤 Usuário atual:', user?.email);
+    // console.log('📊 User metadata:', user?.user_metadata);
+    // console.log('🎯 User role:', user?.user_metadata?.nivel_acesso);
 
     navigate(path);
     // Nota: Removido o fechamento automático - menu só fecha via botão do cabeçalho

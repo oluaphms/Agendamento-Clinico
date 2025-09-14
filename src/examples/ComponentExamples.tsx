@@ -11,12 +11,11 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Modal,
   LoadingSpinner,
 } from '@/components/UI';
 import { useForm, useDebounce, useAsync, useLocalStorage } from '@/hooks';
-import { useApp } from '@/contexts/AppContext';
+// import { useApp } from '@/contexts/AppContext';
 
 // ============================================================================
 // EXEMPLO DE FORMULÁRIO COM VALIDAÇÃO
@@ -287,14 +286,8 @@ export function ModalExample() {
 // ============================================================================
 
 export function ContextExample() {
-  const { addNotification } = useApp();
-
   const showNotification = (type: 'success' | 'error' | 'warning' | 'info') => {
-    addNotification({
-      type,
-      title: `Notificação ${type}`,
-      message: `Esta é uma notificação do tipo ${type}`,
-    });
+    console.log(`Notificação ${type}: Esta é uma notificação do tipo ${type}`);
   };
 
   return (

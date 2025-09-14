@@ -28,7 +28,7 @@ export const SystemsIntegrationExample: React.FC = () => {
   const {
     generateAppointmentsReport,
     generateAppointmentReminder,
-    getTemplatesByType,
+    // getTemplatesByType,
     createReportTemplate,
     templates,
   } = useTemplates();

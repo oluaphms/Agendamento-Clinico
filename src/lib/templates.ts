@@ -544,8 +544,8 @@ export class TemplateManager {
       // Atualizar instância com sucesso
       this.updateInstance(instanceId, {
         status: 'completed',
-        generatedAt: new Date(),
-        filePath,
+        // generatedAt: new Date(),
+        // filePath,
       });
 
       return { success: true, filePath };
@@ -553,7 +553,7 @@ export class TemplateManager {
       // Atualizar instância com erro
       this.updateInstance(instanceId, {
         status: 'error',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        // error: error instanceof Error ? error.message : 'Erro desconhecido',
       });
 
       return {

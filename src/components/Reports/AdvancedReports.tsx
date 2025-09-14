@@ -13,16 +13,30 @@ import {
   Settings,
   Trash2,
   Eye,
-  Calendar,
+  // Calendar,
+  AlertCircle,
   TrendingUp,
   Users,
   DollarSign,
   Activity,
 } from 'lucide-react';
 import { useReports } from '@/hooks/useReports';
-import { Button, Card, CardContent, CardHeader, CardTitle, Badge, Alert, AlertDescription } from '@/design-system';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Alert,
+  AlertDescription,
+} from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { ReportConfig, ReportData, ReportFilter } from '@/services/reportService';
+import {
+  // ReportConfig,
+  ReportData,
+  ReportFilter,
+} from '@/services/reportService';
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -31,7 +45,7 @@ import { ReportConfig, ReportData, ReportFilter } from '@/services/reportService
 export const AdvancedReports: React.FC = () => {
   const {
     reports,
-    generatedReports,
+    // generatedReports,
     currentReport,
     loading,
     error,
@@ -39,14 +53,16 @@ export const AdvancedReports: React.FC = () => {
     generateReport,
     exportReport,
     deleteReport,
-    getAvailableFilters,
+    // getAvailableFilters,
     applyFilters,
     formatDate,
     getReportTypeLabel,
     getChartTypeLabel,
   } = useReports();
 
-  const [selectedReport, setSelectedReport] = useState<ReportConfig | null>(null);
+  // const [selectedReport, setSelectedReport] = useState<ReportConfig | null>(
+  //   null
+  // );
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<ReportFilter[]>([]);
   const [showGeneratedReport, setShowGeneratedReport] = useState(false);
@@ -61,7 +77,10 @@ export const AdvancedReports: React.FC = () => {
     setShowGeneratedReport(true);
   };
 
-  const handleExportReport = async (reportData: ReportData, format: 'pdf' | 'excel' | 'csv' | 'json') => {
+  const handleExportReport = async (
+    reportData: ReportData,
+    format: 'pdf' | 'excel' | 'csv' | 'json'
+  ) => {
     await exportReport(reportData, format);
   };
 
@@ -97,31 +116,31 @@ export const AdvancedReports: React.FC = () => {
   // ============================================================================
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className='flex justify-between items-center'>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Relatórios Avançados</h2>
-          <p className="text-gray-600 dark:text-gray-400">Gere relatórios com gráficos e análises detalhadas</p>
+          <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+            Relatórios Avançados
+          </h2>
+          <p className='text-gray-600 dark:text-gray-400'>
+            Gere relatórios com gráficos e análises detalhadas
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter size={16} className="mr-2" />
+            <Filter size={16} className='mr-2' />
             Filtros
           </Button>
-          <Button
-            variant="outline"
-            onClick={loadReports}
-            disabled={loading}
-          >
-            <BarChart3 size={16} className="mr-2" />
+          <Button variant='outline' onClick={loadReports} disabled={loading}>
+            <BarChart3 size={16} className='mr-2' />
             Atualizar
           </Button>
           <Button>
-            <Plus size={16} className="mr-2" />
+            <Plus size={16} className='mr-2' />
             Novo Relatório
           </Button>
         </div>
@@ -133,51 +152,55 @@ export const AdvancedReports: React.FC = () => {
           <CardHeader>
             <CardTitle>Filtros</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className='space-y-4'>
             {filters.map((filter, index) => (
-              <div key={index} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div
+                key={index}
+                className='flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg'
+              >
+                <div className='flex-1'>
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     {filter.label}
                   </label>
-                  <div className="flex gap-2">
+                  <div className='flex gap-2'>
                     <select
                       value={filter.operator}
-                      onChange={(e) => handleFilterChange(index, 'operator', e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onChange={e =>
+                        handleFilterChange(index, 'operator', e.target.value)
+                      }
+                      className='px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                     >
-                      <option value="eq">Igual a</option>
-                      <option value="neq">Diferente de</option>
-                      <option value="gt">Maior que</option>
-                      <option value="gte">Maior ou igual</option>
-                      <option value="lt">Menor que</option>
-                      <option value="lte">Menor ou igual</option>
-                      <option value="in">Contém</option>
-                      <option value="like">Contém texto</option>
-                      <option value="between">Entre</option>
+                      <option value='eq'>Igual a</option>
+                      <option value='neq'>Diferente de</option>
+                      <option value='gt'>Maior que</option>
+                      <option value='gte'>Maior ou igual</option>
+                      <option value='lt'>Menor que</option>
+                      <option value='lte'>Menor ou igual</option>
+                      <option value='in'>Contém</option>
+                      <option value='like'>Contém texto</option>
+                      <option value='between'>Entre</option>
                     </select>
                     <input
-                      type="text"
+                      type='text'
                       value={String(filter.value)}
-                      onChange={(e) => handleFilterChange(index, 'value', e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onChange={e =>
+                        handleFilterChange(index, 'value', e.target.value)
+                      }
+                      className='flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                     />
                   </div>
                 </div>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => handleRemoveFilter(index)}
                 >
                   <Trash2 size={16} />
                 </Button>
               </div>
             ))}
-            <Button
-              variant="outline"
-              onClick={handleAddFilter}
-            >
-              <Plus size={16} className="mr-2" />
+            <Button variant='outline' onClick={handleAddFilter}>
+              <Plus size={16} className='mr-2' />
               Adicionar Filtro
             </Button>
           </CardContent>
@@ -185,32 +208,36 @@ export const AdvancedReports: React.FC = () => {
       )}
 
       {/* Lista de Relatórios */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {reports.map((report) => (
-          <Card key={report.id} className="hover:shadow-lg transition-shadow">
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {reports.map(report => (
+          <Card key={report.id} className='hover:shadow-lg transition-shadow'>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className='flex justify-between items-start'>
                 <div>
-                  <CardTitle className="text-lg">{report.name}</CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <CardTitle className='text-lg'>{report.name}</CardTitle>
+                  <p className='text-sm text-gray-600 dark:text-gray-400 mt-1'>
                     {report.description}
                   </p>
                 </div>
-                <Badge variant="secondary">
+                <Badge variant='secondary'>
                   {getReportTypeLabel(report.type)}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className='space-y-4'>
                 {/* Gráficos */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <h4 className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Gráficos ({report.charts.length})
                   </h4>
-                  <div className="flex flex-wrap gap-1">
-                    {report.charts.map((chart) => (
-                      <Badge key={chart.id} variant="outline" className="text-xs">
+                  <div className='flex flex-wrap gap-1'>
+                    {report.charts.map(chart => (
+                      <Badge
+                        key={chart.id}
+                        variant='outline'
+                        className='text-xs'
+                      >
                         {getChartTypeLabel(chart.type)}
                       </Badge>
                     ))}
@@ -218,32 +245,34 @@ export const AdvancedReports: React.FC = () => {
                 </div>
 
                 {/* Ações */}
-                <div className="flex gap-2">
+                <div className='flex gap-2'>
                   <Button
-                    size="sm"
+                    size='sm'
                     onClick={() => {
-                      setSelectedReport(report);
+                      // setSelectedReport(report);
                       handleGenerateReport(report.id);
                     }}
                     disabled={loading}
                   >
                     {loading ? (
-                      <LoadingSpinner size="sm" />
+                      <LoadingSpinner size='sm' />
                     ) : (
-                      <Eye size={16} className="mr-1" />
+                      <Eye size={16} className='mr-1' />
                     )}
                     Gerar
                   </Button>
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedReport(report)}
+                    variant='outline'
+                    size='sm'
+                    onClick={() => {
+                      /* setSelectedReport(report); */
+                    }}
                   >
                     <Settings size={16} />
                   </Button>
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleDeleteReport(report.id)}
                   >
                     <Trash2 size={16} />
@@ -259,28 +288,28 @@ export const AdvancedReports: React.FC = () => {
       {showGeneratedReport && currentReport && (
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className='flex justify-between items-center'>
               <CardTitle>Relatório Gerado</CardTitle>
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => handleExportReport(currentReport, 'pdf')}
                 >
-                  <Download size={16} className="mr-1" />
+                  <Download size={16} className='mr-1' />
                   PDF
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => handleExportReport(currentReport, 'excel')}
                 >
-                  <Download size={16} className="mr-1" />
+                  <Download size={16} className='mr-1' />
                   Excel
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => setShowGeneratedReport(false)}
                 >
                   Fechar
@@ -290,51 +319,71 @@ export const AdvancedReports: React.FC = () => {
           </CardHeader>
           <CardContent>
             {/* Resumo */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-6'>
+              <div className='text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg'>
+                <Users className='h-8 w-8 text-blue-500 mx-auto mb-2' />
+                <p className='text-2xl font-bold text-blue-600 dark:text-blue-400'>
                   {currentReport.summary.totalRecords}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total de Registros</p>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  Total de Registros
+                </p>
               </div>
-              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <DollarSign className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+              <div className='text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg'>
+                <DollarSign className='h-8 w-8 text-green-500 mx-auto mb-2' />
+                <p className='text-2xl font-bold text-green-600 dark:text-green-400'>
                   R$ {currentReport.summary.totalValue.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Valor Total</p>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  Valor Total
+                </p>
               </div>
-              <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                <TrendingUp className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              <div className='text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg'>
+                <TrendingUp className='h-8 w-8 text-yellow-500 mx-auto mb-2' />
+                <p className='text-2xl font-bold text-yellow-600 dark:text-yellow-400'>
                   {currentReport.summary.growthRate}%
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Taxa de Crescimento</p>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  Taxa de Crescimento
+                </p>
               </div>
-              <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <Activity className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <div className='text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg'>
+                <Activity className='h-8 w-8 text-purple-500 mx-auto mb-2' />
+                <p className='text-2xl font-bold text-purple-600 dark:text-purple-400'>
                   {currentReport.summary.averageValue.toFixed(2)}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Valor Médio</p>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  Valor Médio
+                </p>
               </div>
             </div>
 
             {/* Gráficos */}
-            <div className="space-y-6">
-              {currentReport.charts.map((chart) => (
-                <div key={chart.chartId} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    {chart.type === 'line' && '📈'} {chart.type === 'bar' && '📊'} {chart.type === 'pie' && '🥧'} {chart.type === 'area' && '📊'} {chart.type === 'scatter' && '🔍'} {chart.type === 'table' && '📋'}
+            <div className='space-y-6'>
+              {currentReport.charts.map(chart => (
+                <div
+                  key={chart.chartId}
+                  className='border border-gray-200 dark:border-gray-700 rounded-lg p-4'
+                >
+                  <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+                    {chart.type === 'line' && '📈'}{' '}
+                    {chart.type === 'bar' && '📊'}{' '}
+                    {chart.type === 'pie' && '🥧'}{' '}
+                    {chart.type === 'area' && '📊'}{' '}
+                    {chart.type === 'scatter' && '🔍'}{' '}
+                    {chart.type === 'table' && '📋'}
                     Gráfico {getChartTypeLabel(chart.type)}
                   </h3>
-                  <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="text-center">
-                      <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">Gráfico será renderizado aqui</p>
-                      <p className="text-sm text-gray-400">
-                        Dados: {Array.isArray(chart.data) ? chart.data.length : 0} registros
+                  <div className='h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg'>
+                    <div className='text-center'>
+                      <BarChart3 className='h-12 w-12 text-gray-400 mx-auto mb-2' />
+                      <p className='text-gray-500'>
+                        Gráfico será renderizado aqui
+                      </p>
+                      <p className='text-sm text-gray-400'>
+                        Dados:{' '}
+                        {Array.isArray(chart.data) ? chart.data.length : 0}{' '}
+                        registros
                       </p>
                     </div>
                   </div>
@@ -343,22 +392,34 @@ export const AdvancedReports: React.FC = () => {
             </div>
 
             {/* Metadados */}
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className='mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg'>
+              <h4 className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Informações do Relatório
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Gerado em:</span>
-                  <p className="font-medium">{formatDate(currentReport.generatedAt)}</p>
+                  <span className='text-gray-600 dark:text-gray-400'>
+                    Gerado em:
+                  </span>
+                  <p className='font-medium'>
+                    {formatDate(currentReport.generatedAt)}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Processamento:</span>
-                  <p className="font-medium">{currentReport.metadata.processingTime}ms</p>
+                  <span className='text-gray-600 dark:text-gray-400'>
+                    Processamento:
+                  </span>
+                  <p className='font-medium'>
+                    {currentReport.metadata.processingTime}ms
+                  </p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Registros:</span>
-                  <p className="font-medium">{currentReport.metadata.recordCount}</p>
+                  <span className='text-gray-600 dark:text-gray-400'>
+                    Registros:
+                  </span>
+                  <p className='font-medium'>
+                    {currentReport.metadata.recordCount}
+                  </p>
                 </div>
               </div>
             </div>
@@ -368,8 +429,8 @@ export const AdvancedReports: React.FC = () => {
 
       {/* Erro */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+        <Alert variant='destructive'>
+          <AlertCircle className='h-4 w-4' />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}

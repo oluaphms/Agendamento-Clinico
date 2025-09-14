@@ -250,8 +250,15 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 // COMPONENTE DE SKELETON PARA CARDS
 // ============================================================================
 
-export const CardSkeleton: React.FC = () => (
-  <div className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'>
+interface CardSkeletonProps {
+  height?: string;
+}
+
+export const CardSkeleton: React.FC<CardSkeletonProps> = ({ height = '200px' }) => (
+  <div 
+    className='bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6'
+    style={{ height }}
+  >
     <div className='animate-pulse'>
       <div className='flex items-center space-x-4 mb-4'>
         <div className='h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded-full'></div>

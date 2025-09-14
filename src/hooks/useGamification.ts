@@ -14,8 +14,7 @@ export const useGamification = () => {
     initializeUserStats,
     addPoints,
     checkAchievements,
-    unlockAchievement,
-    updateStreak
+    updateStreak,
   } = useGamificationStore();
 
   // Inicializar gamificação quando o usuário estiver logado
@@ -39,10 +38,10 @@ export const useGamification = () => {
     try {
       // Adicionar pontos
       await addPoints(points, reason);
-      
+
       // Verificar conquistas
       await checkAchievements(action, data);
-      
+
       // Atualizar streak
       await updateStreak();
     } catch (error) {
@@ -58,7 +57,12 @@ export const useGamification = () => {
     totalValue?: number;
     professionalId?: string;
   }) => {
-    await trackAction('agendamentos', 5, 'Criou um agendamento', appointmentData);
+    await trackAction(
+      'agendamentos',
+      5,
+      'Criou um agendamento',
+      appointmentData
+    );
   };
 
   /**
@@ -78,7 +82,12 @@ export const useGamification = () => {
     count: number;
     specialty?: string;
   }) => {
-    await trackAction('profissionais', 15, 'Cadastrou um profissional', professionalData);
+    await trackAction(
+      'profissionais',
+      15,
+      'Cadastrou um profissional',
+      professionalData
+    );
   };
 
   /**
@@ -97,7 +106,12 @@ export const useGamification = () => {
     totalValue?: number;
     duration?: number;
   }) => {
-    await trackAction('agendamentos', 8, 'Concluiu um agendamento', appointmentData);
+    await trackAction(
+      'agendamentos',
+      8,
+      'Concluiu um agendamento',
+      appointmentData
+    );
   };
 
   /**
@@ -107,7 +121,12 @@ export const useGamification = () => {
     count: number;
     reason?: string;
   }) => {
-    await trackAction('agendamentos', 1, 'Cancelou um agendamento', appointmentData);
+    await trackAction(
+      'agendamentos',
+      1,
+      'Cancelou um agendamento',
+      appointmentData
+    );
   };
 
   /**
@@ -204,7 +223,12 @@ export const useGamification = () => {
     pagesVisited: string[];
     actionsPerformed: number;
   }) => {
-    await trackAction('sistema', Math.min(Math.floor(sessionData.duration / 10), 10), 'Tempo de sessão', sessionData);
+    await trackAction(
+      'sistema',
+      Math.min(Math.floor(sessionData.duration / 10), 10),
+      'Tempo de sessão',
+      sessionData
+    );
   };
 
   return {
@@ -212,10 +236,10 @@ export const useGamification = () => {
     userStats,
     loading,
     error,
-    
+
     // Métodos gerais
     trackAction,
-    
+
     // Métodos específicos
     trackAppointmentCreated,
     trackPatientCreated,
@@ -232,12 +256,14 @@ export const useGamification = () => {
     trackFeatureAccess,
     trackUserFeedback,
     trackSessionTime,
-    
+
     // Utilitários
     isInitialized: !!userStats,
-    hasUnlockedAchievements: userStats ? userStats.achievements.some(a => a.isUnlocked) : false,
+    hasUnlockedAchievements: userStats
+      ? userStats.achievements.some(a => a.isUnlocked)
+      : false,
     currentLevel: userStats?.level || 1,
     currentPoints: userStats?.points || 0,
-    currentStreak: userStats?.streak || 0
+    currentStreak: userStats?.streak || 0,
   };
 };

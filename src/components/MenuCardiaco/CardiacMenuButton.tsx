@@ -5,7 +5,7 @@
 // para acessar o menu cardíaco de qualquer lugar da aplicação.
 // ============================================================================
 
-import React from 'react';
+// import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 

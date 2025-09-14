@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
           .eq('status', 'realizado');
 
         const receitaMes =
-          agendamentosMesData?.reduce((total, ag) => {
+          agendamentosMesData?.reduce((total: number, ag: any) => {
             return total + (ag.servicos?.preco || 0);
           }, 0) || 0;
 
@@ -222,7 +222,7 @@ const Dashboard: React.FC = () => {
 
       const receitaMes =
         agendamentosMes?.reduce(
-          (total, ag) => total + (ag.servicos?.preco || 0),
+          (total: number, ag: any) => total + (ag.servicos?.preco || 0),
           0
         ) || 0;
 
@@ -338,7 +338,7 @@ const Dashboard: React.FC = () => {
           );
 
         const servicosCount: Record<string, number> = {};
-        agendamentosServicosData?.forEach(ag => {
+        agendamentosServicosData?.forEach((ag: any) => {
           const nome = ag.servicos?.nome || 'Outros';
           servicosCount[nome] = (servicosCount[nome] || 0) + 1;
         });
@@ -421,8 +421,8 @@ const Dashboard: React.FC = () => {
             .split('T')[0]
         );
 
-      const servicosCount = {};
-      servicosData?.forEach(ag => {
+      const servicosCount: Record<string, number> = {};
+      servicosData?.forEach((ag: any) => {
         const nome = ag.servicos?.nome || 'Outros';
         servicosCount[nome] = (servicosCount[nome] || 0) + 1;
       });
@@ -505,7 +505,11 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className='mb-8'>
           <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-            <BarChart3 className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
+            <BarChart3
+              className='mr-3 !text-blue-600'
+              size={32}
+              style={{ color: '#2563eb !important' }}
+            />
             Dashboard
           </h1>
           <p className='text-gray-600 dark:text-gray-300 mt-2'>

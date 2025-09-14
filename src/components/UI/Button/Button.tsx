@@ -7,7 +7,7 @@
 import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { utilityClasses } from '@/lib/design-tokens';
-import { createToggleButtonAriaProps } from '@/lib/accessibility';
+// import { createToggleButtonAriaProps } from '@/lib/accessibility';
 
 // ============================================================================
 // TIPOS E INTERFACES
@@ -108,7 +108,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
         whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
         transition={{ duration: 0.1 }}
-        {...props}
+        {...(props as any)}
       >
         <div className="flex items-center justify-center gap-2">
           {loading && (

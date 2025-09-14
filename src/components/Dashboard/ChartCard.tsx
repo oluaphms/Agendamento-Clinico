@@ -99,7 +99,7 @@ const ChartCard: React.FC<ChartCardProps> = ({
 
     const chartData = data.labels.map((label, index) => ({
       name: label,
-      ...data.datasets.reduce((acc, dataset, datasetIndex) => {
+      ...data.datasets.reduce((acc, dataset, _datasetIndex) => {
         acc[dataset.label] = dataset.data[index] || 0;
         return acc;
       }, {} as Record<string, number>),
@@ -202,7 +202,7 @@ const ChartCard: React.FC<ChartCardProps> = ({
                 fill="#8884d8"
                 dataKey="value"
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

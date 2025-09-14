@@ -58,7 +58,13 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   // ESTADOS
   // ============================================================================
   
-  const [pwaManager] = useState(() => initializePWA(config));
+  const [pwaManager] = useState(() => initializePWA({
+    enableNotifications: config.enableNotifications ?? true,
+    enableBackgroundSync: config.enableBackgroundSync ?? true,
+    enableOfflineMode: config.enableOfflineMode ?? true,
+    enableInstallPrompt: config.enableInstallPrompt ?? true,
+    updateCheckInterval: config.updateCheckInterval ?? 300000,
+  }));
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(

@@ -168,7 +168,7 @@ export default function MenuCardiaco({
     }
   }, [isOpen]);
 
-  const handleNavigation = (path: string, requiredRoles: string[]) => {
+  const handleNavigation = (path: string, _requiredRoles: string[]) => {
     console.log('🔄 MenuCardiaco - Navegando para:', path);
     console.log('👤 Usuário atual:', user?.email);
     console.log('🎯 User role:', user?.user_metadata?.nivel_acesso);

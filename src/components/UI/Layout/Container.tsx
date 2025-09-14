@@ -5,7 +5,7 @@
 // ============================================================================
 
 import React from 'react';
-import { designTokens } from '@/lib/design-tokens';
+// import { designTokens } from '@/lib/design-tokens';
 
 // ============================================================================
 // TIPOS E INTERFACES

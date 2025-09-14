@@ -15,7 +15,7 @@ import { utilityClasses } from '@/lib/design-tokens';
 export type InputVariant = 'default' | 'error' | 'success';
 export type InputSize = 'sm' | 'md' | 'lg';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: InputVariant;
   size?: InputSize;
   label?: string;
@@ -126,7 +126,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             className={finalClassName}
             whileFocus={{ scale: 1.01 }}
             transition={{ duration: 0.1 }}
-            {...props}
+            {...(props as any)}
           />
 
           {/* Ícone Direito */}

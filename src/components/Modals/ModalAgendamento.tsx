@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useThemeStore } from '@/stores/themeStore';
 import { supabase } from '@/lib/supabase';
-import { executeWithRetry, isRetryableError } from '@/lib/supabaseHealthCheck';
+// import { executeWithRetry, isRetryableError } from '@/lib/supabaseHealthCheck';
 import toast from 'react-hot-toast';
 
 interface ModalAgendamentoProps {
@@ -212,7 +212,10 @@ export default function ModalAgendamento({
                 console.error(`❌ Erro na tentativa ${i + 1}:`, error);
 
                 // Se for erro 503 (Service Unavailable), tentar novamente
-                if (error.code === '503' || error.message?.includes('503')) {
+                if (
+                  (error as any).code === '503' ||
+                  (error as any).message?.includes('503')
+                ) {
                   if (i < tentativas - 1) {
                     console.log(
                       `⏳ Aguardando 2 segundos antes da próxima tentativa...`
@@ -263,10 +266,13 @@ export default function ModalAgendamento({
 
       // Mensagem de erro mais específica
       let errorMessage = 'Erro ao salvar agendamento';
-      if (error.code === '503' || error.message?.includes('503')) {
+      if (
+        (error as any).code === '503' ||
+        (error as any).message?.includes('503')
+      ) {
         errorMessage =
           'Servidor temporariamente indisponível. Tente novamente em alguns minutos.';
-      } else if (error.message?.includes('network')) {
+      } else if ((error as any).message?.includes('network')) {
         errorMessage = 'Erro de conectividade. Verifique sua internet.';
       }
 
