@@ -192,10 +192,10 @@ const MOCK_TEMPLATES: TemplateRelatorio[] = [
 const Relatorios: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [relatorios, setRelatorios] = useState<Relatorio[]>(MOCK_RELATORIOS);
-  const [templates, setTemplates] = useState<TemplateRelatorio[]>(MOCK_TEMPLATES);
-  const [showCriarRelatorio, setShowCriarRelatorio] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
-  const [relatorioSelecionado, setRelatorioSelecionado] = useState<Relatorio | null>(null);
+  // const [templates, setTemplates] = useState<TemplateRelatorio[]>(MOCK_TEMPLATES);
+  // const [showCriarRelatorio, setShowCriarRelatorio] = useState(false);
+  // const [showTemplates, setShowTemplates] = useState(false);
+  // const [relatorioSelecionado, setRelatorioSelecionado] = useState<Relatorio | null>(null);
   const [filtros, setFiltros] = useState({
     tipo: '',
     status: '',
@@ -253,11 +253,11 @@ const Relatorios: React.FC = () => {
         },
       };
       setRelatorios(prev => [novoRelatorio, ...prev]);
-      setRelatorioSelecionado(novoRelatorio);
-      setShowCriarRelatorio(true);
+      // setRelatorioSelecionado(novoRelatorio);
+      // setShowCriarRelatorio(true);
       toast.success('Relatório criado com base no template!');
     } else {
-      setShowCriarRelatorio(true);
+      // setShowCriarRelatorio(true);
     }
   };
 
@@ -400,7 +400,7 @@ const Relatorios: React.FC = () => {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setShowTemplates(true)}
+                onClick={() => {}}
                 className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <Settings className="mr-2" size={16} />
@@ -558,7 +558,7 @@ const Relatorios: React.FC = () => {
                       )}
                       
                       <button
-                        onClick={() => setRelatorioSelecionado(relatorio)}
+                        onClick={() => {}}
                         className="flex items-center px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors text-sm"
                       >
                         <Eye className="mr-1" size={14} />
