@@ -25,6 +25,7 @@ import {
   DollarSign,
   FileText,
 } from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';

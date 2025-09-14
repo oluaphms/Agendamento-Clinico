@@ -12,12 +12,6 @@ import {
   Download,
   Calendar,
   RefreshCw,
-  BarChart3,
-  PieChart,
-  TrendingUp,
-  Users,
-  Clock,
-  DollarSign,
   CheckCircle,
   XCircle,
   AlertCircle,
@@ -37,7 +31,12 @@ import toast from 'react-hot-toast';
 interface Relatorio {
   id: string;
   nome: string;
-  tipo: 'agendamentos' | 'pacientes' | 'profissionais' | 'financeiro' | 'customizado';
+  tipo:
+    | 'agendamentos'
+    | 'pacientes'
+    | 'profissionais'
+    | 'financeiro'
+    | 'customizado';
   formato: 'pdf' | 'excel' | 'csv' | 'html';
   status: 'rascunho' | 'gerando' | 'pronto' | 'erro';
   dataCriacao: string;
@@ -137,53 +136,53 @@ const MOCK_RELATORIOS: Relatorio[] = [
   },
 ];
 
-const MOCK_TEMPLATES: TemplateRelatorio[] = [
-  {
-    id: '1',
-    nome: 'Relatório Mensal de Agendamentos',
-    descricao: 'Relatório padrão com agendamentos do mês',
-    tipo: 'agendamentos',
-    parametros: {
-      formatoData: 'dd/mm/yyyy',
-      incluirGraficos: true,
-      incluirDetalhes: true,
-      agruparPor: 'dia',
-      ordenarPor: 'data',
-      direcaoOrdem: 'asc',
-    },
-    isDefault: true,
-  },
-  {
-    id: '2',
-    nome: 'Relatório Financeiro Trimestral',
-    descricao: 'Relatório financeiro com receitas e despesas',
-    tipo: 'financeiro',
-    parametros: {
-      formatoData: 'dd/mm/yyyy',
-      incluirGraficos: true,
-      incluirDetalhes: true,
-      agruparPor: 'mes',
-      ordenarPor: 'valor',
-      direcaoOrdem: 'desc',
-    },
-    isDefault: true,
-  },
-  {
-    id: '3',
-    nome: 'Relatório de Pacientes por Profissional',
-    descricao: 'Lista de pacientes atendidos por cada profissional',
-    tipo: 'pacientes',
-    parametros: {
-      formatoData: 'dd/mm/yyyy',
-      incluirGraficos: false,
-      incluirDetalhes: true,
-      agruparPor: 'profissional',
-      ordenarPor: 'nome',
-      direcaoOrdem: 'asc',
-    },
-    isDefault: false,
-  },
-];
+// const MOCK_TEMPLATES: TemplateRelatorio[] = [
+//   {
+//     id: '1',
+//     nome: 'Relatório Mensal de Agendamentos',
+//     descricao: 'Relatório padrão com agendamentos do mês',
+//     tipo: 'agendamentos',
+//     parametros: {
+//       formatoData: 'dd/mm/yyyy',
+//       incluirGraficos: true,
+//       incluirDetalhes: true,
+//       agruparPor: 'dia',
+//       ordenarPor: 'data',
+//       direcaoOrdem: 'asc',
+//     },
+//     isDefault: true,
+//   },
+//   {
+//     id: '2',
+//     nome: 'Relatório Financeiro Trimestral',
+//     descricao: 'Relatório financeiro com receitas e despesas',
+//     tipo: 'financeiro',
+//     parametros: {
+//       formatoData: 'dd/mm/yyyy',
+//       incluirGraficos: true,
+//       incluirDetalhes: true,
+//       agruparPor: 'mes',
+//       ordenarPor: 'valor',
+//       direcaoOrdem: 'desc',
+//     },
+//     isDefault: true,
+//   },
+//   {
+//     id: '3',
+//     nome: 'Relatório de Pacientes por Profissional',
+//     descricao: 'Lista de pacientes atendidos por cada profissional',
+//     tipo: 'pacientes',
+//     parametros: {
+//       formatoData: 'dd/mm/yyyy',
+//       incluirGraficos: false,
+//       incluirDetalhes: true,
+//       agruparPor: 'profissional',
+//       ordenarPor: 'nome',
+//       direcaoOrdem: 'asc',
+//     },
+//     isDefault: false,
+//   },
+// ];
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -266,9 +265,7 @@ const Relatorios: React.FC = () => {
       // Atualizar status para "gerando"
       setRelatorios(prev =>
         prev.map(r =>
-          r.id === relatorio.id
-            ? { ...r, status: 'gerando' as const }
-            : r
+          r.id === relatorio.id ? { ...r, status: 'gerando' as const } : r
         )
       );
 
@@ -295,9 +292,7 @@ const Relatorios: React.FC = () => {
       console.error('Erro ao gerar relatório:', error);
       setRelatorios(prev =>
         prev.map(r =>
-          r.id === relatorio.id
-            ? { ...r, status: 'erro' as const }
-            : r
+          r.id === relatorio.id ? { ...r, status: 'erro' as const } : r
         )
       );
       toast.error('Erro ao gerar relatório');
@@ -327,13 +322,13 @@ const Relatorios: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pronto':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className='h-5 w-5 text-green-500' />;
       case 'gerando':
-        return <RefreshCw className="h-5 w-5 text-blue-500 animate-spin" />;
+        return <RefreshCw className='h-5 w-5 text-blue-500 animate-spin' />;
       case 'erro':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className='h-5 w-5 text-red-500' />;
       default:
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+        return <AlertCircle className='h-5 w-5 text-yellow-500' />;
     }
   };
 
@@ -354,15 +349,17 @@ const Relatorios: React.FC = () => {
     if (!bytes) return 'N/A';
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   const relatoriosFiltrados = relatorios.filter(relatorio => {
     const matchesTipo = !filtros.tipo || relatorio.tipo === filtros.tipo;
-    const matchesStatus = !filtros.status || relatorio.status === filtros.status;
-    const matchesBusca = !filtros.busca || 
+    const matchesStatus =
+      !filtros.status || relatorio.status === filtros.status;
+    const matchesBusca =
+      !filtros.busca ||
       relatorio.nome.toLowerCase().includes(filtros.busca.toLowerCase());
-    
+
     return matchesTipo && matchesStatus && matchesBusca;
   });
 
@@ -372,45 +369,52 @@ const Relatorios: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className='flex items-center justify-center min-h-screen'>
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-900 p-6'>
       <Helmet>
         <title>Relatórios - Sistema de Gestão de Clínica</title>
-        <meta name="description" content="Sistema completo de geração e exportação de relatórios" />
+        <meta
+          name='description'
+          content='Sistema completo de geração e exportação de relatórios'
+        />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto">
+      <div className='max-w-7xl mx-auto'>
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className='mb-8'>
+          <div className='flex items-center justify-between'>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <FileText className="mr-3 !text-blue-600" size={32} style={{ color: '#2563eb !important' }} />
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
+                <FileText
+                  className='mr-3 !text-blue-600'
+                  size={32}
+                  style={{ color: '#2563eb !important' }}
+                />
                 Relatórios Avançados
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-2">
+              <p className='text-gray-600 dark:text-gray-300 mt-2'>
                 Gere e exporte relatórios em múltiplos formatos
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className='flex items-center space-x-4'>
               <button
                 onClick={() => {}}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
               >
-                <Settings className="mr-2" size={16} />
+                <Settings className='mr-2' size={16} />
                 Templates
               </button>
               <button
                 onClick={() => handleCriarRelatorio()}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
-                <Plus className="mr-2" size={16} />
+                <Plus className='mr-2' size={16} />
                 Novo Relatório
               </button>
             </div>
@@ -418,78 +422,88 @@ const Relatorios: React.FC = () => {
         </div>
 
         {/* Filtros */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Tipo
                 </label>
                 <select
                   value={filtros.tipo}
-                  onChange={(e) => setFiltros({...filtros, tipo: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  onChange={e =>
+                    setFiltros({ ...filtros, tipo: e.target.value })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                 >
-                  <option value="">Todos os tipos</option>
-                  <option value="agendamentos">Agendamentos</option>
-                  <option value="pacientes">Pacientes</option>
-                  <option value="profissionais">Profissionais</option>
-                  <option value="financeiro">Financeiro</option>
-                  <option value="customizado">Customizado</option>
+                  <option value=''>Todos os tipos</option>
+                  <option value='agendamentos'>Agendamentos</option>
+                  <option value='pacientes'>Pacientes</option>
+                  <option value='profissionais'>Profissionais</option>
+                  <option value='financeiro'>Financeiro</option>
+                  <option value='customizado'>Customizado</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Status
                 </label>
                 <select
                   value={filtros.status}
-                  onChange={(e) => setFiltros({...filtros, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  onChange={e =>
+                    setFiltros({ ...filtros, status: e.target.value })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                 >
-                  <option value="">Todos os status</option>
-                  <option value="pronto">Pronto</option>
-                  <option value="gerando">Gerando</option>
-                  <option value="rascunho">Rascunho</option>
-                  <option value="erro">Erro</option>
+                  <option value=''>Todos os status</option>
+                  <option value='pronto'>Pronto</option>
+                  <option value='gerando'>Gerando</option>
+                  <option value='rascunho'>Rascunho</option>
+                  <option value='erro'>Erro</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Data Início
                 </label>
                 <input
-                  type="date"
+                  type='date'
                   value={filtros.dataInicio}
-                  onChange={(e) => setFiltros({...filtros, dataInicio: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  onChange={e =>
+                    setFiltros({ ...filtros, dataInicio: e.target.value })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Data Fim
                 </label>
                 <input
-                  type="date"
+                  type='date'
                   value={filtros.dataFim}
-                  onChange={(e) => setFiltros({...filtros, dataFim: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  onChange={e =>
+                    setFiltros({ ...filtros, dataFim: e.target.value })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Buscar
                 </label>
                 <input
-                  type="text"
-                  placeholder="Nome do relatório..."
+                  type='text'
+                  placeholder='Nome do relatório...'
                   value={filtros.busca}
-                  onChange={(e) => setFiltros({...filtros, busca: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  onChange={e =>
+                    setFiltros({ ...filtros, busca: e.target.value })
+                  }
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                 />
               </div>
             </div>
@@ -497,27 +511,32 @@ const Relatorios: React.FC = () => {
         </Card>
 
         {/* Lista de Relatórios */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {relatoriosFiltrados.map((relatorio) => (
-            <Card key={relatorio.id} className="hover:shadow-lg transition-shadow">
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
+          {relatoriosFiltrados.map(relatorio => (
+            <Card
+              key={relatorio.id}
+              className='hover:shadow-lg transition-shadow'
+            >
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{relatorio.nome}</CardTitle>
-                  <div className="flex items-center space-x-2">
+                <div className='flex items-center justify-between'>
+                  <CardTitle className='text-lg'>{relatorio.nome}</CardTitle>
+                  <div className='flex items-center space-x-2'>
                     {getStatusIcon(relatorio.status)}
-                    <span className="text-sm text-gray-500">
+                    <span className='text-sm text-gray-500'>
                       {getStatusText(relatorio.status)}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <span className="flex items-center">
-                    <FileText className="mr-1" size={14} />
+                <div className='flex items-center space-x-4 text-sm text-gray-500'>
+                  <span className='flex items-center'>
+                    <FileText className='mr-1' size={14} />
                     {relatorio.formato.toUpperCase()}
                   </span>
-                  <span className="flex items-center">
-                    <Calendar className="mr-1" size={14} />
-                    {new Date(relatorio.dataCriacao).toLocaleDateString('pt-BR')}
+                  <span className='flex items-center'>
+                    <Calendar className='mr-1' size={14} />
+                    {new Date(relatorio.dataCriacao).toLocaleDateString(
+                      'pt-BR'
+                    )}
                   </span>
                   {relatorio.tamanhoArquivo && (
                     <span>{formatFileSize(relatorio.tamanhoArquivo)}</span>
@@ -525,52 +544,53 @@ const Relatorios: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                <div className='space-y-3'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
                       Tipo: {relatorio.tipo}
                     </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Período: {relatorio.parametros.dataInicio} - {relatorio.parametros.dataFim}
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                      Período: {relatorio.parametros.dataInicio} -{' '}
+                      {relatorio.parametros.dataFim}
                     </span>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-2">
+
+                  <div className='flex items-center justify-between'>
+                    <div className='flex space-x-2'>
                       {relatorio.status === 'pronto' && (
                         <button
                           onClick={() => handleDownloadRelatorio(relatorio)}
-                          className="flex items-center px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm'
                         >
-                          <Download className="mr-1" size={14} />
+                          <Download className='mr-1' size={14} />
                           Download
                         </button>
                       )}
-                      
+
                       {relatorio.status === 'rascunho' && (
                         <button
                           onClick={() => handleGerarRelatorio(relatorio)}
-                          className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm'
                         >
-                          <RefreshCw className="mr-1" size={14} />
+                          <RefreshCw className='mr-1' size={14} />
                           Gerar
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => {}}
-                        className="flex items-center px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors text-sm"
+                        className='flex items-center px-3 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors text-sm'
                       >
-                        <Eye className="mr-1" size={14} />
+                        <Eye className='mr-1' size={14} />
                         Ver
                       </button>
                     </div>
-                    
+
                     <button
                       onClick={() => handleExcluirRelatorio(relatorio.id)}
-                      className="flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                      className='flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm'
                     >
-                      <Trash2 className="mr-1" size={14} />
+                      <Trash2 className='mr-1' size={14} />
                       Excluir
                     </button>
                   </div>
@@ -582,20 +602,20 @@ const Relatorios: React.FC = () => {
 
         {/* Mensagem quando não há relatórios */}
         {relatoriosFiltrados.length === 0 && (
-          <Card className="text-center py-12">
+          <Card className='text-center py-12'>
             <CardContent>
-              <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <FileText className='mx-auto h-12 w-12 text-gray-400 mb-4' />
+              <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
                 Nenhum relatório encontrado
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <p className='text-gray-500 dark:text-gray-400 mb-4'>
                 Crie seu primeiro relatório ou ajuste os filtros de busca.
               </p>
               <button
                 onClick={() => handleCriarRelatorio()}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mx-auto"
+                className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mx-auto'
               >
-                <Plus className="mr-2" size={16} />
+                <Plus className='mr-2' size={16} />
                 Criar Relatório
               </button>
             </CardContent>
