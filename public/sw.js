@@ -12,10 +12,6 @@ const DYNAMIC_CACHE_NAME = 'sistema-clinico-dynamic-v1.0.0';
 
 const STATIC_ASSETS = [
   '/',
-  '/app/dashboard',
-  '/app/agenda',
-  '/app/pacientes',
-  '/app/relatorios',
   '/manifest.json',
   '/icons/icon-192x192.svg',
   '/icons/icon-512x512.svg',

@@ -62,72 +62,6 @@
       "purpose": "maskable any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard principal do sistema"
-    },
-    {
-      "src": "/screenshots/mobile-1.png",
-      "sizes": "375x667",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Interface mobile responsiva"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Acessar dashboard principal",
-      "url": "/app/dashboard",
-      "icons": [
-        {
-          "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Agenda",
-      "short_name": "Agenda",
-      "description": "Gerenciar agenda de consultas",
-      "url": "/app/agenda",
-      "icons": [
-        {
-          "src": "/icons/shortcut-agenda.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Pacientes",
-      "short_name": "Pacientes",
-      "description": "Gerenciar pacientes",
-      "url": "/app/pacientes",
-      "icons": [
-        {
-          "src": "/icons/shortcut-pacientes.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Relatórios",
-      "short_name": "Relatórios",
-      "description": "Visualizar relatórios",
-      "url": "/app/relatorios",
-      "icons": [
-        {
-          "src": "/icons/shortcut-relatorios.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
   "related_applications": [
     {
       "platform": "webapp",
@@ -143,30 +77,4 @@
   },
   "handle_links": "preferred",
   "capture_links": "new-client",
-  "file_handlers": [
-    {
-      "action": "/app/upload",
-      "accept": {
-        "text/csv": [".csv"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
-      }
-    }
-  ],
-  "share_target": {
-    "action": "/app/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "file",
-          "accept": ["image/*", "text/csv", "application/pdf"]
-        }
-      ]
-    }
-  }
 }
