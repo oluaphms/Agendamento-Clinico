@@ -474,4 +474,5 @@ export interface TemplateInstance {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  status?: 'draft' | 'ready' | 'generating' | 'completed' | 'error';
 }

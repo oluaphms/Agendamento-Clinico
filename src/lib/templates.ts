@@ -455,7 +455,7 @@ export class TemplateManager {
     const updatedTemplate = {
       ...template,
       ...updates,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     };
 
     this.templates.set(id, updatedTemplate);

@@ -100,6 +100,7 @@ export const INTEGRATION_TYPES = {
     baseUrl: 'https://api.stripe.com/v1',
     timeout: 15000,
     retries: 3,
+    enabled: true,
   },
   
   // Webhooks

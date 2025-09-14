@@ -311,7 +311,7 @@ export function canViewField(
 
   const sensitiveFieldsForResource = sensitiveFields[resource] || [];
   
-  if (sensitiveFieldsForResource.includes(field)) {
+  if (sensitiveFieldsForResource.includes(_field)) {
     return hasPermission(userPermissions, `${resource}:write` as Permission).hasPermission;
   }
 
