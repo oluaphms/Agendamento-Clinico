@@ -10,12 +10,8 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
-  ChevronLeft,
-  ChevronRight,
   UserCheck,
-  CalendarDays,
   Repeat,
-  MessageCircle,
   FileText,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -25,19 +21,12 @@ import {
   ModalAgendamentoRecorrente,
 } from '@/components/Modals';
 
-import {
-  enviarLembreteWhatsApp,
-  enviarConfirmacaoWhatsApp,
-  enviarCancelamentoWhatsApp,
-} from '@/lib/whatsappUtils';
 import { usePermissions } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { printReport, ReportData } from '@/lib/reportTemplate';
 
 import {
   notificarAgendamentoCancelado,
-  notificarAgendamentoConfirmado,
-  notificarPagamentoRealizado,
   verificarAgendamentosProximos,
 } from '@/lib/notificationUtils';
 
@@ -85,9 +74,7 @@ const Agenda: React.FC = () => {
   const [showRecorrenteModal, setShowRecorrenteModal] = useState(false);
   const [selectedAgendamento, setSelectedAgendamento] =
     useState<Agendamento | null>(null);
-  const [viewMode, setViewMode] = useState<'lista' | 'calendario'>('lista');
   const [isMobile, setIsMobile] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [filtros, setFiltros] = useState<Filtros>({
     data_inicio: '',
     data_fim: '',
@@ -192,13 +179,6 @@ const Agenda: React.FC = () => {
       setPacientes(pacientesData || []);
       setProfissionais(profissionaisData || []);
       setServicos(servicosData || []);
-
-      console.log('✅ Dados carregados com sucesso!');
-      console.log('📊 Resumo final:');
-      console.log(`   - Agendamentos: ${agendamentosData?.length || 0}`);
-      console.log(`   - Pacientes: ${pacientesData?.length || 0}`);
-      console.log(`   - Profissionais: ${profissionaisData?.length || 0}`);
-      console.log(`   - Serviços: ${servicosData?.length || 0}`);
     } catch (error: any) {
       console.error('❌ Erro ao carregar dados:', error);
       console.error('❌ Stack trace:', error.stack);
@@ -322,100 +302,6 @@ const Agenda: React.FC = () => {
     );
   };
 
-  const getStatusPagamento = (agendamento: Agendamento) => {
-    if (!agendamento.pagamentos || agendamento.pagamentos.length === 0) {
-      return {
-        status: 'pendente',
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-800',
-        label: 'Pendente',
-      };
-    }
-
-    const pagamento = agendamento.pagamentos[0];
-    const statusConfig = {
-      pendente: {
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-800',
-        label: 'Pendente',
-      },
-      pago: {
-        bg: 'bg-green-100',
-        text: 'text-green-800',
-        label: 'Pago',
-      },
-      cancelado: {
-        bg: 'bg-red-100',
-        text: 'text-red-800',
-        label: 'Cancelado',
-      },
-      reembolsado: {
-        bg: 'bg-blue-100',
-        text: 'text-blue-800',
-        label: 'Reembolsado',
-      },
-    };
-
-    return {
-      status: pagamento.status,
-      ...statusConfig[pagamento.status as keyof typeof statusConfig],
-    };
-  };
-
-  // Funções para o calendário
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    const days = [];
-
-    // Dias do mês anterior
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-      const prevDate = new Date(year, month, -i);
-      days.push({ date: prevDate, isCurrentMonth: false });
-    }
-
-    // Dias do mês atual
-    for (let day = 1; day <= daysInMonth; day++) {
-      const currentDate = new Date(year, month, day);
-      days.push({ date: currentDate, isCurrentMonth: true });
-    }
-
-    // Dias do próximo mês para completar a grade
-    const remainingDays = 42 - days.length;
-    for (let day = 1; day <= remainingDays; day++) {
-      const nextDate = new Date(year, month + 1, day);
-      days.push({ date: nextDate, isCurrentMonth: false });
-    }
-
-    return days;
-  };
-
-  const getAgendamentosByDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return agendamentos.filter(ag => ag.data === dateStr);
-  };
-
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentMonth(prev => {
-      const newDate = new Date(prev);
-      if (direction === 'prev') {
-        newDate.setMonth(prev.getMonth() - 1);
-      } else {
-        newDate.setMonth(prev.getMonth() + 1);
-      }
-      return newDate;
-    });
-  };
-
-  const formatMonthYear = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-  };
-
   // Funções para edição e cancelamento
   const handleEditAgendamento = (agendamento: Agendamento) => {
     setSelectedAgendamento(agendamento);
@@ -429,11 +315,6 @@ const Agenda: React.FC = () => {
       status: agendamento.status,
     });
     setShowEditModal(true);
-  };
-
-  const handleCancelAgendamento = (agendamento: Agendamento) => {
-    setSelectedAgendamento(agendamento);
-    setShowCancelModal(true);
   };
 
   const handleDeleteAgendamento = (agendamento: Agendamento) => {
@@ -612,100 +493,6 @@ const Agenda: React.FC = () => {
     return true;
   });
 
-  const handleMarcarComoPago = async (agendamento: Agendamento) => {
-    try {
-      // Verificar se já existe um pagamento
-      if (agendamento.pagamentos && agendamento.pagamentos.length > 0) {
-        // Atualizar pagamento existente
-        const { error } = await supabase
-          .from('pagamentos')
-          .update({
-            status: 'pago',
-            data_pagamento: new Date().toISOString(),
-          })
-          .eq('agendamento_id', agendamento.id);
-
-        if (error) throw error;
-      } else {
-        // Criar novo pagamento
-        const { error } = await supabase.from('pagamentos').insert({
-          agendamento_id: agendamento.id,
-          paciente_id: agendamento.paciente_id,
-          servico_id: agendamento.servico_id,
-          valor: agendamento.servicos?.preco || 0,
-          forma_pagamento: 'Dinheiro',
-          status: 'pago',
-          data_pagamento: new Date().toISOString(),
-        });
-
-        if (error) throw error;
-      }
-
-      toast.success('Pagamento registrado com sucesso!');
-
-      // Notificar sobre o pagamento
-      await notificarPagamentoRealizado(agendamento);
-
-      loadData();
-    } catch (error: any) {
-      console.error('Erro ao marcar como pago:', error);
-      toast.error(error.message || 'Erro ao registrar pagamento');
-    }
-  };
-
-  // Função para bloquear horários
-  const handleBloquearHorario = async (
-    data: string,
-    hora: string,
-    profissional_id: number
-  ) => {
-    try {
-      const { error } = await supabase.from('agendamentos').insert({
-        paciente_id: null,
-        profissional_id,
-        servico_id: null,
-        data,
-        hora,
-        status: 'bloqueado',
-        observacoes: 'Horário bloqueado',
-      });
-
-      if (error) throw error;
-
-      toast.success('Horário bloqueado com sucesso!');
-      loadData();
-    } catch (error: any) {
-      console.error('Erro ao bloquear horário:', error);
-      toast.error(error.message || 'Erro ao bloquear horário');
-    }
-  };
-
-  // Funções do WhatsApp
-  const handleEnviarWhatsApp = (
-    agendamento: Agendamento,
-    tipo: 'lembrete' | 'confirmacao' | 'cancelamento'
-  ) => {
-    let resultado;
-
-    switch (tipo) {
-      case 'lembrete':
-        resultado = enviarLembreteWhatsApp(agendamento);
-        break;
-      case 'confirmacao':
-        resultado = enviarConfirmacaoWhatsApp(agendamento);
-        break;
-      case 'cancelamento':
-        resultado = enviarCancelamentoWhatsApp(agendamento);
-        break;
-    }
-
-    if (resultado.success) {
-      toast.success(resultado.message);
-    } else {
-      toast.error(resultado.message);
-    }
-  };
-
   // Função para imprimir lista de agendamentos
   const imprimirAgendamentos = () => {
     if (filteredAgendamentos.length === 0) {
@@ -814,31 +601,25 @@ const Agenda: React.FC = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='mb-8'>
+          <div className='mb-6'>
+            <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
+              <Calendar
+                className='mr-3 !text-blue-600'
+                size={32}
+                style={{ color: '#2563eb !important' }}
+              />
+              Agenda de Consultas
+            </h1>
+            <p className='text-gray-600 dark:text-gray-300 mt-2'>
+              Gerencie agendamentos, consultas e horários disponíveis
+            </p>
+          </div>
           <div
             className={`flex flex-col ${isMobile ? 'gap-3' : 'sm:flex-row justify-between items-start sm:items-center gap-4'}`}
           >
             <div
               className={`flex flex-wrap gap-2 ${isMobile ? 'justify-center' : 'gap-3'}`}
             >
-              {/* Botão Calendário - Alterna entre Lista e Calendário */}
-              <button
-                className={`${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2 text-sm'} rounded-lg font-medium transition-colors ${
-                  viewMode === 'calendario'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
-                }`}
-                onClick={() =>
-                  setViewMode(
-                    viewMode === 'calendario' ? 'lista' : 'calendario'
-                  )
-                }
-              >
-                <CalendarDays size={16} className='inline mr-2' />
-                {viewMode === 'calendario'
-                  ? 'Fechar Calendário'
-                  : 'Abrir Calendário'}
-              </button>
-
               {/* Botão de Impressão */}
               <button
                 className={`btn btn-outline-info btn-sm d-flex align-items-center gap-2 ${isMobile ? 'w-full justify-center' : ''}`}
@@ -1022,268 +803,160 @@ const Agenda: React.FC = () => {
         </div>
 
         {/* Visualização de Agendamentos */}
-        {viewMode === 'lista' ? (
-          <div className={`rounded-lg shadow-sm ${getCardClasses()}`}>
-            <div className='px-6 py-4 border-b border-gray-200'>
-              <div className='flex justify-between items-center'>
-                <h3 className='text-lg font-medium text-gray-900'>
-                  <Calendar
-                    size={18}
-                    className='inline mr-2 text-blue-600 dark:text-blue-200'
-                  />
-                  Lista de Agendamentos
-                </h3>
-                <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
-                  {filteredAgendamentos.length} agendamentos
-                </span>
-              </div>
-            </div>
-            <div className='overflow-x-auto'>
-              <table className='min-w-full divide-y divide-gray-200'>
-                <thead className='bg-gray-50'>
-                  <tr>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Paciente
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Profissional
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Serviço
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Status
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Data
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Hora
-                    </th>
-                    <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='bg-white divide-y divide-gray-200'>
-                  {filteredAgendamentos.map(agendamento => (
-                    <tr key={agendamento.id} className='hover:bg-gray-50'>
-                      {/* Paciente */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='flex items-center'>
-                          <div className='flex-shrink-0 h-10 w-10'>
-                            <div className='h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center'>
-                              <User
-                                size={16}
-                                className='text-blue-600 dark:text-blue-200'
-                              />
-                            </div>
-                          </div>
-                          <div className='ml-4'>
-                            <div className='text-sm font-medium text-gray-900'>
-                              {agendamento.pacientes?.nome}
-                            </div>
-                            <div className='text-sm text-gray-500'>
-                              {agendamento.pacientes?.telefone}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      {/* Profissional */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='flex items-center'>
-                          <div className='flex-shrink-0 h-10 w-10'>
-                            <div className='h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center'>
-                              <UserCheck
-                                size={16}
-                                className='text-indigo-600'
-                              />
-                            </div>
-                          </div>
-                          <div className='ml-4'>
-                            <div className='text-sm font-medium text-gray-900'>
-                              {agendamento.profissionais?.nome}
-                            </div>
-                            <div className='text-sm text-gray-500'>
-                              {agendamento.profissionais?.especialidade}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      {/* Serviço */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='text-sm text-gray-900'>
-                          {agendamento.servicos?.nome}
-                        </div>
-                        <div className='text-sm text-gray-500'>
-                          R$ {agendamento.servicos?.preco?.toFixed(2)}
-                        </div>
-                      </td>
-                      {/* Status */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        {getStatusBadge(agendamento.status)}
-                      </td>
-                      {/* Data */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='text-sm font-medium text-gray-900'>
-                          {new Date(agendamento.data).toLocaleDateString(
-                            'pt-BR'
-                          )}
-                        </div>
-                      </td>
-                      {/* Hora */}
-                      <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='flex items-center'>
-                          <Clock
-                            size={16}
-                            className='text-blue-600 dark:text-blue-200 mr-2'
-                          />
-                          <span className='text-sm font-medium text-gray-900'>
-                            {agendamento.hora}
-                          </span>
-                        </div>
-                      </td>
-                      {/* Ações */}
-                      <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                        <div className='flex space-x-2'>
-                          {canAccess([
-                            'admin',
-                            'gerente',
-                            'recepcao',
-                            'desenvolvedor',
-                          ]) && (
-                            <button
-                              className='text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50'
-                              title='Editar'
-                              onClick={() => handleEditAgendamento(agendamento)}
-                            >
-                              <Edit size={16} />
-                            </button>
-                          )}
-                          {canAccess([
-                            'admin',
-                            'gerente',
-                            'recepcao',
-                            'desenvolvedor',
-                          ]) && (
-                            <button
-                              className='text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50'
-                              title='Excluir'
-                              onClick={() =>
-                                handleDeleteAgendamento(agendamento)
-                              }
-                            >
-                              <XCircle size={16} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className={`rounded-lg shadow-sm ${getCardClasses()}`}>
+          <div className='px-6 py-4 border-b border-gray-200'>
+            <div className='flex justify-between items-center'>
+              <h3 className='text-lg font-medium text-gray-900'>
+                <Calendar
+                  size={18}
+                  className='inline mr-2 text-blue-600 dark:text-blue-200'
+                />
+                Lista de Agendamentos
+              </h3>
+              <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
+                {filteredAgendamentos.length} agendamentos
+              </span>
             </div>
           </div>
-        ) : (
-          /* Visualização do Calendário */
-          <div className={`rounded-lg shadow-sm ${getCardClasses()}`}>
-            <div className='px-6 py-4 border-b border-gray-200'>
-              <div className='flex justify-between items-center'>
-                <h3 className='text-lg font-medium text-gray-900'>
-                  <CalendarDays
-                    size={18}
-                    className='inline mr-2 text-blue-600'
-                  />
-                  Calendário de Agendamentos
-                </h3>
-                <div className='flex items-center space-x-2'>
-                  <button
-                    onClick={() => navigateMonth('prev')}
-                    className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <span className='text-lg font-medium text-gray-900 min-w-[200px] text-center'>
-                    {formatMonthYear(currentMonth)}
-                  </span>
-                  <button
-                    onClick={() => navigateMonth('next')}
-                    className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className='p-6'>
-              {/* Cabeçalho dos dias da semana */}
-              <div className='grid grid-cols-7 gap-1 mb-2'>
-                {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
-                  <div
-                    key={day}
-                    className='p-2 text-center text-sm font-medium text-gray-500'
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Grade do calendário */}
-              <div className='grid grid-cols-7 gap-1'>
-                {getDaysInMonth(currentMonth).map((day, index) => {
-                  const agendamentosDoDia = getAgendamentosByDate(day.date);
-                  const isToday =
-                    day.date.toDateString() === new Date().toDateString();
-
-                  return (
-                    <div
-                      key={index}
-                      className={`min-h-[120px] p-2 border border-gray-200 ${
-                        day.isCurrentMonth ? 'bg-white' : 'bg-gray-50'
-                      } ${isToday ? 'ring-2 ring-blue-500' : ''}`}
-                    >
-                      <div
-                        className={`text-sm font-medium mb-1 ${
-                          day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
-                        } ${isToday ? 'text-blue-600' : ''}`}
-                      >
-                        {day.date.getDate()}
+          <div className='overflow-x-auto'>
+            <table className='min-w-full divide-y divide-gray-200'>
+              <thead className='bg-gray-50'>
+                <tr>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Paciente
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Profissional
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Serviço
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Status
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Data
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Hora
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody className='bg-white divide-y divide-gray-200'>
+                {filteredAgendamentos.map(agendamento => (
+                  <tr key={agendamento.id} className='hover:bg-gray-50'>
+                    {/* Paciente */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='flex items-center'>
+                        <div className='flex-shrink-0 h-10 w-10'>
+                          <div className='h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center'>
+                            <User
+                              size={16}
+                              className='text-blue-600 dark:text-blue-200'
+                            />
+                          </div>
+                        </div>
+                        <div className='ml-4'>
+                          <div className='text-sm font-medium text-gray-900'>
+                            {agendamento.pacientes?.nome}
+                          </div>
+                          <div className='text-sm text-gray-500'>
+                            {agendamento.pacientes?.telefone}
+                          </div>
+                        </div>
                       </div>
-
-                      <div className='space-y-1'>
-                        {agendamentosDoDia.slice(0, 3).map(agendamento => (
-                          <div
-                            key={agendamento.id}
-                            className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 ${
-                              agendamento.status === 'agendado'
-                                ? 'bg-blue-100 text-blue-800'
-                                : agendamento.status === 'confirmado'
-                                  ? 'bg-green-100 text-green-800'
-                                  : agendamento.status === 'realizado'
-                                    ? 'bg-purple-100 text-purple-800'
-                                    : agendamento.status === 'cancelado'
-                                      ? 'bg-red-100 text-red-800'
-                                      : 'bg-yellow-100 text-yellow-800'
-                            }`}
-                            title={`${agendamento.hora} - ${agendamento.pacientes?.nome}`}
+                    </td>
+                    {/* Profissional */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='flex items-center'>
+                        <div className='flex-shrink-0 h-10 w-10'>
+                          <div className='h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center'>
+                            <UserCheck size={16} className='text-indigo-600' />
+                          </div>
+                        </div>
+                        <div className='ml-4'>
+                          <div className='text-sm font-medium text-gray-900'>
+                            {agendamento.profissionais?.nome}
+                          </div>
+                          <div className='text-sm text-gray-500'>
+                            {agendamento.profissionais?.especialidade}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    {/* Serviço */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='text-sm text-gray-900'>
+                        {agendamento.servicos?.nome}
+                      </div>
+                      <div className='text-sm text-gray-500'>
+                        R$ {agendamento.servicos?.preco?.toFixed(2)}
+                      </div>
+                    </td>
+                    {/* Status */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      {getStatusBadge(agendamento.status)}
+                    </td>
+                    {/* Data */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='text-sm font-medium text-gray-900'>
+                        {new Date(agendamento.data).toLocaleDateString('pt-BR')}
+                      </div>
+                    </td>
+                    {/* Hora */}
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='flex items-center'>
+                        <Clock
+                          size={16}
+                          className='text-blue-600 dark:text-blue-200 mr-2'
+                        />
+                        <span className='text-sm font-medium text-gray-900'>
+                          {agendamento.hora}
+                        </span>
+                      </div>
+                    </td>
+                    {/* Ações */}
+                    <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
+                      <div className='flex space-x-2'>
+                        {canAccess([
+                          'admin',
+                          'gerente',
+                          'recepcao',
+                          'desenvolvedor',
+                        ]) && (
+                          <button
+                            className='text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50'
+                            title='Editar'
+                            onClick={() => handleEditAgendamento(agendamento)}
                           >
-                            {agendamento.hora} - {agendamento.pacientes?.nome}
-                          </div>
-                        ))}
-                        {agendamentosDoDia.length > 3 && (
-                          <div className='text-xs text-gray-500 text-center'>
-                            +{agendamentosDoDia.length - 3} mais
-                          </div>
+                            <Edit size={16} />
+                          </button>
+                        )}
+                        {canAccess([
+                          'admin',
+                          'gerente',
+                          'recepcao',
+                          'desenvolvedor',
+                        ]) && (
+                          <button
+                            className='text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50'
+                            title='Excluir'
+                            onClick={() => handleDeleteAgendamento(agendamento)}
+                          >
+                            <XCircle size={16} />
+                          </button>
                         )}
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Modal Novo Agendamento */}

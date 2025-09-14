@@ -7,19 +7,18 @@ import {
   ArrowLeft,
   Sun,
   Moon,
-  Menu,
-  X,
+  Heart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore, usePermissions } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMenu } from '@/contexts/MenuContext';
+import MenuCardiaco from '@/components/MenuCardiaco';
 import toast from 'react-hot-toast';
 
 const Header: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { isMenuOpen, toggleMenu } = useMenu();
+  const [isCardiacMenuOpen, setIsCardiacMenuOpen] = useState(false);
 
   const { user, signOut } = useAuthStore();
   const permissions = usePermissions();
@@ -164,35 +163,39 @@ const Header: React.FC = () => {
 
         {/* Right Side */}
         <div className='flex items-center space-x-4'>
-          {/* Menu Lateral Button */}
+          {/* Menu Cardíaco Button */}
           <motion.button
-            onClick={toggleMenu}
+            onClick={() => setIsCardiacMenuOpen(true)}
             className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 group ${
               isDark
-                ? 'text-white hover:text-blue-100 hover:bg-blue-800'
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30'
+                : 'text-red-500 hover:text-red-600 hover:bg-red-50'
             }`}
-            title='Menu Lateral'
+            title='Menu Cardíaco'
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <motion.div
               animate={{
-                rotate: isMenuOpen ? 90 : 0,
-                scale: isMenuOpen ? 1.1 : 1,
+                scale: [1, 1.1, 1],
               }}
-              transition={{ duration: 0.3 }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
             >
-              {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              <Heart size={18} />
             </motion.div>
-            <span className='text-sm font-medium'>Menu</span>
+            <span className='text-sm font-medium'>Cardíaco</span>
 
             {/* Efeito de brilho no hover */}
             <motion.div
-              className={`absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+              className={`absolute inset-0 rounded-lg bg-gradient-to-r from-red-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
               initial={false}
             />
           </motion.button>
+
 
           {/* Theme Toggle Button */}
           <motion.button
@@ -340,6 +343,12 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Menu Cardíaco */}
+      <MenuCardiaco 
+        isOpen={isCardiacMenuOpen} 
+        onClose={() => setIsCardiacMenuOpen(false)} 
+      />
     </header>
   );
 };

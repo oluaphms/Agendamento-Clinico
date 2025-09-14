@@ -766,6 +766,15 @@ const Profissionais: React.FC = () => {
         {/* Header */}
         <div className='row mb-4'>
           <div className='col-12'>
+            <div className='mb-6'>
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
+                <UserCheck className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
+                Cadastro de Profissionais
+              </h1>
+              <p className='text-gray-600 dark:text-gray-300 mt-2'>
+                Gerencie o cadastro e informações dos profissionais da clínica
+              </p>
+            </div>
             <div className='d-flex justify-content-between align-items-center'>
               <div></div>
               <div className='d-flex gap-2'>

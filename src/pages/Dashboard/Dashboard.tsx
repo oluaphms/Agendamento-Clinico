@@ -8,6 +8,7 @@ import {
   FileText,
   CheckCircle,
   AlertCircle,
+  BarChart3,
 } from 'lucide-react';
 import {
   BarChart,
@@ -501,7 +502,16 @@ const Dashboard: React.FC = () => {
       <div
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isDark ? 'dark' : ''}`}
       >
-        
+        {/* Header */}
+        <div className='mb-8'>
+          <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
+            <BarChart3 className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
+            Dashboard
+          </h1>
+          <p className='text-gray-600 dark:text-gray-300 mt-2'>
+            Visão geral e métricas importantes da clínica
+          </p>
+        </div>
 
         {/* Cards de Estatísticas */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>

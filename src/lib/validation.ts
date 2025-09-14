@@ -194,14 +194,14 @@ export function validateForm(
   validations: FieldValidation
 ): ValidationResult {
   const errors: string[] = [];
-  const fieldErrors: { [fieldName: string]: string[] } = {};
+  const _fieldErrors: { [fieldName: string]: string[] } = {};
 
   for (const [fieldName, rules] of Object.entries(validations)) {
     const fieldErrors = validateField(data[fieldName], rules);
 
     if (fieldErrors.length > 0) {
       errors.push(...fieldErrors);
-      fieldErrors[fieldName] = fieldErrors;
+      _fieldErrors[fieldName] = _fieldErrors;
     }
   }
 
@@ -344,7 +344,7 @@ export function useFormValidation(
   touched: { [fieldName: string]: boolean } = {}
 ) {
   const result = validateForm(data, validations);
-  const fieldErrors: { [fieldName: string]: string[] } = {};
+  const _fieldErrors: { [fieldName: string]: string[] } = {};
 
   // Separar erros por campo
   for (const [fieldName, rules] of Object.entries(validations)) {

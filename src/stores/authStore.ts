@@ -58,7 +58,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   session: null,
-  loading: true,
+  loading: false, // Iniciar como false para evitar loop
   error: null,
   mustChangePassword: false,
 

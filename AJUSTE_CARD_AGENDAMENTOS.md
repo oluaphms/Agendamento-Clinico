@@ -70,3 +70,4 @@ O card agora exibe uma tabela limpa e organizada com apenas as informações ess
 **O card agora está otimizado e mostra apenas as colunas solicitadas!** 🚀
 
 
+

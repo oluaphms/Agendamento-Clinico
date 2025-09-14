@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
+import { useAuthStore } from './stores/authStore';
 
 // Lazy Pages
 import {
@@ -18,6 +19,11 @@ import {
   ConfiguracoesLazy,
   ChangePasswordLazy,
   PermissionsLazy,
+  AnalyticsLazy,
+  RelatoriosLazy,
+  NotificacoesLazy,
+  WhatsAppLazy,
+  BackupLazy,
 } from './components/LazyLoading/LazyPages';
 
 // Components
@@ -29,9 +35,9 @@ import {
   UpdateNotification,
   OfflineIndicator,
 } from './components/PWA';
+import { ThemeProvider } from './components/Theme/ThemeProvider';
 
 // Contexts
-import { MenuProvider } from './contexts/MenuContext';
 import { AppProvider } from './contexts/AppContext';
 
 // Layout
@@ -49,15 +55,22 @@ const queryClient = new QueryClient({
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const { initialize } = useAuthStore();
 
   useEffect(() => {
-    // Simular carregamento inicial
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    // Inicializar authStore
+    const initAuth = async () => {
+      try {
+        await initialize();
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao inicializar auth:', error);
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
+    initAuth();
+  }, [initialize]);
 
   if (loading) {
     return (
@@ -73,12 +86,12 @@ function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <AppProvider>
-          <AccessibilityProvider>
-            <PWAProvider>
-              <MenuProvider>
+        <ThemeProvider>
+          <AppProvider>
+            <AccessibilityProvider>
+              <PWAProvider>
                 <ErrorBoundary>
-                  <div className='min-h-screen bg-gray-50'>
+                  <div className='min-h-screen'>
                     <Routes>
                       {/* Página de Apresentação */}
                       <Route path='/' element={<ApresentacaoLazy />} />
@@ -124,9 +137,7 @@ function App() {
                         <Route
                           path='profissionais'
                           element={
-                            <ProtectedRoute
-                              requiredRoles={['admin', 'gerente']}
-                            >
+                            <ProtectedRoute>
                               <ProfissionaisLazy />
                             </ProtectedRoute>
                           }
@@ -142,17 +153,55 @@ function App() {
                         <Route
                           path='usuarios'
                           element={
-                            <ProtectedRoute
-                              requiredRoles={['admin', 'desenvolvedor']}
-                            >
+                            <ProtectedRoute>
                               <UsuariosLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='analytics'
+                          element={
+                            <ProtectedRoute>
+                              <AnalyticsLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='relatorios'
+                          element={
+                            <ProtectedRoute>
+                              <RelatoriosLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='notificacoes'
+                          element={
+                            <ProtectedRoute>
+                              <NotificacoesLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='whatsapp'
+                          element={
+                            <ProtectedRoute>
+                              <WhatsAppLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='backup'
+                          element={
+                            <ProtectedRoute>
+                              <BackupLazy />
                             </ProtectedRoute>
                           }
                         />
                         <Route
                           path='configuracoes'
                           element={
-                            <ProtectedRoute requiredRoles={['admin']}>
+                            <ProtectedRoute>
                               <ConfiguracoesLazy />
                             </ProtectedRoute>
                           }
@@ -160,9 +209,7 @@ function App() {
                         <Route
                           path='permissions'
                           element={
-                            <ProtectedRoute
-                              requiredRoles={['admin', 'desenvolvedor']}
-                            >
+                            <ProtectedRoute>
                               <PermissionsLazy />
                             </ProtectedRoute>
                           }
@@ -190,10 +237,10 @@ function App() {
                     />
                   </div>
                 </ErrorBoundary>
-              </MenuProvider>
-            </PWAProvider>
-          </AccessibilityProvider>
-        </AppProvider>
+              </PWAProvider>
+            </AccessibilityProvider>
+          </AppProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </HelmetProvider>
   );

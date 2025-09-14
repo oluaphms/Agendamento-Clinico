@@ -23,8 +23,8 @@ class ConnectivityManager {
     retryCount: 0
   };
 
-  private maxRetries = 3;
-  private checkInterval = 60000; // 60 segundos (reduzir frequência)
+  private maxRetries = import.meta.env.DEV ? 2 : 3;
+  private checkInterval = import.meta.env.DEV ? 30000 : 60000; // 30s em dev, 60s em prod
   private intervalId: number | null = null;
 
   constructor() {

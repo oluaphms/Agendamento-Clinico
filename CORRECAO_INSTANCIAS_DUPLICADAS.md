@@ -183,3 +183,4 @@ console.log(
 **O sistema agora está otimizado e livre de instâncias duplicadas!** 🚀
 
 
+

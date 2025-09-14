@@ -110,7 +110,7 @@ export function normalizeError(error: unknown): AppError {
 export function determineErrorType(error: ApiError | Error): ErrorType {
   if ('code' in error) {
     const code = error.code?.toUpperCase();
-    
+
     switch (code) {
       case 'NETWORK_ERROR':
       case 'TIMEOUT':
@@ -137,27 +137,27 @@ export function determineErrorType(error: ApiError | Error): ErrorType {
 
   // Verificar mensagem de erro
   const message = error.message.toLowerCase();
-  
+
   if (message.includes('network') || message.includes('fetch')) {
     return ErrorType.NETWORK;
   }
-  
+
   if (message.includes('validation') || message.includes('invalid')) {
     return ErrorType.VALIDATION;
   }
-  
+
   if (message.includes('unauthorized') || message.includes('authentication')) {
     return ErrorType.AUTHENTICATION;
   }
-  
+
   if (message.includes('forbidden') || message.includes('permission')) {
     return ErrorType.AUTHORIZATION;
   }
-  
+
   if (message.includes('not found') || message.includes('404')) {
     return ErrorType.NOT_FOUND;
   }
-  
+
   if (message.includes('server') || message.includes('500')) {
     return ErrorType.SERVER;
   }
@@ -172,22 +172,25 @@ export function getErrorMessage(error: AppError): string {
   switch (error.type) {
     case ErrorType.NETWORK:
       return 'Problema de conexão. Verifique sua internet e tente novamente.';
-    
+
     case ErrorType.VALIDATION:
-      return error.message || 'Dados inválidos. Verifique as informações e tente novamente.';
-    
+      return (
+        error.message ||
+        'Dados inválidos. Verifique as informações e tente novamente.'
+      );
+
     case ErrorType.AUTHENTICATION:
       return 'Sessão expirada. Faça login novamente.';
-    
+
     case ErrorType.AUTHORIZATION:
       return 'Você não tem permissão para realizar esta ação.';
-    
+
     case ErrorType.NOT_FOUND:
       return 'Recurso não encontrado.';
-    
+
     case ErrorType.SERVER:
       return 'Erro interno do servidor. Tente novamente mais tarde.';
-    
+
     case ErrorType.UNKNOWN:
     default:
       return error.message || 'Ocorreu um erro inesperado. Tente novamente.';
@@ -249,21 +252,23 @@ export function getErrorColor(error: AppError): string {
  */
 export function handleApiError(error: unknown): AppError {
   const normalizedError = normalizeError(error);
-  
+
   // Log do erro para desenvolvimento
   if (import.meta.env.DEV) {
     console.error('API Error:', normalizedError);
   }
-  
+
   return normalizedError;
 }
 
 /**
  * Handler para erros de validação
  */
-export function handleValidationError(errors: Record<string, string>): AppError {
+export function handleValidationError(
+  errors: Record<string, string>
+): AppError {
   const firstError = Object.values(errors)[0];
-  
+
   return {
     type: ErrorType.VALIDATION,
     message: firstError || 'Erro de validação',
@@ -294,11 +299,14 @@ export function handleNetworkError(error: unknown): AppError {
 export function showErrorNotification(error: AppError): void {
   const message = getErrorMessage(error);
   const icon = getErrorIcon(error);
-  
-  toast.error(message, {
-    icon,
-    duration: error.type === ErrorType.NETWORK ? 8000 : 5000,
-  });
+
+  // Usar setTimeout para evitar setState durante renderização
+  setTimeout(() => {
+    toast.error(message, {
+      icon,
+      duration: error.type === ErrorType.NETWORK ? 8000 : 5000,
+    });
+  }, 0);
 }
 
 /**
@@ -366,13 +374,13 @@ export async function withErrorHandling<T>(
     return await asyncFn();
   } catch (error) {
     const appError = normalizeError(error);
-    
+
     if (errorHandler) {
       errorHandler(appError);
     } else {
       showErrorNotification(appError);
     }
-    
+
     return null;
   }
 }
@@ -388,13 +396,13 @@ export function withSyncErrorHandling<T>(
     return syncFn();
   } catch (error) {
     const appError = normalizeError(error);
-    
+
     if (errorHandler) {
       errorHandler(appError);
     } else {
       showErrorNotification(appError);
     }
-    
+
     return null;
   }
 }
@@ -408,26 +416,26 @@ export function withSyncErrorHandling<T>(
  */
 export function setupGlobalErrorHandler(): void {
   // Handler para erros não capturados
-  window.addEventListener('error', (event) => {
+  window.addEventListener('error', event => {
     const error = normalizeError(event.error);
-    
+
     if (import.meta.env.DEV) {
       console.error('Uncaught Error:', error);
     }
-    
+
     showErrorNotification(error);
   });
 
   // Handler para promises rejeitadas
-  window.addEventListener('unhandledrejection', (event) => {
+  window.addEventListener('unhandledrejection', event => {
     const error = normalizeError(event.reason);
-    
+
     if (import.meta.env.DEV) {
       console.error('Unhandled Promise Rejection:', error);
     }
-    
+
     showErrorNotification(error);
-    
+
     // Prevenir o log padrão do navegador
     event.preventDefault();
   });

@@ -15,8 +15,7 @@ import {
   Shield,
   UserCheck,
   UserX,
-  Download,
-  RefreshCw,
+  Power,
 } from 'lucide-react';
 import {
   Button,
@@ -30,6 +29,7 @@ import {
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import { supabase, checkSupabaseConnection } from '@/lib/supabase';
 import { localDb } from '@/lib/database';
+import toast from 'react-hot-toast';
 
 // ============================================================================
 // INTERFACES E TIPOS
@@ -40,17 +40,23 @@ interface Usuario {
   nome: string;
   cpf: string;
   email: string;
+  telefone?: string;
+  cargo?: string;
   nivel_acesso: string;
   status: 'ativo' | 'inativo' | 'pendente';
   primeiro_acesso: boolean;
   created_at: string;
   updated_at: string;
   ultimo_acesso?: string;
+  ultimo_login?: string;
+  senha_hash?: string;
 }
 
 interface UsuarioFormData {
   nome: string;
   cpf: string;
+  telefone: string;
+  cargo: string;
   nivel_acesso: string;
   senha: string;
 }
@@ -140,6 +146,8 @@ const Usuarios: React.FC = () => {
   const [formData, setFormData] = useState<UsuarioFormData>({
     nome: '',
     cpf: '',
+    telefone: '',
+    cargo: '',
     nivel_acesso: 'usuario',
     senha: '',
   });
@@ -150,13 +158,14 @@ const Usuarios: React.FC = () => {
 
   useEffect(() => {
     loadUsuarios();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ============================================================================
   // FUNÇÕES
   // ============================================================================
 
   const loadUsuarios = async () => {
+    if (loading) return; // Evitar chamadas múltiplas
     setLoading(true);
     try {
       // Verificar se Supabase está disponível
@@ -184,12 +193,16 @@ const Usuarios: React.FC = () => {
             nome: usuario.nome,
             cpf: usuario.cpf,
             email: usuario.email || `${usuario.cpf}@clinica.local`,
+            telefone: usuario.telefone || null,
+            cargo: usuario.cargo || null,
             nivel_acesso: usuario.nivel_acesso,
             status: usuario.status,
             primeiro_acesso: usuario.primeiro_acesso || false,
             created_at: usuario.created_at,
             updated_at: usuario.updated_at,
             ultimo_acesso: usuario.ultimo_login,
+            ultimo_login: usuario.ultimo_login,
+            senha_hash: usuario.senha_hash,
           }));
 
           setUsuarios(usuariosConvertidos);
@@ -237,6 +250,8 @@ const Usuarios: React.FC = () => {
     setFormData({
       nome: '',
       cpf: '',
+      telefone: '',
+      cargo: '',
       nivel_acesso: 'usuario',
       senha: '',
     });
@@ -248,6 +263,8 @@ const Usuarios: React.FC = () => {
     setFormData({
       nome: usuario.nome,
       cpf: usuario.cpf,
+      telefone: usuario.telefone || '',
+      cargo: usuario.cargo || '',
       nivel_acesso: usuario.nivel_acesso,
       senha: '',
     });
@@ -257,13 +274,101 @@ const Usuarios: React.FC = () => {
   const handleDeleteUser = (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este usuário?')) {
       setUsuarios(prev => prev.filter(u => u.id !== id));
+      toast.success('Usuário excluído com sucesso!');
     }
   };
 
+  const handleToggleUserStatus = (usuario: Usuario) => {
+    const newStatus = usuario.status === 'ativo' ? 'inativo' : 'ativo';
+    const message =
+      newStatus === 'ativo'
+        ? 'Tem certeza que deseja ativar este usuário?'
+        : 'Tem certeza que deseja desativar este usuário?';
+
+    if (window.confirm(message)) {
+      setUsuarios(prev =>
+        prev.map(u =>
+          u.id === usuario.id
+            ? {
+                ...u,
+                status: newStatus as 'ativo' | 'inativo' | 'pendente',
+                updated_at: new Date().toISOString(),
+              }
+            : u
+        )
+      );
+      toast.success(
+        `Usuário ${newStatus === 'ativo' ? 'ativado' : 'desativado'} com sucesso!`
+      );
+    }
+  };
+
+  const formatCPF = (cpf: string) => {
+    return cpf
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  const validateCPF = (cpf: string) => {
+    const cleanCPF = cpf.replace(/\D/g, '');
+    if (cleanCPF.length !== 11) return false;
+
+    // Verificar se todos os dígitos são iguais
+    if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
+
+    // Algoritmo de validação do CPF
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(cleanCPF.charAt(i)) * (10 - i);
+    }
+    let remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cleanCPF.charAt(9))) return false;
+
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += parseInt(cleanCPF.charAt(i)) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cleanCPF.charAt(10))) return false;
+
+    return true;
+  };
+
   const handleSaveUser = () => {
+    // Validar campos obrigatórios
+    if (!formData.nome.trim()) {
+      toast.error('Nome é obrigatório');
+      return;
+    }
+
+    if (!formData.cpf.trim()) {
+      toast.error('CPF é obrigatório');
+      return;
+    }
+
+    // Validar CPF
+    if (!validateCPF(formData.cpf)) {
+      toast.error('CPF inválido');
+      return;
+    }
+
+    // Verificar se CPF já existe
+    const cpfExists = usuarios.some(
+      u =>
+        u.cpf.replace(/\D/g, '') === formData.cpf.replace(/\D/g, '') &&
+        (!editingUser || u.id !== editingUser.id)
+    );
+
+    if (cpfExists) {
+      toast.error('CPF já cadastrado no sistema');
+      return;
+    }
+
     // Validar senha obrigatória
     if (!formData.senha || formData.senha.length < 3) {
-      alert('Senha deve ter pelo menos 3 caracteres');
+      toast.error('Senha deve ter pelo menos 3 caracteres');
       return;
     }
 
@@ -293,6 +398,12 @@ const Usuarios: React.FC = () => {
       };
       setUsuarios(prev => [...prev, novoUsuario]);
     }
+
+    toast.success(
+      editingUser
+        ? 'Usuário atualizado com sucesso!'
+        : 'Usuário criado com sucesso!'
+    );
     setShowForm(false);
     setEditingUser(null);
   };
@@ -372,7 +483,7 @@ const Usuarios: React.FC = () => {
           <div className='flex items-center justify-between'>
             <div>
               <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-                <Users className='mr-3 text-blue-600' size={32} />
+                <Users className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
                 Usuários do Sistema
               </h1>
               <p className='text-gray-600 dark:text-gray-300 mt-2'>
@@ -520,19 +631,7 @@ const Usuarios: React.FC = () => {
         {/* Lista de Usuários */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <span>Lista de Usuários ({filteredUsuarios.length})</span>
-              <div className='flex space-x-2'>
-                <Button variant='outline' size='sm'>
-                  <Download size={16} className='mr-2' />
-                  Exportar
-                </Button>
-                <Button variant='outline' size='sm' onClick={loadUsuarios}>
-                  <RefreshCw size={16} className='mr-2' />
-                  Atualizar
-                </Button>
-              </div>
-            </CardTitle>
+            <CardTitle>Lista de Usuários ({filteredUsuarios.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='overflow-x-auto'>
@@ -544,6 +643,9 @@ const Usuarios: React.FC = () => {
                     </th>
                     <th className='text-left py-3 px-4 font-medium text-gray-900 dark:text-white'>
                       CPF
+                    </th>
+                    <th className='text-left py-3 px-4 font-medium text-gray-900 dark:text-white'>
+                      Telefone
                     </th>
                     <th className='text-left py-3 px-4 font-medium text-gray-900 dark:text-white'>
                       Nível
@@ -580,6 +682,9 @@ const Usuarios: React.FC = () => {
                       <td className='py-4 px-4 text-gray-600 dark:text-gray-300'>
                         {usuario.cpf}
                       </td>
+                      <td className='py-4 px-4 text-gray-600 dark:text-gray-300'>
+                        {usuario.telefone || 'Não informado'}
+                      </td>
                       <td className='py-4 px-4'>
                         <Badge className={getNivelColor(usuario.nivel_acesso)}>
                           {getNivelName(usuario.nivel_acesso)}
@@ -603,13 +708,35 @@ const Usuarios: React.FC = () => {
                             variant='outline'
                             size='sm'
                             onClick={() => handleEditUser(usuario)}
+                            title='Editar usuário'
                           >
                             <Edit size={16} />
                           </Button>
+                          {usuario.status !== 'pendente' && (
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() => handleToggleUserStatus(usuario)}
+                              title={
+                                usuario.status === 'ativo'
+                                  ? 'Desativar usuário'
+                                  : 'Ativar usuário'
+                              }
+                              className={
+                                usuario.status === 'ativo'
+                                  ? 'text-red-600 hover:text-red-700'
+                                  : 'text-green-600 hover:text-green-700'
+                              }
+                            >
+                              <Power size={16} />
+                            </Button>
+                          )}
                           <Button
                             variant='outline'
                             size='sm'
                             onClick={() => handleDeleteUser(usuario.id)}
+                            title='Excluir usuário'
+                            className='text-red-600 hover:text-red-700'
                           >
                             <Trash2 size={16} />
                           </Button>
@@ -661,9 +788,38 @@ const Usuarios: React.FC = () => {
                     </label>
                     <Input
                       value={formData.cpf}
+                      onChange={e => {
+                        const formatted = formatCPF(e.target.value);
+                        setFormData({ ...formData, cpf: formatted });
+                      }}
+                      placeholder='000.000.000-00'
+                      maxLength={14}
+                    />
+                  </div>
+
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                      Telefone
+                    </label>
+                    <Input
+                      value={formData.telefone}
                       onChange={e =>
-                        setFormData({ ...formData, cpf: e.target.value })
+                        setFormData({ ...formData, telefone: e.target.value })
                       }
+                      placeholder='(11) 99999-9999'
+                    />
+                  </div>
+
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                      Cargo
+                    </label>
+                    <Input
+                      value={formData.cargo}
+                      onChange={e =>
+                        setFormData({ ...formData, cargo: e.target.value })
+                      }
+                      placeholder='Ex: Recepcionista, Médico, etc.'
                     />
                   </div>
 

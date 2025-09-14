@@ -16,10 +16,7 @@
   --transition-speed: 0.3s;
 }
 
-/* Tema escuro como padrão */
-html {
-  color-scheme: dark;
-}
+/* Tema escuro como padrão - será aplicado pelo ThemeProvider */
 
 html.dark {
   color-scheme: dark;
@@ -641,3 +638,10 @@ body.light-theme {
 .debug-spacing > * {
   @apply border-red-500;
 }
+
+/* ============================================================================
+   ANIMAÇÃO ECG - MONITOR CARDÍACO
+   ============================================================================ */
+
+/* Animação da linha ECG agora é controlada via JavaScript */
+/* Removidas as animações CSS infinitas - agora é progressiva e para no fim */

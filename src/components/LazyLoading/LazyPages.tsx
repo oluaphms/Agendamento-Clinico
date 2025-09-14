@@ -40,6 +40,26 @@ export const LazyConfiguracoes = createLazyComponent(
   () => import('@/pages/Configuracoes/Configuracoes'),
   { chunkName: 'configuracoes' }
 );
+export const LazyAnalytics = createLazyComponent(
+  () => import('@/pages/Analytics/Analytics'),
+  { chunkName: 'analytics' }
+);
+export const LazyRelatorios = createLazyComponent(
+  () => import('@/pages/Relatorios/Relatorios'),
+  { chunkName: 'relatorios' }
+);
+export const LazyNotificacoes = createLazyComponent(
+  () => import('@/pages/Notificacoes/Notificacoes'),
+  { chunkName: 'notificacoes' }
+);
+export const LazyWhatsApp = createLazyComponent(
+  () => import('@/pages/WhatsApp/WhatsApp'),
+  { chunkName: 'whatsapp' }
+);
+export const LazyBackup = createLazyComponent(
+  () => import('@/pages/Backup/Backup'),
+  { chunkName: 'backup' }
+);
 
 // Páginas de autenticação
 export const LazyLogin = createLazyComponent(
@@ -180,6 +200,124 @@ export const ConfiguracoesLazy = () => (
     }
   >
     <LazyConfiguracoes />
+  </LazyWrapper>
+);
+
+// Analytics com skeleton de gráficos
+export const AnalyticsLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Métricas */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <CardSkeleton key={index} />
+          ))}
+        </div>
+        {/* Gráficos */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <CardSkeleton key={index} height='300px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyAnalytics />
+  </LazyWrapper>
+);
+
+// Relatórios com skeleton de cards
+export const RelatoriosLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Filtros */}
+        <CardSkeleton height='120px' />
+        {/* Lista de relatórios */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CardSkeleton key={index} height='200px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyRelatorios />
+  </LazyWrapper>
+);
+
+// Notificações com skeleton de lista
+export const NotificacoesLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Estatísticas */}
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <CardSkeleton key={index} height='100px' />
+          ))}
+        </div>
+        {/* Filtros */}
+        <CardSkeleton height='120px' />
+        {/* Lista de notificações */}
+        <div className='space-y-4'>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <CardSkeleton key={index} height='150px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyNotificacoes />
+  </LazyWrapper>
+);
+
+// WhatsApp com skeleton de mensagens
+export const WhatsAppLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <CardSkeleton height='120px' />
+        {/* Tabs */}
+        <CardSkeleton height='60px' />
+        {/* Filtros */}
+        <CardSkeleton height='120px' />
+        {/* Lista de mensagens */}
+        <div className='space-y-4'>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <CardSkeleton key={index} height='150px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyWhatsApp />
+  </LazyWrapper>
+);
+
+// Backup com skeleton de backups
+export const BackupLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <CardSkeleton height='120px' />
+        {/* Tabs */}
+        <CardSkeleton height='60px' />
+        {/* Filtros */}
+        <CardSkeleton height='120px' />
+        {/* Lista de backups */}
+        <div className='space-y-4'>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <CardSkeleton key={index} height='200px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyBackup />
   </LazyWrapper>
 );
 

@@ -385,22 +385,104 @@ export interface Template {
 // TIPOS DE GAMIFICAÇÃO
 // ============================================================================
 
+export type AchievementCategory = 'agendamentos' | 'pacientes' | 'profissionais' | 'sistema' | 'consecutivo';
+
 export interface Achievement {
   id: string;
   name: string;
   description: string;
   icon: string;
   points: number;
-  category: string;
+  category: AchievementCategory;
+  requirement: {
+    type: 'count' | 'streak' | 'value' | 'date';
+    target: number;
+    entity?: string;
+  };
   isUnlocked: boolean;
   unlockedAt?: string;
+  progress?: number;
 }
 
 export interface UserStats {
+  userId: string;
   level: number;
   experience: number;
   points: number;
   achievements: Achievement[];
   streak: number;
   lastActivity: string;
+  totalAgendamentos: number;
+  totalPacientes: number;
+  totalProfissionais: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GamificationEvent {
+  id: string;
+  userId: string;
+  type: 'achievement_unlocked' | 'level_up' | 'points_earned';
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  userName: string;
+  level: number;
+  points: number;
+  position: number;
+  achievements: number;
+}
+
+// ============================================================================
+// TIPOS DE TEMPLATES
+// ============================================================================
+
+export type TemplateType = 'relatorio' | 'formulario' | 'email' | 'whatsapp' | 'sms' | 'documento';
+
+export interface TemplateField {
+  id: string;
+  name: string;
+  label: string;
+  type: 'text' | 'number' | 'date' | 'select' | 'textarea' | 'boolean' | 'image';
+  required: boolean;
+  defaultValue?: unknown;
+  options?: Array<{ value: string; label: string }>;
+  validation?: {
+    min?: number;
+    max?: number;
+    pattern?: string;
+    message?: string;
+  };
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  type: TemplateType;
+  category: string;
+  content: string;
+  fields: TemplateField[];
+  variables: string[];
+  isActive: boolean;
+  isPublic: boolean;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  usageCount: number;
+  tags: string[];
+}
+
+export interface TemplateInstance {
+  id: string;
+  templateId: string;
+  name: string;
+  data: Record<string, unknown>;
+  generatedContent: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
 }

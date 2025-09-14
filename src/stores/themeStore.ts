@@ -51,7 +51,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
       set({ isDark });
       html.classList.toggle('dark', isDark);
       html.setAttribute('data-theme', theme);
-      
+
       // Aplicar classes específicas para tema claro/escuro
       if (isDark) {
         body.classList.remove('light-theme');
@@ -64,7 +64,4 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   },
 }));
 
-// Inicializar tema quando o store for criado
-if (typeof window !== 'undefined') {
-  useThemeStore.getState().initializeTheme();
-}
+// Não inicializar automaticamente - será inicializado pelo ThemeProvider

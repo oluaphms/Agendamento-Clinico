@@ -1,553 +1,731 @@
 // ============================================================================
-// SERVIÇO: BackupService - Sistema de Backup Automático
+// SERVIÇO: Backup & Restore - Sistema Completo de Backup e Restauração
 // ============================================================================
-// Serviço para backup automático e manual de dados da aplicação
+// Este serviço fornece funcionalidades completas de backup e restauração
+// para garantir a segurança e integridade dos dados da clínica.
 // ============================================================================
 
 import { supabase } from '@/lib/supabase';
-import { config, devLog } from '@/config/environment';
 
 // ============================================================================
-// TIPOS E INTERFACES
+// INTERFACES E TIPOS
 // ============================================================================
 
-export interface BackupConfig {
-  enabled: boolean;
-  interval: number; // em minutos
-  retention: number; // número de backups para manter
-  tables: string[];
-  includeFiles: boolean;
-  compression: boolean;
-}
-
-export interface BackupData {
+export interface BackupInfo {
   id: string;
-  timestamp: string;
-  tables: Record<string, unknown[]>;
-  metadata: {
-    version: string;
-    userCount: number;
-    totalRecords: number;
-    size: number;
+  nome: string;
+  descricao: string;
+  tipo: 'completo' | 'incremental' | 'diferencial' | 'manual';
+  status: 'criando' | 'concluido' | 'falhou' | 'restaurando' | 'pausado';
+  dataCriacao: string;
+  dataConclusao?: string;
+  tamanho: number;
+  localizacao: 'local' | 'nuvem' | 'híbrido';
+  tabelas: string[];
+  registros: number;
+  versao: string;
+  hash: string;
+  criptografado: boolean;
+  compressao: boolean;
+  agendamento?: {
+    ativo: boolean;
+    frequencia: 'diario' | 'semanal' | 'mensal';
+    horario: string;
+    diasSemana?: number[];
+    diaMes?: number;
   };
-  files?: Record<string, string>; // base64 encoded files
+  retencao: {
+    dias: number;
+    maxBackups: number;
+  };
+  custo?: number;
+  erro?: string;
 }
 
-export interface BackupStatus {
-  isRunning: boolean;
-  lastBackup?: string;
-  nextBackup?: string;
-  totalBackups: number;
-  totalSize: number;
-  error?: string;
+export interface RestoreInfo {
+  id: string;
+  backupId: string;
+  status: 'preparando' | 'restaurando' | 'concluido' | 'falhou' | 'pausado';
+  dataInicio: string;
+  dataConclusao?: string;
+  tabelasRestauradas: string[];
+  registrosRestaurados: number;
+  progresso: number;
+  erro?: string;
+}
+
+export interface ConfiguracaoBackup {
+  ativo: boolean;
+  frequencia: 'diario' | 'semanal' | 'mensal';
+  horario: string;
+  diasSemana: number[];
+  diaMes: number;
+  retencao: {
+    dias: number;
+    maxBackups: number;
+  };
+  localizacao: {
+    local: boolean;
+    nuvem: boolean;
+    servidor: boolean;
+  };
+  criptografia: boolean;
+  compressao: boolean;
+  notificacoes: boolean;
+  emailNotificacao: string;
+  tabelasIncluidas: string[];
+  tabelasExcluidas: string[];
 }
 
 // ============================================================================
-// CONFIGURAÇÃO PADRÃO
+// CONFIGURAÇÃO
 // ============================================================================
 
-const DEFAULT_CONFIG: BackupConfig = {
-  enabled: true,
-  interval: 60, // 1 hora
-  retention: 7, // 7 backups
-  tables: [
-    'usuarios',
-    'pacientes',
-    'profissionais',
-    'servicos',
-    'agendamentos',
-    'pagamentos',
-    'notificacoes',
-    'configuracoes',
-  ],
-  includeFiles: false,
-  compression: true,
+const BACKUP_STORAGE_KEY = 'clinica_backups';
+const BACKUP_CONFIG_KEY = 'clinica_backup_config';
+
+// ============================================================================
+// FUNÇÕES PRINCIPAIS
+// ============================================================================
+
+/**
+ * Cria um novo backup
+ */
+export const criarBackup = async (
+  tipo: 'completo' | 'incremental' | 'diferencial' | 'manual',
+  configuracao: ConfiguracaoBackup
+): Promise<BackupInfo> => {
+  try {
+    const backup: BackupInfo = {
+      id: Date.now().toString(),
+      nome: `Backup ${tipo} - ${new Date().toLocaleDateString('pt-BR')}`,
+      descricao: `Backup ${tipo} criado em ${new Date().toLocaleString('pt-BR')}`,
+      tipo,
+      status: 'criando',
+      dataCriacao: new Date().toISOString(),
+      tamanho: 0,
+      localizacao: configuracao.localizacao.nuvem ? 'nuvem' : 'local',
+      tabelas: configuracao.tabelasIncluidas,
+      registros: 0,
+      versao: '2.1.0',
+      hash: '',
+      criptografado: configuracao.criptografia,
+      compressao: configuracao.compressao,
+      retencao: configuracao.retencao,
+    };
+
+    // Salvar no banco de dados
+    await salvarBackup(backup);
+
+    // Iniciar processo de backup
+    await executarBackup(backup);
+
+    return backup;
+  } catch (error) {
+    console.error('Erro ao criar backup:', error);
+    throw error;
+  }
 };
 
-// ============================================================================
-// CLASSE PRINCIPAL
-// ============================================================================
+/**
+ * Executa o processo de backup
+ */
+const executarBackup = async (backup: BackupInfo): Promise<void> => {
+  try {
+    // Simular processo de backup
+    const tabelas = backup.tabelas;
+    let totalRegistros = 0;
+    let dadosBackup: any = {};
 
-class BackupService {
-  private config: BackupConfig;
-  private intervalId: NodeJS.Timeout | null = null;
-  private status: BackupStatus = {
-    isRunning: false,
-    totalBackups: 0,
-    totalSize: 0,
-  };
-
-  constructor() {
-    this.config = { ...DEFAULT_CONFIG };
-    this.loadConfig();
-  }
-
-  // ============================================================================
-  // CONFIGURAÇÃO
-  // ============================================================================
-
-  private async loadConfig(): Promise<void> {
-    try {
-      if (config.mockDataEnabled) {
-        devLog('BackupService: Usando configuração mock');
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('configuracoes')
-        .select('backup_config')
-        .eq('chave', 'backup')
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao carregar configuração de backup:', error);
-        return;
-      }
-
-      if (data?.backup_config) {
-        this.config = { ...DEFAULT_CONFIG, ...data.backup_config };
-        devLog('BackupService: Configuração carregada:', this.config);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar configuração de backup:', error);
-    }
-  }
-
-  async updateConfig(newConfig: Partial<BackupConfig>): Promise<void> {
-    this.config = { ...this.config, ...newConfig };
-    
-    try {
-      if (config.mockDataEnabled) {
-        devLog('BackupService: Configuração atualizada (mock):', this.config);
-        return;
-      }
-
-      await supabase
-        .from('configuracoes')
-        .upsert({
-          chave: 'backup',
-          backup_config: this.config,
-          updated_at: new Date().toISOString(),
-        });
-
-      devLog('BackupService: Configuração salva no banco');
-    } catch (error) {
-      console.error('Erro ao salvar configuração de backup:', error);
-      throw error;
-    }
-  }
-
-  getConfig(): BackupConfig {
-    return { ...this.config };
-  }
-
-  // ============================================================================
-  // BACKUP MANUAL
-  // ============================================================================
-
-  async createBackup(): Promise<BackupData> {
-    if (this.status.isRunning) {
-      throw new Error('Backup já está em execução');
-    }
-
-    this.status.isRunning = true;
-    this.status.error = undefined;
-
-    try {
-      devLog('BackupService: Iniciando backup manual');
-      
-      const backupData: BackupData = {
-        id: this.generateBackupId(),
-        timestamp: new Date().toISOString(),
-        tables: {},
-        metadata: {
-          version: '2.0.0',
-          userCount: 0,
-          totalRecords: 0,
-          size: 0,
-        },
-      };
-
-      // Backup das tabelas
-      for (const table of this.config.tables) {
-        try {
-          const { data, error } = await supabase
-            .from(table)
-            .select('*');
-
-          if (error) {
-            console.warn(`Erro ao fazer backup da tabela ${table}:`, error);
-            backupData.tables[table] = [];
-          } else {
-            backupData.tables[table] = data || [];
-            backupData.metadata.totalRecords += (data || []).length;
-          }
-        } catch (error) {
-          console.warn(`Erro ao fazer backup da tabela ${table}:`, error);
-          backupData.tables[table] = [];
-        }
-      }
-
-      // Backup de arquivos (se habilitado)
-      if (this.config.includeFiles) {
-        backupData.files = await this.backupFiles();
-      }
-
-      // Calcular tamanho
-      backupData.metadata.size = this.calculateSize(backupData);
-
-      // Salvar backup
-      await this.saveBackup(backupData);
-
-      // Limpar backups antigos
-      await this.cleanupOldBackups();
-
-      this.status.lastBackup = backupData.timestamp;
-      this.status.totalBackups++;
-      this.status.totalSize += backupData.metadata.size;
-
-      devLog('BackupService: Backup concluído com sucesso');
-      return backupData;
-
-    } catch (error) {
-      this.status.error = error instanceof Error ? error.message : 'Erro desconhecido';
-      throw error;
-    } finally {
-      this.status.isRunning = false;
-    }
-  }
-
-  // ============================================================================
-  // BACKUP AUTOMÁTICO
-  // ============================================================================
-
-  startAutomaticBackup(): void {
-    if (!this.config.enabled) {
-      devLog('BackupService: Backup automático desabilitado');
-      return;
-    }
-
-    if (this.intervalId) {
-      this.stopAutomaticBackup();
-    }
-
-    const intervalMs = this.config.interval * 60 * 1000;
-    
-    this.intervalId = setInterval(async () => {
-      try {
-        await this.createBackup();
-        devLog('BackupService: Backup automático executado');
-      } catch (error) {
-        console.error('Erro no backup automático:', error);
-      }
-    }, intervalMs);
-
-    // Calcular próximo backup
-    this.status.nextBackup = new Date(Date.now() + intervalMs).toISOString();
-    
-    devLog(`BackupService: Backup automático iniciado (intervalo: ${this.config.interval}min)`);
-  }
-
-  stopAutomaticBackup(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-      this.status.nextBackup = undefined;
-      devLog('BackupService: Backup automático parado');
-    }
-  }
-
-  // ============================================================================
-  // RESTAURAÇÃO
-  // ============================================================================
-
-  async restoreBackup(backupId: string): Promise<void> {
-    if (this.status.isRunning) {
-      throw new Error('Operação já está em execução');
-    }
-
-    this.status.isRunning = true;
-
-    try {
-      devLog(`BackupService: Iniciando restauração do backup ${backupId}`);
-      
-      const backupData = await this.loadBackup(backupId);
-      
-      if (!backupData) {
-        throw new Error('Backup não encontrado');
-      }
-
-      // Restaurar tabelas
-      for (const [table, data] of Object.entries(backupData.tables)) {
-        try {
-          // Limpar tabela existente
-          await supabase.from(table).delete().neq('id', '');
-          
-          // Inserir dados do backup
-          if (Array.isArray(data) && data.length > 0) {
-            const { error } = await supabase
-              .from(table)
-              .insert(data);
-
-            if (error) {
-              console.warn(`Erro ao restaurar tabela ${table}:`, error);
-            }
-          }
-        } catch (error) {
-          console.warn(`Erro ao restaurar tabela ${table}:`, error);
-        }
-      }
-
-      // Restaurar arquivos (se existirem)
-      if (backupData.files) {
-        await this.restoreFiles(backupData.files);
-      }
-
-      devLog('BackupService: Restauração concluída com sucesso');
-
-    } catch (error) {
-      this.status.error = error instanceof Error ? error.message : 'Erro desconhecido';
-      throw error;
-    } finally {
-      this.status.isRunning = false;
-    }
-  }
-
-  // ============================================================================
-  // LISTAGEM E GERENCIAMENTO
-  // ============================================================================
-
-  async listBackups(): Promise<BackupData[]> {
-    try {
-      if (config.mockDataEnabled) {
-        return this.getMockBackups();
-      }
-
-      const { data, error } = await supabase
-        .from('backups')
-        .select('*')
-        .order('timestamp', { ascending: false });
+    // Fazer backup de cada tabela
+    for (const tabela of tabelas) {
+      const { data, error } = await supabase.from(tabela).select('*');
 
       if (error) {
-        console.error('Erro ao listar backups:', error);
-        return [];
+        throw new Error(
+          `Erro ao fazer backup da tabela ${tabela}: ${error.message}`
+        );
       }
 
-      return (data || []).map((item: any) => item.backup_data as BackupData);
-
-    } catch (error) {
-      console.error('Erro ao listar backups:', error);
-      return [];
+      dadosBackup[tabela] = data || [];
+      totalRegistros += (data || []).length;
     }
-  }
 
-  async deleteBackup(backupId: string): Promise<void> {
-    try {
-      if (config.mockDataEnabled) {
-        devLog(`BackupService: Backup ${backupId} deletado (mock)`);
-        return;
-      }
+    // Calcular hash dos dados
+    const dadosString = JSON.stringify(dadosBackup);
+    const hash = await calcularHash(dadosString);
 
-      const { error } = await supabase
-        .from('backups')
-        .delete()
-        .eq('id', backupId);
-
-      if (error) {
-        throw error;
-      }
-
-      devLog(`BackupService: Backup ${backupId} deletado`);
-
-    } catch (error) {
-      console.error('Erro ao deletar backup:', error);
-      throw error;
+    // Simular compressão se habilitada
+    let dadosComprimidos = dadosString;
+    if (backup.compressao) {
+      dadosComprimidos = await comprimirDados(dadosString);
     }
-  }
 
-  // ============================================================================
-  // UTILITÁRIOS
-  // ============================================================================
-
-  private generateBackupId(): string {
-    return `backup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  private calculateSize(data: BackupData): number {
-    return new Blob([JSON.stringify(data)]).size;
-  }
-
-  private async saveBackup(backupData: BackupData): Promise<void> {
-    try {
-      if (config.mockDataEnabled) {
-        devLog('BackupService: Backup salvo (mock)');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('backups')
-        .insert({
-          id: backupData.id,
-          backup_data: backupData,
-          timestamp: backupData.timestamp,
-          size: backupData.metadata.size,
-        });
-
-      if (error) {
-        throw error;
-      }
-
-    } catch (error) {
-      console.error('Erro ao salvar backup:', error);
-      throw error;
+    // Simular criptografia se habilitada
+    if (backup.criptografado) {
+      dadosComprimidos = await criptografarDados(dadosComprimidos);
     }
-  }
 
-  private async loadBackup(backupId: string): Promise<BackupData | null> {
-    try {
-      if (config.mockDataEnabled) {
-        const mockBackups = this.getMockBackups();
-        return mockBackups.find(b => b.id === backupId) || null;
-      }
+    // Calcular tamanho final
+    const tamanho = new Blob([dadosComprimidos]).size;
 
-      const { data, error } = await supabase
-        .from('backups')
-        .select('backup_data')
-        .eq('id', backupId)
-        .single();
-
-      if (error) {
-        return null;
-      }
-
-      return data?.backup_data as BackupData;
-
-    } catch (error) {
-      console.error('Erro ao carregar backup:', error);
-      return null;
-    }
-  }
-
-  private async cleanupOldBackups(): Promise<void> {
-    try {
-      const backups = await this.listBackups();
-      
-      if (backups.length > this.config.retention) {
-        const backupsToDelete = backups.slice(this.config.retention);
-        
-        for (const backup of backupsToDelete) {
-          await this.deleteBackup(backup.id);
-        }
-        
-        devLog(`BackupService: ${backupsToDelete.length} backups antigos removidos`);
-      }
-
-    } catch (error) {
-      console.error('Erro ao limpar backups antigos:', error);
-    }
-  }
-
-  private async backupFiles(): Promise<Record<string, string>> {
-    // Implementar backup de arquivos se necessário
-    return {};
-  }
-
-  private async restoreFiles(_files: Record<string, string>): Promise<void> {
-    // Implementar restauração de arquivos se necessário
-  }
-
-  private getMockBackups(): BackupData[] {
-    return [
-      {
-        id: 'backup_1',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        tables: {
-          usuarios: [{ id: 1, nome: 'Admin' }],
-          pacientes: [{ id: 1, nome: 'João Silva' }],
-        },
-        metadata: {
-          version: '2.0.0',
-          userCount: 1,
-          totalRecords: 2,
-          size: 1024,
-        },
-      },
-    ];
-  }
-
-  // ============================================================================
-  // STATUS E INFORMAÇÕES
-  // ============================================================================
-
-  getStatus(): BackupStatus {
-    return { ...this.status };
-  }
-
-  async getBackupStats(): Promise<{
-    totalBackups: number;
-    totalSize: number;
-    lastBackup?: string;
-    nextBackup?: string;
-  }> {
-    const backups = await this.listBackups();
-    const totalSize = backups.reduce((sum, backup) => sum + backup.metadata.size, 0);
-
-    return {
-      totalBackups: backups.length,
-      totalSize,
-      lastBackup: backups[0]?.timestamp,
-      nextBackup: this.status.nextBackup,
+    // Atualizar backup com dados finais
+    const backupAtualizado: BackupInfo = {
+      ...backup,
+      status: 'concluido',
+      dataConclusao: new Date().toISOString(),
+      tamanho,
+      registros: totalRegistros,
+      hash,
     };
+
+    await salvarBackup(backupAtualizado);
+
+    // Salvar dados do backup (em produção, salvaria em storage seguro)
+    await salvarDadosBackup(backup.id, dadosComprimidos);
+  } catch (error) {
+    console.error('Erro ao executar backup:', error);
+
+    // Atualizar status para falhou
+    const backupFalhou: BackupInfo = {
+      ...backup,
+      status: 'falhou',
+      erro: error instanceof Error ? error.message : 'Erro desconhecido',
+    };
+
+    await salvarBackup(backupFalhou);
+    throw error;
   }
+};
 
-  // ============================================================================
-  // EXPORTAÇÃO E IMPORTAÇÃO
-  // ============================================================================
-
-  async exportBackup(backupId: string): Promise<Blob> {
-    const backupData = await this.loadBackup(backupId);
-    
-    if (!backupData) {
+/**
+ * Restaura um backup
+ */
+export const restaurarBackup = async (
+  backupId: string
+): Promise<RestoreInfo> => {
+  try {
+    // Buscar backup
+    const backup = await buscarBackup(backupId);
+    if (!backup) {
       throw new Error('Backup não encontrado');
     }
 
-    const jsonString = JSON.stringify(backupData, null, 2);
-    return new Blob([jsonString], { type: 'application/json' });
-  }
+    const restore: RestoreInfo = {
+      id: Date.now().toString(),
+      backupId,
+      status: 'preparando',
+      dataInicio: new Date().toISOString(),
+      tabelasRestauradas: [],
+      registrosRestaurados: 0,
+      progresso: 0,
+    };
 
-  async importBackup(file: File): Promise<void> {
-    try {
-      const text = await file.text();
-      const backupData: BackupData = JSON.parse(text);
-      
-      // Validar estrutura do backup
-      if (!backupData.id || !backupData.timestamp || !backupData.tables) {
-        throw new Error('Arquivo de backup inválido');
+    // Salvar no banco de dados
+    await salvarRestore(restore);
+
+    // Iniciar processo de restauração
+    await executarRestore(restore, backup);
+
+    return restore;
+  } catch (error) {
+    console.error('Erro ao restaurar backup:', error);
+    throw error;
+  }
+};
+
+/**
+ * Executa o processo de restauração
+ */
+const executarRestore = async (
+  restore: RestoreInfo,
+  backup: BackupInfo
+): Promise<void> => {
+  try {
+    // Atualizar status para restaurando
+    await atualizarRestore(restore.id, { status: 'restaurando' });
+
+    // Carregar dados do backup
+    const dadosBackup = await carregarDadosBackup(backup.id);
+
+    // Descriptografar se necessário
+    let dadosDescriptografados = dadosBackup;
+    if (backup.criptografado) {
+      dadosDescriptografados = await descriptografarDados(dadosBackup);
+    }
+
+    // Descomprimir se necessário
+    let dadosDescomprimidos = dadosDescriptografados;
+    if (backup.compressao) {
+      dadosDescomprimidos = await descomprimirDados(dadosDescriptografados);
+    }
+
+    // Parse dos dados
+    const dados = JSON.parse(dadosDescomprimidos);
+
+    // Restaurar cada tabela
+    let totalRestaurados = 0;
+    const tabelasRestauradas: string[] = [];
+
+    for (const [tabela, registros] of Object.entries(dados)) {
+      if (Array.isArray(registros) && registros.length > 0) {
+        // Limpar tabela existente (cuidado em produção!)
+        await supabase.from(tabela).delete().neq('id', 0);
+
+        // Inserir dados restaurados
+        const { error } = await supabase.from(tabela).insert(registros);
+
+        if (error) {
+          throw new Error(
+            `Erro ao restaurar tabela ${tabela}: ${error.message}`
+          );
+        }
+
+        tabelasRestauradas.push(tabela);
+        totalRestaurados += registros.length;
       }
 
-      // Salvar backup importado
-      await this.saveBackup(backupData);
-      
-      devLog('BackupService: Backup importado com sucesso');
+      // Atualizar progresso
+      const progresso = Math.round(
+        (tabelasRestauradas.length / backup.tabelas.length) * 100
+      );
+      await atualizarRestore(restore.id, {
+        progresso,
+        tabelasRestauradas: [...tabelasRestauradas],
+        registrosRestaurados: totalRestaurados,
+      });
+    }
 
-    } catch (error) {
-      console.error('Erro ao importar backup:', error);
+    // Finalizar restauração
+    await atualizarRestore(restore.id, {
+      status: 'concluido',
+      dataConclusao: new Date().toISOString(),
+      progresso: 100,
+    });
+  } catch (error) {
+    console.error('Erro ao executar restauração:', error);
+
+    // Atualizar status para falhou
+    await atualizarRestore(restore.id, {
+      status: 'falhou',
+      erro: error instanceof Error ? error.message : 'Erro desconhecido',
+    });
+
+    throw error;
+  }
+};
+
+/**
+ * Salva backup no banco de dados
+ */
+const salvarBackup = async (backup: BackupInfo): Promise<void> => {
+  try {
+    const { error } = await supabase.from('backups').upsert([backup]);
+
+    if (error) {
       throw error;
     }
+  } catch (error) {
+    console.error('Erro ao salvar backup:', error);
+    throw error;
   }
-}
+};
+
+/**
+ * Busca backup por ID
+ */
+export const buscarBackup = async (id: string): Promise<BackupInfo | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('backups')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Erro ao buscar backup:', error);
+    return null;
+  }
+};
+
+/**
+ * Busca todos os backups
+ */
+export const buscarBackups = async (filtros?: {
+  status?: string;
+  tipo?: string;
+  localizacao?: string;
+  dataInicio?: string;
+  dataFim?: string;
+}): Promise<BackupInfo[]> => {
+  try {
+    let query = supabase
+      .from('backups')
+      .select('*')
+      .order('dataCriacao', { ascending: false });
+
+    if (filtros?.status) {
+      query = query.eq('status', filtros.status);
+    }
+
+    if (filtros?.tipo) {
+      query = query.eq('tipo', filtros.tipo);
+    }
+
+    if (filtros?.localizacao) {
+      query = query.eq('localizacao', filtros.localizacao);
+    }
+
+    if (filtros?.dataInicio) {
+      query = query.gte('dataCriacao', filtros.dataInicio);
+    }
+
+    if (filtros?.dataFim) {
+      query = query.lte('dataCriacao', filtros.dataFim);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao buscar backups:', error);
+    throw error;
+  }
+};
+
+/**
+ * Salva restore no banco de dados
+ */
+const salvarRestore = async (restore: RestoreInfo): Promise<void> => {
+  try {
+    const { error } = await supabase.from('restores').insert([restore]);
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao salvar restore:', error);
+    throw error;
+  }
+};
+
+/**
+ * Atualiza restore
+ */
+const atualizarRestore = async (
+  id: string,
+  updates: Partial<RestoreInfo>
+): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('restores')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar restore:', error);
+    throw error;
+  }
+};
+
+/**
+ * Busca restores
+ */
+export const buscarRestores = async (): Promise<RestoreInfo[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('restores')
+      .select('*')
+      .order('dataInicio', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Erro ao buscar restores:', error);
+    throw error;
+  }
+};
+
+/**
+ * Exclui backup
+ */
+export const excluirBackup = async (id: string): Promise<void> => {
+  try {
+    // Excluir dados do backup
+    await excluirDadosBackup(id);
+
+    // Excluir registro do banco
+    const { error } = await supabase.from('backups').delete().eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao excluir backup:', error);
+    throw error;
+  }
+};
+
+/**
+ * Download de backup
+ */
+export const downloadBackup = async (id: string): Promise<void> => {
+  try {
+    const backup = await buscarBackup(id);
+    if (!backup) {
+      throw new Error('Backup não encontrado');
+    }
+
+    // Carregar dados do backup
+    const dados = await carregarDadosBackup(id);
+
+    // Criar arquivo para download
+    const blob = new Blob([dados], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `backup_${backup.nome.replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Erro ao fazer download do backup:', error);
+    throw error;
+  }
+};
 
 // ============================================================================
-// INSTÂNCIA SINGLETON
+// FUNÇÕES DE UTILIDADE
 // ============================================================================
 
-export const backupService = new BackupService();
+/**
+ * Calcula hash dos dados
+ */
+const calcularHash = async (dados: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(dados);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
 
-// ============================================================================
-// EXPORTAÇÕES
-// ============================================================================
+/**
+ * Comprime dados
+ */
+const comprimirDados = async (dados: string): Promise<string> => {
+  // Simular compressão (em produção, usar biblioteca de compressão real)
+  return btoa(dados);
+};
 
-export {
-  BackupService,
-  DEFAULT_CONFIG,
+/**
+ * Descomprime dados
+ */
+const descomprimirDados = async (dados: string): Promise<string> => {
+  // Simular descompressão (em produção, usar biblioteca de compressão real)
+  return atob(dados);
+};
+
+/**
+ * Criptografa dados
+ */
+const criptografarDados = async (dados: string): Promise<string> => {
+  // Simular criptografia (em produção, usar biblioteca de criptografia real)
+  return btoa(dados);
+};
+
+/**
+ * Descriptografa dados
+ */
+const descriptografarDados = async (dados: string): Promise<string> => {
+  // Simular descriptografia (em produção, usar biblioteca de criptografia real)
+  return atob(dados);
+};
+
+/**
+ * Salva dados do backup
+ */
+const salvarDadosBackup = async (
+  backupId: string,
+  dados: string
+): Promise<void> => {
+  try {
+    // Em produção, salvaria em storage seguro (AWS S3, Google Cloud Storage, etc.)
+    localStorage.setItem(`${BACKUP_STORAGE_KEY}_${backupId}`, dados);
+  } catch (error) {
+    console.error('Erro ao salvar dados do backup:', error);
+    throw error;
+  }
+};
+
+/**
+ * Carrega dados do backup
+ */
+const carregarDadosBackup = async (backupId: string): Promise<string> => {
+  try {
+    // Em produção, carregaria de storage seguro
+    const dados = localStorage.getItem(`${BACKUP_STORAGE_KEY}_${backupId}`);
+    if (!dados) {
+      throw new Error('Dados do backup não encontrados');
+    }
+    return dados;
+  } catch (error) {
+    console.error('Erro ao carregar dados do backup:', error);
+    throw error;
+  }
+};
+
+/**
+ * Exclui dados do backup
+ */
+const excluirDadosBackup = async (backupId: string): Promise<void> => {
+  try {
+    // Em produção, excluiria de storage seguro
+    localStorage.removeItem(`${BACKUP_STORAGE_KEY}_${backupId}`);
+  } catch (error) {
+    console.error('Erro ao excluir dados do backup:', error);
+    throw error;
+  }
+};
+
+/**
+ * Salva configuração de backup
+ */
+export const salvarConfiguracao = async (
+  configuracao: ConfiguracaoBackup
+): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('configuracoes_backup')
+      .upsert([configuracao]);
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao salvar configuração:', error);
+    throw error;
+  }
+};
+
+/**
+ * Busca configuração de backup
+ */
+export const buscarConfiguracao =
+  async (): Promise<ConfiguracaoBackup | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('configuracoes_backup')
+        .select('*')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar configuração:', error);
+      return null;
+    }
+  };
+
+/**
+ * Gera estatísticas de backup
+ */
+export const gerarEstatisticas = async (periodo: {
+  inicio: string;
+  fim: string;
+}) => {
+  try {
+    const backups = await buscarBackups({
+      dataInicio: periodo.inicio,
+      dataFim: periodo.fim,
+    });
+
+    const estatisticas = {
+      total: backups.length,
+      concluidos: backups.filter(b => b.status === 'concluido').length,
+      falhas: backups.filter(b => b.status === 'falhou').length,
+      tamanhoTotal: backups.reduce((total, b) => total + b.tamanho, 0),
+      registrosTotal: backups.reduce((total, b) => total + b.registros, 0),
+      custoTotal: backups.reduce((total, b) => total + (b.custo || 0), 0),
+      porTipo: {
+        completo: backups.filter(b => b.tipo === 'completo').length,
+        incremental: backups.filter(b => b.tipo === 'incremental').length,
+        diferencial: backups.filter(b => b.tipo === 'diferencial').length,
+        manual: backups.filter(b => b.tipo === 'manual').length,
+      },
+      porLocalizacao: {
+        local: backups.filter(b => b.localizacao === 'local').length,
+        nuvem: backups.filter(b => b.localizacao === 'nuvem').length,
+        híbrido: backups.filter(b => b.localizacao === 'híbrido').length,
+      },
+    };
+
+    return estatisticas;
+  } catch (error) {
+    console.error('Erro ao gerar estatísticas:', error);
+    throw error;
+  }
+};
+
+/**
+ * Limpa backups antigos
+ */
+export const limparBackupsAntigos = async (): Promise<void> => {
+  try {
+    const configuracao = await buscarConfiguracao();
+    if (!configuracao) {
+      return;
+    }
+
+    const dataLimite = new Date();
+    dataLimite.setDate(dataLimite.getDate() - configuracao.retencao.dias);
+
+    const backupsAntigos = await buscarBackups({
+      dataFim: dataLimite.toISOString(),
+    });
+
+    // Excluir backups antigos
+    for (const backup of backupsAntigos) {
+      await excluirBackup(backup.id);
+    }
+
+    // Limitar número máximo de backups
+    const todosBackups = await buscarBackups();
+    if (todosBackups.length > configuracao.retencao.maxBackups) {
+      const backupsParaExcluir = todosBackups
+        .sort(
+          (a, b) =>
+            new Date(a.dataCriacao).getTime() -
+            new Date(b.dataCriacao).getTime()
+        )
+        .slice(0, todosBackups.length - configuracao.retencao.maxBackups);
+
+      for (const backup of backupsParaExcluir) {
+        await excluirBackup(backup.id);
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao limpar backups antigos:', error);
+    throw error;
+  }
 };

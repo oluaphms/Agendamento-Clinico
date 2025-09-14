@@ -558,7 +558,7 @@ export class IntegrationManager {
   async testAllIntegrations(): Promise<Record<string, boolean>> {
     const results: Record<string, boolean> = {};
     
-    for (const [id, integration] of this.integrations) {
+    for (const [id, _integration] of this.integrations) {
       results[id] = await this.testIntegration(id);
     }
 

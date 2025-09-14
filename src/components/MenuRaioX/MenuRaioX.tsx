@@ -9,12 +9,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Users, // Ícone para Pacientes e Usuários
+  Users, // Ícone para Usuários
   Settings, // Ícone para Configurações
   Calendar, // Ícone para Agenda
-  UserCheck, // Ícone para Profissionais
-  Stethoscope, // Ícone para Serviços
   Shield, // Ícone para Permissões
+  BarChart3, // Ícone para Analytics
+  FileText, // Ícone para Relatórios
+  Bell, // Ícone para Notificações
   X, // Ícone para fechar o menu
   Menu, // Ícone para o cabeçalho do menu
 } from 'lucide-react';
@@ -84,50 +85,49 @@ export default function MenuRaioX({ isOpen = false, onClose }: MenuRaioXProps) {
   // ============================================================================
 
   // Array com todos os itens disponíveis no menu
-  // Cada item contém: ícone, label, rota e roles permitidos
-  // Dashboard removido - é a página principal, não precisa estar no menu
+  // Menu reorganizado conforme solicitado - acesso liberado para todos os usuários
   const menuItems: MenuItem[] = [
     {
       icon: <Calendar size={20} />,
       label: 'Agenda',
       path: '/app/agenda',
-      roles: ['admin', 'gerente', 'recepcao', 'profissional'],
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
-      icon: <Users size={20} />,
-      label: 'Pacientes',
-      path: '/app/pacientes',
-      roles: ['admin', 'gerente', 'recepcao'],
+      icon: <BarChart3 size={20} />,
+      label: 'Analytics',
+      path: '/app/analytics',
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
-      icon: <UserCheck size={20} />,
-      label: 'Profissionais',
-      path: '/app/profissionais',
-      roles: ['admin', 'gerente'],
+      icon: <FileText size={20} />,
+      label: 'Relatórios',
+      path: '/app/relatorios',
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
-      icon: <Stethoscope size={20} />,
-      label: 'Serviços',
-      path: '/app/servicos',
-      roles: ['admin', 'gerente', 'recepcao'],
+      icon: <Bell size={20} />,
+      label: 'Notificações',
+      path: '/app/notificacoes',
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
       icon: <Users size={20} />,
       label: 'Usuários',
       path: '/app/usuarios',
-      roles: ['admin', 'desenvolvedor'],
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
       icon: <Shield size={20} />,
       label: 'Permissões',
       path: '/app/permissions',
-      roles: ['admin', 'desenvolvedor'],
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {
       icon: <Settings size={20} />,
       label: 'Configurações',
       path: '/app/configuracoes',
-      roles: ['admin'],
+      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
   ];
 
@@ -159,6 +159,11 @@ export default function MenuRaioX({ isOpen = false, onClose }: MenuRaioXProps) {
    * @param path - Caminho da rota para navegar
    */
   const handleNavigation = (path: string) => {
+    console.log('🔄 MenuRaioX - Navegando para:', path);
+    console.log('👤 Usuário atual:', user?.email);
+    console.log('📊 User metadata:', user?.user_metadata);
+    console.log('🎯 User role:', user?.user_metadata?.nivel_acesso);
+
     navigate(path);
     // Nota: Removido o fechamento automático - menu só fecha via botão do cabeçalho
   };
@@ -254,7 +259,7 @@ export default function MenuRaioX({ isOpen = false, onClose }: MenuRaioXProps) {
                   attributeName='stroke-dasharray'
                   from='0,1000'
                   to='1000,0'
-                  dur='3s'
+                  dur='6s'
                   repeatCount='indefinite'
                 />
               </path>

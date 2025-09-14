@@ -126,7 +126,16 @@ self.addEventListener('fetch', event => {
       request.url.includes('?v=') ||
       request.url.includes('?ts=') ||
       request.url.includes('?import&') ||
-      request.url.includes('&import')
+      request.url.includes('&import') ||
+      // Ignorar requisições de desenvolvimento do Vite
+      (url.hostname === 'localhost' && url.port === '5173') ||
+      // Ignorar requisições para recursos de desenvolvimento
+      request.url.includes('node_modules') ||
+      request.url.includes('src/') ||
+      request.url.includes('.tsx') ||
+      request.url.includes('.ts') ||
+      request.url.includes('.jsx') ||
+      request.url.includes('.js')
     ) {
       return;
     }
@@ -208,7 +217,14 @@ function isStaticAsset(request) {
 
 function isApiRequest(request) {
   const url = new URL(request.url);
-  return url.pathname.startsWith('/api/') || url.hostname.includes('supabase');
+  return (
+    url.pathname.startsWith('/api/') || 
+    url.hostname.includes('supabase') ||
+    url.pathname.startsWith('/rest/v1/') ||
+    url.pathname.startsWith('/auth/v1/') ||
+    url.pathname.startsWith('/storage/v1/') ||
+    url.pathname.startsWith('/realtime/v1/')
+  );
 }
 
 function isPageRequest(request) {
@@ -316,7 +332,8 @@ async function handleApiRequest(request) {
       // Só logar erro se não for erro de rede comum (503, fetch failed)
       if (
         !error.message.includes('Failed to fetch') &&
-        !error.message.includes('503')
+        !error.message.includes('503') &&
+        !error.message.includes('Service Unavailable')
       ) {
         console.warn(`Tentativa ${attempt} falhou com exceção:`, error);
       }
@@ -343,19 +360,24 @@ async function handleApiRequest(request) {
     console.error('Cache lookup failed:', cacheError);
   }
 
-  // Se não há cache e a rede falhou, retornar erro mais informativo
+  // Para erros 503 (Service Unavailable), retornar resposta mais amigável
   const errorMessage = lastError ? lastError.message : 'Network error';
+  const isServiceUnavailable = errorMessage.includes('503') || errorMessage.includes('Service Unavailable');
+  
   return new Response(
     JSON.stringify({
-      error: 'API not available offline',
-      message: errorMessage,
+      error: isServiceUnavailable ? 'Serviço temporariamente indisponível' : 'API not available offline',
+      message: isServiceUnavailable ? 'O servidor está temporariamente indisponível. Usando dados locais.' : errorMessage,
       timestamp: new Date().toISOString(),
       url: request.url,
+      offline: true,
+      fallback: true
     }),
     {
-      status: 503,
+      status: isServiceUnavailable ? 503 : 503,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
       },
     }
   );
