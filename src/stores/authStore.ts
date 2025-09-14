@@ -107,7 +107,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       // Usar banco local (se Supabase não estiver disponível ou falhou)
+      console.log('🔍 Tentando login com banco local:', { cpf, password });
       const localResult = await localDb.auth.signIn({ cpf, password });
+      console.log('🔍 Resultado do login local:', localResult);
 
       if (localResult.data.user) {
         set({

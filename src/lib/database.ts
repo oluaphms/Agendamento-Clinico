@@ -43,35 +43,39 @@ interface QueryChain {
 
 export const localDb = {
   _isLocalDb: true, // Flag para identificar banco local
-  
+
   // Função para listar usuários
   usuarios: {
     list: async () => {
       try {
         const usuarios: any[] = [];
-        
+
         // Adicionar usuários dos dados mock
         if (mockData.usuarios) {
-          usuarios.push(...mockData.usuarios.map(usuario => ({
-            id: usuario.id.toString(),
-            nome: usuario.nome,
-            cpf: usuario.cpf,
-            email: usuario.email || `${usuario.cpf}@clinica.local`,
-            nivel_acesso: usuario.nivel_acesso,
-            status: 'ativo',
-            primeiro_acesso: usuario.primeiro_acesso || false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            ultimo_acesso: new Date().toISOString(),
-          })));
+          usuarios.push(
+            ...mockData.usuarios.map(usuario => ({
+              id: usuario.id.toString(),
+              nome: usuario.nome,
+              cpf: usuario.cpf,
+              email: usuario.email || `${usuario.cpf}@clinica.local`,
+              nivel_acesso: usuario.nivel_acesso,
+              status: 'ativo',
+              primeiro_acesso: usuario.primeiro_acesso || false,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              ultimo_acesso: new Date().toISOString(),
+            }))
+          );
         }
-        
+
         // Adicionar usuários aprovados do localStorage
         const storedUsers = localStorage.getItem('pendingUsers');
         if (storedUsers) {
           const pendingUsers = JSON.parse(storedUsers);
-          const approvedUsers = pendingUsers.filter((u: any) => u.status === 'approved');
-          
+          const approvedUsers = pendingUsers.filter(
+            (u: any) => u.status === 'approved'
+          );
+
           approvedUsers.forEach((user: any) => {
             usuarios.push({
               id: user.id,
@@ -87,24 +91,30 @@ export const localDb = {
             });
           });
         }
-        
+
         console.log('Usuários listados do banco local:', usuarios.length);
         return usuarios;
       } catch (error) {
         console.error('Erro ao listar usuários do banco local:', error);
         return [];
       }
-    }
+    },
   },
-  
+
   auth: {
     signIn: async (credentials: { cpf: string; password: string }) => {
       try {
+        console.log('🔍 [Database] Iniciando autenticação:', credentials);
         // Simular autenticação com dados mock
         const cpfLimpo = credentials.cpf.replace(/[.\-\s]/g, '');
+        console.log('🔍 [Database] CPF limpo:', cpfLimpo);
 
         // Buscar usuário nos dados mock
         let usuario = mockData.usuarios.find(u => u.cpf === cpfLimpo);
+        console.log(
+          '🔍 [Database] Usuário encontrado nos dados mock:',
+          usuario
+        );
 
         // Se não encontrou nos dados mock, verificar usuários aprovados no localStorage
         if (!usuario) {
@@ -145,6 +155,12 @@ export const localDb = {
         let senhaValida = false;
         let precisaMigrar = false;
 
+        console.log('🔍 [Database] Verificando senha:', {
+          senhaDigitada: credentials.password,
+          senhaArmazenada: usuario.senha,
+          tipoSenha: typeof usuario.senha,
+        });
+
         if (usuario.senha) {
           // Usar hash se disponível
           const { isValid, needsUpdate } = verifyPassword(
@@ -153,10 +169,17 @@ export const localDb = {
           );
           senhaValida = isValid;
           precisaMigrar = needsUpdate || false;
+          console.log('🔍 [Database] Verificação com hash:', {
+            isValid,
+            needsUpdate,
+          });
         } else if (usuario.senha) {
           // Fallback para senha em texto (migração)
           senhaValida = usuario.senha === credentials.password;
           precisaMigrar = true;
+          console.log('🔍 [Database] Verificação com texto simples:', {
+            senhaValida,
+          });
         }
 
         if (!senhaValida) {
