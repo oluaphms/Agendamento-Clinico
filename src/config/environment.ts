@@ -52,7 +52,11 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
 
     // Configurações de funcionalidades
     enableMockData:
-      isDevelopment && import.meta.env.VITE_ENABLE_MOCK_DATA !== 'false',
+      (isDevelopment && import.meta.env.VITE_ENABLE_MOCK_DATA !== 'false') ||
+      (!import.meta.env.VITE_SUPABASE_URL || 
+       import.meta.env.VITE_SUPABASE_URL === 'https://seu-projeto.supabase.co' ||
+       !import.meta.env.VITE_SUPABASE_ANON_KEY ||
+       import.meta.env.VITE_SUPABASE_ANON_KEY === 'sua_chave_anonima_aqui'),
     enableDebugLogs:
       isDevelopment || import.meta.env.VITE_ENABLE_DEBUG_LOGS === 'true',
     enableErrorReporting:

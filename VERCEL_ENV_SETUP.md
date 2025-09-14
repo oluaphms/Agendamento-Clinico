@@ -1,87 +1,79 @@
 # 🔧 Configuração de Variáveis de Ambiente no Vercel
 
-## ❌ Erro Atual
+## Problema Identificado
+O projeto no Vercel está mostrando apenas "Carregando sistema clínico..." porque as variáveis de ambiente do Supabase não estão configuradas.
+
+## Solução
+
+### 1. Configurar Variáveis de Ambiente no Vercel
+
+Acesse o painel do Vercel e configure as seguintes variáveis de ambiente:
+
 ```
-Falha na implantação — A variável de ambiente "VITE_SUPABASE_URL" faz referência ao segredo "vite_supabase_url", que não existe.
-```
-
-## ✅ Solução Rápida
-
-### 1. Acesse o Painel do Vercel
-1. Vá para [vercel.com](https://vercel.com)
-2. Faça login e selecione seu projeto
-3. Vá para **Settings** → **Environment Variables**
-
-### 2. Adicione as Variáveis Obrigatórias
-
-| Nome | Valor | Ambiente |
-|------|-------|----------|
-| `VITE_SUPABASE_URL` | `https://seu-projeto.supabase.co` | Production, Preview, Development |
-| `VITE_SUPABASE_ANON_KEY` | `sua_chave_anonima_aqui` | Production, Preview, Development |
-| `VITE_APP_ENVIRONMENT` | `production` | Production |
-| `VITE_ENABLE_MOCK_DATA` | `false` | Production |
-| `VITE_ENABLE_DEBUG_LOGS` | `false` | Production |
-
-### 3. Obter Credenciais do Supabase
-
-#### Se você tem um projeto Supabase:
-1. Acesse [supabase.com](https://supabase.com)
-2. Vá para **Settings** → **API**
-3. Copie:
-   - **Project URL** → `VITE_SUPABASE_URL`
-   - **anon public** key → `VITE_SUPABASE_ANON_KEY`
-
-#### Se precisa criar um projeto:
-1. Acesse [supabase.com](https://supabase.com)
-2. Clique em **New Project**
-3. Configure:
-   - **Name**: `sistema-clinico`
-   - **Database Password**: (escolha uma senha forte)
-   - **Region**: (escolha a mais próxima)
-4. Aguarde a criação (2-3 minutos)
-5. Vá para **Settings** → **API** e copie as credenciais
-
-### 4. Configurar Banco de Dados
-
-No Supabase, vá para **SQL Editor** e execute:
-
-```sql
--- 1. Schema principal (copie o conteúdo de database/schema.sql)
--- 2. Dados básicos (copie o conteúdo de scripts/01-dados-basicos.sql)
--- 3. Permissões (copie o conteúdo de scripts/10-permissoes-dados.sql)
+VITE_APP_ENVIRONMENT=production
+VITE_APP_TITLE=Sistema Clínico
+VITE_APP_VERSION=1.0.0
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_aqui
+VITE_API_URL=https://sistema-agendamento-clinico-appverc.vercel.app/api
+VITE_ENABLE_MOCK_DATA=false
+VITE_ENABLE_DEBUG_LOGS=false
+VITE_ENABLE_ERROR_REPORTING=true
 ```
 
-### 5. Fazer Novo Deploy
+### 2. Como Configurar no Vercel
 
-```bash
-# Fazer push das alterações
-git add .
-git commit -m "fix: Remover referências a segredos inexistentes do Vercel"
-git push origin main
-```
+1. Acesse [vercel.com](https://vercel.com)
+2. Vá para o seu projeto
+3. Clique em "Settings"
+4. Clique em "Environment Variables"
+5. Adicione cada variável acima
+6. Faça um novo deploy
 
-## 🚨 Valores de Exemplo para Teste
+### 3. Configuração Local
 
-Se você quiser testar rapidamente, pode usar estes valores temporários:
+Para desenvolvimento local, crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
-VITE_SUPABASE_URL=https://exemplo.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.exemplo
-VITE_APP_ENVIRONMENT=production
+VITE_APP_ENVIRONMENT=development
+VITE_APP_TITLE=Sistema Clínico
+VITE_APP_VERSION=1.0.0
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_aqui
+VITE_API_URL=http://localhost:3000/api
 VITE_ENABLE_MOCK_DATA=true
-VITE_ENABLE_DEBUG_LOGS=false
+VITE_ENABLE_DEBUG_LOGS=true
+VITE_ENABLE_ERROR_REPORTING=false
 ```
 
-**⚠️ IMPORTANTE**: Use `VITE_ENABLE_MOCK_DATA=true` temporariamente para testar sem banco de dados.
+### 4. Credenciais do Supabase
 
-## ✅ Verificação
+Para obter as credenciais do Supabase:
 
-Após configurar:
-1. Acesse o link do deploy no Vercel
-2. Verifique se a aplicação carrega
-3. Teste o login (admin / admin123)
-4. Se usar mock data, os dados aparecerão automaticamente
+1. Acesse [supabase.com](https://supabase.com)
+2. Vá para o seu projeto
+3. Clique em "Settings" > "API"
+4. Copie:
+   - Project URL (VITE_SUPABASE_URL)
+   - Project API keys > anon public (VITE_SUPABASE_ANON_KEY)
 
----
+### 5. Teste de Login
 
-**🎯 Após seguir estes passos, o erro será resolvido e o sistema funcionará no Vercel!**
+Após configurar as variáveis:
+
+1. **Local**: Use as credenciais do banco local (CPF: 333.333.333-33, Senha: 333)
+2. **Vercel**: Use as credenciais do Supabase configuradas
+
+## Status Atual
+
+- ✅ Build funcionando (0 erros TypeScript)
+- ✅ Deploy no Vercel funcionando
+- ❌ Variáveis de ambiente não configuradas
+- ❌ Login não funcionando (sem credenciais)
+
+## Próximos Passos
+
+1. Configure as variáveis de ambiente no Vercel
+2. Faça um novo deploy
+3. Teste o login com as credenciais do Supabase
+4. Verifique se a interface carrega completamente
