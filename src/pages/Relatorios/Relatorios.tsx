@@ -11,7 +11,6 @@ import {
   FileText,
   Download,
   Calendar,
-  Filter,
   RefreshCw,
   BarChart3,
   PieChart,
@@ -26,14 +25,7 @@ import {
   Settings,
   Plus,
   Trash2,
-  Edit,
-  Save,
-  Share2,
-  Mail,
-  Printer,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useThemeStore } from '@/stores/themeStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';
@@ -198,7 +190,6 @@ const MOCK_TEMPLATES: TemplateRelatorio[] = [
 // ============================================================================
 
 const Relatorios: React.FC = () => {
-  const { isDark } = useThemeStore();
   const [loading, setLoading] = useState(false);
   const [relatorios, setRelatorios] = useState<Relatorio[]>(MOCK_RELATORIOS);
   const [templates, setTemplates] = useState<TemplateRelatorio[]>(MOCK_TEMPLATES);

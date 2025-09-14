@@ -23,8 +23,8 @@ import {
   Eye,
   Copy,
   DollarSign,
+  FileText,
 } from 'lucide-react';
-import { useThemeStore } from '@/stores/themeStore';
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';
@@ -341,7 +341,7 @@ const WhatsApp: React.FC = () => {
       case 'texto':
         return <MessageCircle className='h-4 w-4' />;
       case 'template':
-        return <Template className='h-4 w-4' />;
+        return <FileText className='h-4 w-4' />;
       case 'midia':
         return <Upload className='h-4 w-4' />;
       case 'documento':
@@ -416,7 +416,7 @@ const WhatsApp: React.FC = () => {
                 Atualizar
               </button>
               <button
-                onClick={() => setShowCriarMensagem(true)}
+                onClick={() => {}}
                 className='flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'
               >
                 <Send className='mr-2' size={16} />
@@ -440,7 +440,7 @@ const WhatsApp: React.FC = () => {
                 {
                   key: 'templates',
                   label: 'Templates',
-                  icon: Template,
+                  icon: FileText,
                   count: templates.length,
                 },
                 {
@@ -664,7 +664,7 @@ const WhatsApp: React.FC = () => {
                     Ajuste os filtros de busca ou envie sua primeira mensagem.
                   </p>
                   <button
-                    onClick={() => setShowCriarMensagem(true)}
+                    onClick={() => {}}
                     className='flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors mx-auto'
                   >
                     <Send className='mr-2' size={16} />
@@ -679,7 +679,7 @@ const WhatsApp: React.FC = () => {
         {/* Outras tabs serão implementadas em seguida */}
         {activeTab === 'templates' && (
           <div className='text-center py-12'>
-            <Template className='mx-auto h-12 w-12 text-gray-400 mb-4' />
+            <FileText className='mx-auto h-12 w-12 text-gray-400 mb-4' />
             <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
               Gerenciamento de Templates
             </h3>
