@@ -370,17 +370,6 @@ export interface ValidationResult {
 // TIPOS DE TEMPLATE
 // ============================================================================
 
-export interface Template {
-  id: string;
-  name: string;
-  type: 'email' | 'sms' | 'whatsapp';
-  content: string;
-  variables: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 // ============================================================================
 // TIPOS DE GAMIFICAÇÃO
 // ============================================================================

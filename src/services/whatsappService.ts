@@ -34,7 +34,13 @@ export interface MensagemWhatsApp {
 export interface TemplateWhatsApp {
   id: string;
   nome: string;
-  categoria: 'agendamento' | 'lembrete' | 'confirmacao' | 'cancelamento' | 'promocional' | 'informativo';
+  categoria:
+    | 'agendamento'
+    | 'lembrete'
+    | 'confirmacao'
+    | 'cancelamento'
+    | 'promocional'
+    | 'informativo';
   conteudo: string;
   variaveis: string[];
   aprovado: boolean;
@@ -51,7 +57,13 @@ export interface CampanhaWhatsApp {
   descricao: string;
   template: TemplateWhatsApp;
   destinatarios: string[];
-  status: 'rascunho' | 'agendada' | 'enviando' | 'concluida' | 'pausada' | 'cancelada';
+  status:
+    | 'rascunho'
+    | 'agendada'
+    | 'enviando'
+    | 'concluida'
+    | 'pausada'
+    | 'cancelada';
   dataCriacao: string;
   dataEnvio?: string;
   dataConclusao?: string;
@@ -85,8 +97,10 @@ export interface ConfiguracaoWhatsApp {
 // CONFIGURAÇÃO
 // ============================================================================
 
-const WHATSAPP_API_URL = process.env.REACT_APP_WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
-const WHATSAPP_PHONE_NUMBER_ID = process.env.REACT_APP_WHATSAPP_PHONE_NUMBER_ID || '';
+const WHATSAPP_API_URL =
+  process.env.REACT_APP_WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
+const WHATSAPP_PHONE_NUMBER_ID =
+  process.env.REACT_APP_WHATSAPP_PHONE_NUMBER_ID || '';
 const WHATSAPP_ACCESS_TOKEN = process.env.REACT_APP_WHATSAPP_ACCESS_TOKEN || '';
 
 // ============================================================================
@@ -103,28 +117,31 @@ export const enviarMensagemTexto = async (
   agendamentoId?: string
 ): Promise<MensagemWhatsApp> => {
   try {
-    const response = await fetch(`${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: numero,
-        type: 'text',
-        text: {
-          body: conteudo,
+    const response = await fetch(
+      `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: numero,
+          type: 'text',
+          text: {
+            body: conteudo,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Erro ao enviar mensagem: ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     // Salvar no banco de dados
     const mensagem: MensagemWhatsApp = {
       id: data.messages[0].id,
@@ -158,40 +175,43 @@ export const enviarMensagemTemplate = async (
   agendamentoId?: string
 ): Promise<MensagemWhatsApp> => {
   try {
-    const response = await fetch(`${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: numero,
-        type: 'template',
-        template: {
-          name: templateId,
-          language: {
-            code: 'pt_BR',
-          },
-          components: [
-            {
-              type: 'body',
-              parameters: Object.values(variaveis).map(valor => ({
-                type: 'text',
-                text: valor,
-              })),
-            },
-          ],
+    const response = await fetch(
+      `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: numero,
+          type: 'template',
+          template: {
+            name: templateId,
+            language: {
+              code: 'pt_BR',
+            },
+            components: [
+              {
+                type: 'body',
+                parameters: Object.values(variaveis).map(valor => ({
+                  type: 'text',
+                  text: valor,
+                })),
+              },
+            ],
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Erro ao enviar template: ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     const mensagem: MensagemWhatsApp = {
       id: data.messages[0].id,
       numero,
@@ -226,29 +246,35 @@ export const enviarMensagemMidia = async (
   agendamentoId?: string
 ): Promise<MensagemWhatsApp> => {
   try {
-    const response = await fetch(`${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: numero,
-        type,
-        [tipo]: {
-          link: midiaUrl,
-          caption: caption || '',
+    const messageBody: any = {
+      messaging_product: 'whatsapp',
+      to: numero,
+      type: tipo,
+    };
+
+    messageBody[tipo] = {
+      link: midiaUrl,
+      caption: caption || '',
+    };
+
+    const response = await fetch(
+      `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify(messageBody),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Erro ao enviar mídia: ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     const mensagem: MensagemWhatsApp = {
       id: data.messages[0].id,
       numero,
@@ -274,7 +300,9 @@ export const enviarMensagemMidia = async (
 /**
  * Salva mensagem no banco de dados
  */
-export const salvarMensagem = async (mensagem: MensagemWhatsApp): Promise<void> => {
+export const salvarMensagem = async (
+  mensagem: MensagemWhatsApp
+): Promise<void> => {
   try {
     const { error } = await supabase
       .from('mensagens_whatsapp')
@@ -292,15 +320,13 @@ export const salvarMensagem = async (mensagem: MensagemWhatsApp): Promise<void> 
 /**
  * Busca mensagens do banco de dados
  */
-export const buscarMensagens = async (
-  filtros?: {
-    status?: string;
-    tipo?: string;
-    dataInicio?: string;
-    dataFim?: string;
-    pacienteId?: string;
-  }
-): Promise<MensagemWhatsApp[]> => {
+export const buscarMensagens = async (filtros?: {
+  status?: string;
+  tipo?: string;
+  dataInicio?: string;
+  dataFim?: string;
+  pacienteId?: string;
+}): Promise<MensagemWhatsApp[]> => {
   try {
     let query = supabase
       .from('mensagens_whatsapp')
@@ -343,7 +369,9 @@ export const buscarMensagens = async (
 /**
  * Cria um novo template
  */
-export const criarTemplate = async (template: Omit<TemplateWhatsApp, 'id' | 'dataCriacao' | 'uso'>): Promise<TemplateWhatsApp> => {
+export const criarTemplate = async (
+  template: Omit<TemplateWhatsApp, 'id' | 'dataCriacao' | 'uso'>
+): Promise<TemplateWhatsApp> => {
   try {
     const novoTemplate: TemplateWhatsApp = {
       ...template,
@@ -391,7 +419,18 @@ export const buscarTemplates = async (): Promise<TemplateWhatsApp[]> => {
 /**
  * Cria uma nova campanha
  */
-export const criarCampanha = async (campanha: Omit<CampanhaWhatsApp, 'id' | 'dataCriacao' | 'totalEnviadas' | 'totalEntregues' | 'totalLidas' | 'totalFalhas' | 'custoTotal'>): Promise<CampanhaWhatsApp> => {
+export const criarCampanha = async (
+  campanha: Omit<
+    CampanhaWhatsApp,
+    | 'id'
+    | 'dataCriacao'
+    | 'totalEnviadas'
+    | 'totalEntregues'
+    | 'totalLidas'
+    | 'totalFalhas'
+    | 'custoTotal'
+  >
+): Promise<CampanhaWhatsApp> => {
   try {
     const novaCampanha: CampanhaWhatsApp = {
       ...campanha,
@@ -486,7 +525,6 @@ export const executarCampanha = async (campanhaId: string): Promise<void> => {
         custoTotal,
       })
       .eq('id', campanhaId);
-
   } catch (error) {
     console.error('Erro ao executar campanha:', error);
     throw error;
@@ -517,7 +555,9 @@ export const buscarCampanhas = async (): Promise<CampanhaWhatsApp[]> => {
 /**
  * Atualiza configurações do WhatsApp
  */
-export const atualizarConfiguracao = async (configuracao: ConfiguracaoWhatsApp): Promise<void> => {
+export const atualizarConfiguracao = async (
+  configuracao: ConfiguracaoWhatsApp
+): Promise<void> => {
   try {
     const { error } = await supabase
       .from('configuracoes_whatsapp')
@@ -535,23 +575,24 @@ export const atualizarConfiguracao = async (configuracao: ConfiguracaoWhatsApp):
 /**
  * Busca configurações do WhatsApp
  */
-export const buscarConfiguracao = async (): Promise<ConfiguracaoWhatsApp | null> => {
-  try {
-    const { data, error } = await supabase
-      .from('configuracoes_whatsapp')
-      .select('*')
-      .single();
+export const buscarConfiguracao =
+  async (): Promise<ConfiguracaoWhatsApp | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('configuracoes_whatsapp')
+        .select('*')
+        .single();
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar configuração:', error);
+      return null;
     }
-
-    return data;
-  } catch (error) {
-    console.error('Erro ao buscar configuração:', error);
-    return null;
-  }
-};
+  };
 
 /**
  * Processa webhook do WhatsApp
@@ -569,7 +610,7 @@ export const processarWebhook = async (webhookData: any): Promise<void> => {
                 await processarMensagemRecebida(message);
               }
             }
-            
+
             if (change.value?.statuses) {
               for (const status of change.value.statuses) {
                 // Atualizar status da mensagem
@@ -612,22 +653,26 @@ const processarMensagemRecebida = async (message: any): Promise<void> => {
 /**
  * Atualiza status da mensagem
  */
-const atualizarStatusMensagem = async (messageId: string, status: string): Promise<void> => {
+const atualizarStatusMensagem = async (
+  messageId: string,
+  status: string
+): Promise<void> => {
   try {
     const statusMap: Record<string, string> = {
-      'sent': 'enviada',
-      'delivered': 'entregue',
-      'read': 'lida',
-      'failed': 'falhou',
+      sent: 'enviada',
+      delivered: 'entregue',
+      read: 'lida',
+      failed: 'falhou',
     };
 
     const novoStatus = statusMap[status] || 'pendente';
 
     await supabase
       .from('mensagens_whatsapp')
-      .update({ 
+      .update({
         status: novoStatus,
-        dataEntrega: status === 'delivered' ? new Date().toISOString() : undefined,
+        dataEntrega:
+          status === 'delivered' ? new Date().toISOString() : undefined,
         dataLeitura: status === 'read' ? new Date().toISOString() : undefined,
       })
       .eq('id', messageId);
@@ -646,7 +691,7 @@ const atualizarStatusMensagem = async (messageId: string, status: string): Promi
 export const validarNumeroWhatsApp = (numero: string): boolean => {
   // Remove caracteres não numéricos
   const numeroLimpo = numero.replace(/\D/g, '');
-  
+
   // Verifica se tem 10 ou 11 dígitos (com DDD)
   return numeroLimpo.length >= 10 && numeroLimpo.length <= 11;
 };
@@ -656,19 +701,22 @@ export const validarNumeroWhatsApp = (numero: string): boolean => {
  */
 export const formatarNumeroWhatsApp = (numero: string): string => {
   const numeroLimpo = numero.replace(/\D/g, '');
-  
+
   // Adiciona código do país se necessário
   if (numeroLimpo.length === 10 || numeroLimpo.length === 11) {
     return `55${numeroLimpo}`;
   }
-  
+
   return numeroLimpo;
 };
 
 /**
  * Gera estatísticas do WhatsApp
  */
-export const gerarEstatisticas = async (periodo: { inicio: string; fim: string }) => {
+export const gerarEstatisticas = async (periodo: {
+  inicio: string;
+  fim: string;
+}) => {
   try {
     const mensagens = await buscarMensagens({
       dataInicio: periodo.inicio,

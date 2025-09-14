@@ -1,62 +1,79 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Template, TemplateInstance, TemplateField, TemplateType } from '@/types/global';
+import { Template, TemplateInstance, TemplateType } from '@/types/global';
 import toast from 'react-hot-toast';
 
 interface TemplateState {
   // Estado dos templates
   templates: Template[];
   instances: TemplateInstance[];
-  
+
   // Estados de loading
   loading: boolean;
   error: string | null;
-  
+
   // Filtros e busca
   searchQuery: string;
   selectedCategory: string;
   selectedType: TemplateType | 'all';
-  
+
   // Métodos de templates
   loadTemplates: () => Promise<void>;
-  createTemplate: (template: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>) => Promise<void>;
+  createTemplate: (
+    template: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+  ) => Promise<void>;
   updateTemplate: (id: string, updates: Partial<Template>) => Promise<void>;
   deleteTemplate: (id: string) => Promise<void>;
   duplicateTemplate: (id: string) => Promise<void>;
-  
+
   // Métodos de instâncias
-  createInstance: (templateId: string, data: Record<string, unknown>) => Promise<void>;
-  updateInstance: (id: string, updates: Partial<TemplateInstance>) => Promise<void>;
+  createInstance: (
+    templateId: string,
+    data: Record<string, unknown>
+  ) => Promise<void>;
+  updateInstance: (
+    id: string,
+    updates: Partial<TemplateInstance>
+  ) => Promise<void>;
   deleteInstance: (id: string) => Promise<void>;
-  
+
   // Métodos de busca e filtro
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (category: string) => void;
   setSelectedType: (type: TemplateType | 'all') => void;
   getFilteredTemplates: () => Template[];
-  
+
   // Métodos de categorias
   getCategories: () => string[];
   getTypes: () => TemplateType[];
-  
+
   // Métodos de template específicos
   getTemplateById: (id: string) => Template | undefined;
   getInstancesByTemplate: (templateId: string) => TemplateInstance[];
-  
+
   // Métodos de geração de conteúdo
-  generateContent: (template: Template, data: Record<string, unknown>) => string;
-  validateTemplateData: (template: Template, data: Record<string, unknown>) => { isValid: boolean; errors: string[] };
-  
+  generateContent: (
+    template: Template,
+    data: Record<string, unknown>
+  ) => string;
+  validateTemplateData: (
+    template: Template,
+    data: Record<string, unknown>
+  ) => { isValid: boolean; errors: string[] };
+
   // Métodos de importação/exportação
   exportTemplate: (id: string) => string;
   importTemplate: (templateData: string) => Promise<void>;
-  
+
   // Reset
   resetTemplates: () => void;
 }
 
 // Templates padrão do sistema
-const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>[] = [
+const DEFAULT_TEMPLATES: Omit<
+  Template,
+  'id' | 'createdAt' | 'updatedAt' | 'usageCount'
+>[] = [
   {
     name: 'Relatório de Agendamentos',
     description: 'Relatório padrão para agendamentos do dia',
@@ -119,14 +136,14 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Data de Geração',
         type: 'date',
         required: true,
-        defaultValue: new Date().toISOString().split('T')[0]
+        defaultValue: new Date().toISOString().split('T')[0],
       },
       {
         id: 'usuarioNome',
         name: 'usuarioNome',
         label: 'Nome do Usuário',
         type: 'text',
-        required: true
+        required: true,
       },
       {
         id: 'totalAgendamentos',
@@ -134,7 +151,7 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Total de Agendamentos',
         type: 'number',
         required: true,
-        defaultValue: 0
+        defaultValue: 0,
       },
       {
         id: 'agendados',
@@ -142,7 +159,7 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Agendados',
         type: 'number',
         required: true,
-        defaultValue: 0
+        defaultValue: 0,
       },
       {
         id: 'confirmados',
@@ -150,7 +167,7 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Confirmados',
         type: 'number',
         required: true,
-        defaultValue: 0
+        defaultValue: 0,
       },
       {
         id: 'realizados',
@@ -158,7 +175,7 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Realizados',
         type: 'number',
         required: true,
-        defaultValue: 0
+        defaultValue: 0,
       },
       {
         id: 'cancelados',
@@ -166,14 +183,23 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Cancelados',
         type: 'number',
         required: true,
-        defaultValue: 0
-      }
+        defaultValue: 0,
+      },
     ],
-    variables: ['dataGeracao', 'usuarioNome', 'totalAgendamentos', 'agendados', 'confirmados', 'realizados', 'cancelados', 'agendamentos'],
+    variables: [
+      'dataGeracao',
+      'usuarioNome',
+      'totalAgendamentos',
+      'agendados',
+      'confirmados',
+      'realizados',
+      'cancelados',
+      'agendamentos',
+    ],
     isActive: true,
     isPublic: true,
     createdBy: 'system',
-    tags: ['relatório', 'agendamentos', 'padrão']
+    tags: ['relatório', 'agendamentos', 'padrão'],
   },
   {
     name: 'Formulário de Paciente',
@@ -242,7 +268,7 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Nome Completo',
         type: 'text',
         required: true,
-        validation: { min: 3, max: 100 }
+        validation: { min: 3, max: 100 },
       },
       {
         id: 'cpf',
@@ -250,28 +276,28 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'CPF',
         type: 'text',
         required: true,
-        validation: { pattern: '\\d{11}', message: 'CPF deve ter 11 dígitos' }
+        validation: { pattern: '\\d{11}', message: 'CPF deve ter 11 dígitos' },
       },
       {
         id: 'telefone',
         name: 'telefone',
         label: 'Telefone',
-        type: 'tel',
-        required: true
+        type: 'text',
+        required: true,
       },
       {
         id: 'email',
         name: 'email',
         label: 'E-mail',
         type: 'text',
-        required: false
+        required: false,
       },
       {
         id: 'dataNascimento',
         name: 'dataNascimento',
         label: 'Data de Nascimento',
         type: 'date',
-        required: true
+        required: true,
       },
       {
         id: 'genero',
@@ -282,29 +308,38 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         options: [
           { value: 'masculino', label: 'Masculino' },
           { value: 'feminino', label: 'Feminino' },
-          { value: 'outro', label: 'Outro' }
-        ]
+          { value: 'outro', label: 'Outro' },
+        ],
       },
       {
         id: 'endereco',
         name: 'endereco',
         label: 'Endereço',
         type: 'text',
-        required: false
+        required: false,
       },
       {
         id: 'observacoes',
         name: 'observacoes',
         label: 'Observações',
         type: 'textarea',
-        required: false
-      }
+        required: false,
+      },
     ],
-    variables: ['nome', 'cpf', 'telefone', 'email', 'dataNascimento', 'genero', 'endereco', 'observacoes'],
+    variables: [
+      'nome',
+      'cpf',
+      'telefone',
+      'email',
+      'dataNascimento',
+      'genero',
+      'endereco',
+      'observacoes',
+    ],
     isActive: true,
     isPublic: true,
     createdBy: 'system',
-    tags: ['formulário', 'paciente', 'cadastro']
+    tags: ['formulário', 'paciente', 'cadastro'],
   },
   {
     name: 'Mensagem WhatsApp - Lembrete',
@@ -339,50 +374,50 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Nome da Clínica',
         type: 'text',
         required: true,
-        defaultValue: 'Sistema de Gestão de Clínica'
+        defaultValue: 'Sistema de Gestão de Clínica',
       },
       {
         id: 'pacienteNome',
         name: 'pacienteNome',
         label: 'Nome do Paciente',
         type: 'text',
-        required: true
+        required: true,
       },
       {
         id: 'dataAgendamento',
         name: 'dataAgendamento',
         label: 'Data do Agendamento',
         type: 'date',
-        required: true
+        required: true,
       },
       {
         id: 'horaAgendamento',
         name: 'horaAgendamento',
         label: 'Hora do Agendamento',
         type: 'text',
-        required: true
+        required: true,
       },
       {
         id: 'profissionalNome',
         name: 'profissionalNome',
         label: 'Nome do Profissional',
         type: 'text',
-        required: true
+        required: true,
       },
       {
         id: 'servicoNome',
         name: 'servicoNome',
         label: 'Nome do Serviço',
         type: 'text',
-        required: true
+        required: true,
       },
       {
         id: 'telefoneClinica',
         name: 'telefoneClinica',
         label: 'Telefone da Clínica',
-        type: 'tel',
+        type: 'text',
         required: false,
-        defaultValue: '(11) 99999-9999'
+        defaultValue: '(11) 99999-9999',
       },
       {
         id: 'siteClinica',
@@ -390,15 +425,24 @@ const DEFAULT_TEMPLATES: Omit<Template, 'id' | 'createdAt' | 'updatedAt' | 'usag
         label: 'Site da Clínica',
         type: 'text',
         required: false,
-        defaultValue: 'www.clinica.com.br'
-      }
+        defaultValue: 'www.clinica.com.br',
+      },
     ],
-    variables: ['clinicaNome', 'pacienteNome', 'dataAgendamento', 'horaAgendamento', 'profissionalNome', 'servicoNome', 'telefoneClinica', 'siteClinica'],
+    variables: [
+      'clinicaNome',
+      'pacienteNome',
+      'dataAgendamento',
+      'horaAgendamento',
+      'profissionalNome',
+      'servicoNome',
+      'telefoneClinica',
+      'siteClinica',
+    ],
     isActive: true,
     isPublic: true,
     createdBy: 'system',
-    tags: ['whatsapp', 'lembrete', 'agendamento']
-  }
+    tags: ['whatsapp', 'lembrete', 'agendamento'],
+  },
 ];
 
 export const useTemplateStore = create<TemplateState>()(
@@ -415,14 +459,14 @@ export const useTemplateStore = create<TemplateState>()(
       loadTemplates: async () => {
         try {
           set({ loading: true, error: null });
-          
+
           // Carregar templates do localStorage
           const storedTemplates = localStorage.getItem('templates');
           const storedInstances = localStorage.getItem('template_instances');
-          
+
           let templates: Template[];
           let instances: TemplateInstance[];
-          
+
           if (storedTemplates) {
             templates = JSON.parse(storedTemplates);
           } else {
@@ -432,48 +476,50 @@ export const useTemplateStore = create<TemplateState>()(
               id: `template_${index + 1}`,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
-              usageCount: 0
+              usageCount: 0,
             }));
-            
+
             // Salvar templates padrão
             localStorage.setItem('templates', JSON.stringify(templates));
           }
-          
+
           instances = storedInstances ? JSON.parse(storedInstances) : [];
-          
+
           set({
             templates,
             instances,
-            loading: false
+            loading: false,
           });
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar templates';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao carregar templates';
           set({ error: errorMessage, loading: false });
           console.error('Erro ao carregar templates:', error);
         }
       },
 
-      createTemplate: async (templateData) => {
+      createTemplate: async templateData => {
         try {
           const { templates } = get();
-          
+
           const newTemplate: Template = {
             ...templateData,
             id: `template_${Date.now()}`,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            usageCount: 0
+            usageCount: 0,
           };
-          
+
           const updatedTemplates = [...templates, newTemplate];
           set({ templates: updatedTemplates });
           localStorage.setItem('templates', JSON.stringify(updatedTemplates));
-          
+
           toast.success('Template criado com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao criar template';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro ao criar template';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
@@ -482,68 +528,74 @@ export const useTemplateStore = create<TemplateState>()(
       updateTemplate: async (id, updates) => {
         try {
           const { templates } = get();
-          
+
           const updatedTemplates = templates.map(template =>
             template.id === id
               ? { ...template, ...updates, updatedAt: new Date().toISOString() }
               : template
           );
-          
+
           set({ templates: updatedTemplates });
           localStorage.setItem('templates', JSON.stringify(updatedTemplates));
-          
+
           toast.success('Template atualizado com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar template';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao atualizar template';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
       },
 
-      deleteTemplate: async (id) => {
+      deleteTemplate: async id => {
         try {
           const { templates } = get();
-          
-          const updatedTemplates = templates.filter(template => template.id !== id);
+
+          const updatedTemplates = templates.filter(
+            template => template.id !== id
+          );
           set({ templates: updatedTemplates });
           localStorage.setItem('templates', JSON.stringify(updatedTemplates));
-          
+
           toast.success('Template excluído com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao excluir template';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro ao excluir template';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
       },
 
-      duplicateTemplate: async (id) => {
+      duplicateTemplate: async id => {
         try {
           const { templates } = get();
           const originalTemplate = templates.find(t => t.id === id);
-          
+
           if (!originalTemplate) {
             throw new Error('Template não encontrado');
           }
-          
+
           const duplicatedTemplate: Template = {
             ...originalTemplate,
             id: `template_${Date.now()}`,
             name: `${originalTemplate.name} (Cópia)`,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            usageCount: 0
+            usageCount: 0,
           };
-          
+
           const updatedTemplates = [...templates, duplicatedTemplate];
           set({ templates: updatedTemplates });
           localStorage.setItem('templates', JSON.stringify(updatedTemplates));
-          
+
           toast.success('Template duplicado com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao duplicar template';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao duplicar template';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
@@ -553,20 +605,20 @@ export const useTemplateStore = create<TemplateState>()(
         try {
           const { instances, templates } = get();
           const template = templates.find(t => t.id === templateId);
-          
+
           if (!template) {
             throw new Error('Template não encontrado');
           }
-          
+
           // Validar dados
           const validation = get().validateTemplateData(template, data);
           if (!validation.isValid) {
             throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
           }
-          
+
           // Gerar conteúdo
           const generatedContent = get().generateContent(template, data);
-          
+
           const newInstance: TemplateInstance = {
             id: `instance_${Date.now()}`,
             templateId,
@@ -575,20 +627,25 @@ export const useTemplateStore = create<TemplateState>()(
             generatedContent,
             createdBy: 'current_user', // Em produção, usar ID do usuário logado
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           };
-          
+
           const updatedInstances = [...instances, newInstance];
           set({ instances: updatedInstances });
-          localStorage.setItem('template_instances', JSON.stringify(updatedInstances));
-          
+          localStorage.setItem(
+            'template_instances',
+            JSON.stringify(updatedInstances)
+          );
+
           // Incrementar contador de uso
-          await get().updateTemplate(templateId, { usageCount: template.usageCount + 1 });
-          
+          await get().updateTemplate(templateId, {
+            usageCount: template.usageCount + 1,
+          });
+
           toast.success('Instância criada com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao criar instância';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro ao criar instância';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
@@ -597,58 +654,79 @@ export const useTemplateStore = create<TemplateState>()(
       updateInstance: async (id, updates) => {
         try {
           const { instances } = get();
-          
+
           const updatedInstances = instances.map(instance =>
             instance.id === id
               ? { ...instance, ...updates, updatedAt: new Date().toISOString() }
               : instance
           );
-          
+
           set({ instances: updatedInstances });
-          localStorage.setItem('template_instances', JSON.stringify(updatedInstances));
-          
+          localStorage.setItem(
+            'template_instances',
+            JSON.stringify(updatedInstances)
+          );
+
           toast.success('Instância atualizada com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar instância';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao atualizar instância';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
       },
 
-      deleteInstance: async (id) => {
+      deleteInstance: async id => {
         try {
           const { instances } = get();
-          
-          const updatedInstances = instances.filter(instance => instance.id !== id);
+
+          const updatedInstances = instances.filter(
+            instance => instance.id !== id
+          );
           set({ instances: updatedInstances });
-          localStorage.setItem('template_instances', JSON.stringify(updatedInstances));
-          
+          localStorage.setItem(
+            'template_instances',
+            JSON.stringify(updatedInstances)
+          );
+
           toast.success('Instância excluída com sucesso!');
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao excluir instância';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao excluir instância';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
       },
 
-      setSearchQuery: (query) => set({ searchQuery: query }),
-      setSelectedCategory: (category) => set({ selectedCategory: category }),
-      setSelectedType: (type) => set({ selectedType: type }),
+      setSearchQuery: query => set({ searchQuery: query }),
+      setSelectedCategory: category => set({ selectedCategory: category }),
+      setSelectedType: type => set({ selectedType: type }),
 
       getFilteredTemplates: () => {
-        const { templates, searchQuery, selectedCategory, selectedType } = get();
-        
+        const { templates, searchQuery, selectedCategory, selectedType } =
+          get();
+
         return templates.filter(template => {
-          const matchesSearch = !searchQuery || 
+          const matchesSearch =
+            !searchQuery ||
             template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            template.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-          
-          const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
-          const matchesType = selectedType === 'all' || template.type === selectedType;
-          
+            template.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            template.tags.some(tag =>
+              tag.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+          const matchesCategory =
+            selectedCategory === 'all' ||
+            template.category === selectedCategory;
+          const matchesType =
+            selectedType === 'all' || template.type === selectedType;
+
           return matchesSearch && matchesCategory && matchesType;
         });
       },
@@ -665,117 +743,142 @@ export const useTemplateStore = create<TemplateState>()(
         return types.sort();
       },
 
-      getTemplateById: (id) => {
+      getTemplateById: id => {
         const { templates } = get();
         return templates.find(t => t.id === id);
       },
 
-      getInstancesByTemplate: (templateId) => {
+      getInstancesByTemplate: templateId => {
         const { instances } = get();
         return instances.filter(i => i.templateId === templateId);
       },
 
       generateContent: (template, data) => {
         let content = template.content;
-        
+
         // Substituir variáveis simples {{variavel}}
         template.variables.forEach(variable => {
           const value = data[variable] || '';
           const regex = new RegExp(`{{${variable}}}`, 'g');
           content = content.replace(regex, String(value));
         });
-        
+
         // Processar loops {{#each array}}...{{/each}}
-        content = content.replace(/\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayName, loopContent) => {
-          const array = data[arrayName] as unknown[];
-          if (!Array.isArray(array)) return '';
-          
-          return array.map(item => {
-            let itemContent = loopContent;
-            Object.entries(item).forEach(([key, value]) => {
-              const regex = new RegExp(`{{${key}}}`, 'g');
-              itemContent = itemContent.replace(regex, String(value));
-            });
-            return itemContent;
-          }).join('');
-        });
-        
+        content = content.replace(
+          /\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g,
+          (_, arrayName, loopContent) => {
+            const array = data[arrayName] as unknown[];
+            if (!Array.isArray(array)) return '';
+
+            return array
+              .map(item => {
+                let itemContent = loopContent;
+                if (typeof item === 'object' && item !== null) {
+                  Object.entries(item).forEach(([key, value]) => {
+                    const regex = new RegExp(`{{${key}}}`, 'g');
+                    itemContent = itemContent.replace(regex, String(value));
+                  });
+                }
+                return itemContent;
+              })
+              .join('');
+          }
+        );
+
         // Processar condicionais {{#if condition}}...{{/if}}
-        content = content.replace(/\{\{#if\s+\(eq\s+(\w+)\s+"([^"]+)"\)\s*\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, variable, expectedValue, conditionalContent) => {
-          const actualValue = data[variable];
-          return actualValue === expectedValue ? conditionalContent : '';
-        });
-        
+        content = content.replace(
+          /\{\{#if\s+\(eq\s+(\w+)\s+"([^"]+)"\)\s*\}\}([\s\S]*?)\{\{\/if\}\}/g,
+          (_, variable, expectedValue, conditionalContent) => {
+            const actualValue = data[variable];
+            return actualValue === expectedValue ? conditionalContent : '';
+          }
+        );
+
         return content;
       },
 
       validateTemplateData: (template, data) => {
         const errors: string[] = [];
-        
+
         template.fields.forEach(field => {
           const value = data[field.name];
-          
+
           if (field.required && (!value || String(value).trim() === '')) {
             errors.push(`${field.label} é obrigatório`);
             return;
           }
-          
+
           if (value && field.validation) {
             const stringValue = String(value);
-            
-            if (field.validation.min && stringValue.length < field.validation.min) {
-              errors.push(`${field.label} deve ter pelo menos ${field.validation.min} caracteres`);
+
+            if (
+              field.validation.min &&
+              stringValue.length < field.validation.min
+            ) {
+              errors.push(
+                `${field.label} deve ter pelo menos ${field.validation.min} caracteres`
+              );
             }
-            
-            if (field.validation.max && stringValue.length > field.validation.max) {
-              errors.push(`${field.label} deve ter no máximo ${field.validation.max} caracteres`);
+
+            if (
+              field.validation.max &&
+              stringValue.length > field.validation.max
+            ) {
+              errors.push(
+                `${field.label} deve ter no máximo ${field.validation.max} caracteres`
+              );
             }
-            
+
             if (field.validation.pattern) {
               const regex = new RegExp(field.validation.pattern);
               if (!regex.test(stringValue)) {
-                errors.push(field.validation.message || `${field.label} tem formato inválido`);
+                errors.push(
+                  field.validation.message ||
+                    `${field.label} tem formato inválido`
+                );
               }
             }
           }
         });
-        
+
         return {
           isValid: errors.length === 0,
-          errors
+          errors,
         };
       },
 
-      exportTemplate: (id) => {
+      exportTemplate: id => {
         const { templates } = get();
         const template = templates.find(t => t.id === id);
-        
+
         if (!template) {
           throw new Error('Template não encontrado');
         }
-        
+
         return JSON.stringify(template, null, 2);
       },
 
-      importTemplate: async (templateData) => {
+      importTemplate: async templateData => {
         try {
           const template = JSON.parse(templateData) as Template;
-          
+
           // Validar estrutura do template
           if (!template.name || !template.type || !template.content) {
             throw new Error('Template inválido: campos obrigatórios ausentes');
           }
-          
+
           // Gerar novo ID
           template.id = `template_${Date.now()}`;
           template.createdAt = new Date().toISOString();
           template.updatedAt = new Date().toISOString();
           template.usageCount = 0;
-          
+
           await get().createTemplate(template);
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao importar template';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao importar template';
           set({ error: errorMessage });
           toast.error(errorMessage);
         }
@@ -789,15 +892,15 @@ export const useTemplateStore = create<TemplateState>()(
           error: null,
           searchQuery: '',
           selectedCategory: 'all',
-          selectedType: 'all'
+          selectedType: 'all',
         });
-      }
+      },
     }),
     {
       name: 'template-storage',
-      partialize: (state) => ({
+      partialize: () => ({
         // Não persistir estados temporários
-      })
+      }),
     }
   )
 );

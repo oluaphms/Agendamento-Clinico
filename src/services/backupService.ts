@@ -82,7 +82,6 @@ export interface ConfiguracaoBackup {
 // ============================================================================
 
 const BACKUP_STORAGE_KEY = 'clinica_backups';
-const BACKUP_CONFIG_KEY = 'clinica_backup_config';
 
 // ============================================================================
 // FUNÇÕES PRINCIPAIS

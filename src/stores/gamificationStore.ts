@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UserStats, Achievement, GamificationEvent, LeaderboardEntry, AchievementCategory } from '@/types/global';
+import {
+  UserStats,
+  Achievement,
+  GamificationEvent,
+  LeaderboardEntry,
+  AchievementCategory,
+} from '@/types/global';
 import toast from 'react-hot-toast';
 
 interface GamificationState {
@@ -9,43 +15,54 @@ interface GamificationState {
   achievements: Achievement[];
   events: GamificationEvent[];
   leaderboard: LeaderboardEntry[];
-  
+
   // Estados de loading
   loading: boolean;
   error: string | null;
-  
+
   // Métodos de gamificação
   initializeUserStats: (userId: string) => Promise<void>;
   addPoints: (points: number, reason: string) => Promise<void>;
-  checkAchievements: (action: string, data?: Record<string, unknown>) => Promise<void>;
+  checkAchievements: (
+    action: string,
+    data?: Record<string, unknown>
+  ) => Promise<void>;
   unlockAchievement: (achievementId: string) => Promise<void>;
   updateStreak: () => Promise<void>;
   levelUp: () => Promise<void>;
-  
+
   // Métodos de conquistas
   getAchievementsByCategory: (category: AchievementCategory) => Achievement[];
   getUnlockedAchievements: () => Achievement[];
   getLockedAchievements: () => Achievement[];
-  
+
   // Métodos de leaderboard
   updateLeaderboard: () => Promise<void>;
   getUserRank: (userId: string) => number;
-  
+
   // Métodos de eventos
-  addEvent: (event: Omit<GamificationEvent, 'id' | 'timestamp'>) => Promise<void>;
+  addEvent: (
+    event: Omit<GamificationEvent, 'id' | 'timestamp'>
+  ) => Promise<void>;
   getRecentEvents: (limit?: number) => GamificationEvent[];
-  
+
   // Utilitários
   calculateLevel: (experience: number) => number;
   getExperienceToNextLevel: (currentLevel: number) => number;
-  getProgressToNextLevel: (currentExperience: number, currentLevel: number) => number;
-  
+  getProgressToNextLevel: (
+    currentExperience: number,
+    currentLevel: number
+  ) => number;
+
   // Reset
   resetGamification: () => void;
 }
 
 // Conquistas padrão do sistema
-const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'progress'>[] = [
+const DEFAULT_ACHIEVEMENTS: Omit<
+  Achievement,
+  'isUnlocked' | 'unlockedAt' | 'progress'
+>[] = [
   // Agendamentos
   {
     id: 'first_appointment',
@@ -54,7 +71,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '📅',
     points: 10,
     category: 'agendamentos',
-    requirement: { type: 'count', target: 1, entity: 'agendamentos' }
+    requirement: { type: 'count', target: 1, entity: 'agendamentos' },
   },
   {
     id: 'appointment_master',
@@ -63,7 +80,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '🎯',
     points: 100,
     category: 'agendamentos',
-    requirement: { type: 'count', target: 100, entity: 'agendamentos' }
+    requirement: { type: 'count', target: 100, entity: 'agendamentos' },
   },
   {
     id: 'appointment_streak',
@@ -72,9 +89,9 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '🔥',
     points: 50,
     category: 'consecutivo',
-    requirement: { type: 'streak', target: 7, entity: 'agendamentos' }
+    requirement: { type: 'streak', target: 7, entity: 'agendamentos' },
   },
-  
+
   // Pacientes
   {
     id: 'first_patient',
@@ -83,7 +100,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '👤',
     points: 15,
     category: 'pacientes',
-    requirement: { type: 'count', target: 1, entity: 'pacientes' }
+    requirement: { type: 'count', target: 1, entity: 'pacientes' },
   },
   {
     id: 'patient_collector',
@@ -92,9 +109,9 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '👥',
     points: 75,
     category: 'pacientes',
-    requirement: { type: 'count', target: 50, entity: 'pacientes' }
+    requirement: { type: 'count', target: 50, entity: 'pacientes' },
   },
-  
+
   // Profissionais
   {
     id: 'first_professional',
@@ -103,7 +120,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '👨‍⚕️',
     points: 20,
     category: 'profissionais',
-    requirement: { type: 'count', target: 1, entity: 'profissionais' }
+    requirement: { type: 'count', target: 1, entity: 'profissionais' },
   },
   {
     id: 'team_builder',
@@ -112,9 +129,9 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '🏥',
     points: 80,
     category: 'profissionais',
-    requirement: { type: 'count', target: 10, entity: 'profissionais' }
+    requirement: { type: 'count', target: 10, entity: 'profissionais' },
   },
-  
+
   // Sistema
   {
     id: 'early_bird',
@@ -123,7 +140,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '🌅',
     points: 25,
     category: 'sistema',
-    requirement: { type: 'date', target: 7, entity: 'login' }
+    requirement: { type: 'date', target: 7, entity: 'login' },
   },
   {
     id: 'night_owl',
@@ -132,7 +149,7 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '🦉',
     points: 25,
     category: 'sistema',
-    requirement: { type: 'date', target: 22, entity: 'login' }
+    requirement: { type: 'date', target: 22, entity: 'login' },
   },
   {
     id: 'power_user',
@@ -141,8 +158,8 @@ const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'pro
     icon: '⚡',
     points: 150,
     category: 'consecutivo',
-    requirement: { type: 'streak', target: 30, entity: 'login' }
-  }
+    requirement: { type: 'streak', target: 30, entity: 'login' },
+  },
 ];
 
 export const useGamificationStore = create<GamificationState>()(
@@ -158,15 +175,17 @@ export const useGamificationStore = create<GamificationState>()(
       initializeUserStats: async (userId: string) => {
         try {
           set({ loading: true, error: null });
-          
+
           // Carregar estatísticas do usuário do localStorage
           const storedStats = localStorage.getItem(`gamification_${userId}`);
-          const storedAchievements = localStorage.getItem(`achievements_${userId}`);
+          const storedAchievements = localStorage.getItem(
+            `achievements_${userId}`
+          );
           const storedEvents = localStorage.getItem(`events_${userId}`);
-          
+
           let userStats: UserStats;
           let achievements: Achievement[];
-          
+
           if (storedStats) {
             userStats = JSON.parse(storedStats);
           } else {
@@ -183,10 +202,10 @@ export const useGamificationStore = create<GamificationState>()(
               totalPacientes: 0,
               totalProfissionais: 0,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
             };
           }
-          
+
           if (storedAchievements) {
             achievements = JSON.parse(storedAchievements);
           } else {
@@ -194,79 +213,87 @@ export const useGamificationStore = create<GamificationState>()(
             achievements = DEFAULT_ACHIEVEMENTS.map(ach => ({
               ...ach,
               isUnlocked: false,
-              progress: 0
+              progress: 0,
             }));
           }
-          
+
           const events = storedEvents ? JSON.parse(storedEvents) : [];
-          
+
           set({
             userStats,
             achievements,
             events,
-            loading: false
+            loading: false,
           });
-          
+
           // Atualizar streak
           await get().updateStreak();
-          
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro ao inicializar gamificação';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Erro ao inicializar gamificação';
           set({ error: errorMessage, loading: false });
           console.error('Erro ao inicializar gamificação:', error);
         }
       },
 
       addPoints: async (points: number, reason: string) => {
-        const { userStats, userId } = get();
+        const { userStats } = get();
         if (!userStats) return;
-        
+
         const newPoints = userStats.points + points;
         const newExperience = userStats.experience + points;
         const newLevel = get().calculateLevel(newExperience);
-        
+
         const updatedStats = {
           ...userStats,
           points: newPoints,
           experience: newExperience,
           level: newLevel,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        
+
         set({ userStats: updatedStats });
-        
+
         // Salvar no localStorage
-        localStorage.setItem(`gamification_${userStats.userId}`, JSON.stringify(updatedStats));
-        
+        localStorage.setItem(
+          `gamification_${userStats.userId}`,
+          JSON.stringify(updatedStats)
+        );
+
         // Adicionar evento
         await get().addEvent({
           userId: userStats.userId,
           type: 'points_earned',
-          data: { points, reason }
+          data: { points, reason },
         });
-        
+
         // Verificar se subiu de nível
         if (newLevel > userStats.level) {
           await get().levelUp();
         }
-        
+
         toast.success(`+${points} pontos! ${reason}`);
       },
 
-      checkAchievements: async (action: string, data: Record<string, unknown> = {}) => {
+      checkAchievements: async (
+        action: string,
+        data: Record<string, unknown> = {}
+      ) => {
         const { achievements, userStats } = get();
         if (!userStats) return;
-        
+
         const updatedAchievements = [...achievements];
         let hasNewUnlocks = false;
-        
+
         for (let i = 0; i < updatedAchievements.length; i++) {
           const achievement = updatedAchievements[i];
           if (achievement.isUnlocked) continue;
-          
+
           let progress = 0;
           let shouldUnlock = false;
-          
+
           switch (achievement.requirement.type) {
             case 'count':
               if (achievement.requirement.entity === action) {
@@ -274,14 +301,14 @@ export const useGamificationStore = create<GamificationState>()(
                 shouldUnlock = progress >= achievement.requirement.target;
               }
               break;
-              
+
             case 'streak':
               if (achievement.requirement.entity === action) {
                 progress = (data.streak as number) || 0;
                 shouldUnlock = progress >= achievement.requirement.target;
               }
               break;
-              
+
             case 'date':
               if (achievement.requirement.entity === action) {
                 const hour = new Date().getHours();
@@ -290,69 +317,81 @@ export const useGamificationStore = create<GamificationState>()(
               }
               break;
           }
-          
+
           updatedAchievements[i] = {
             ...achievement,
-            progress: Math.min(progress, achievement.requirement.target)
+            progress: Math.min(progress, achievement.requirement.target),
           };
-          
+
           if (shouldUnlock) {
             await get().unlockAchievement(achievement.id);
             hasNewUnlocks = true;
           }
         }
-        
+
         set({ achievements: updatedAchievements });
-        
+
         if (hasNewUnlocks) {
           // Salvar conquistas atualizadas
-          localStorage.setItem(`achievements_${userStats.userId}`, JSON.stringify(updatedAchievements));
+          localStorage.setItem(
+            `achievements_${userStats.userId}`,
+            JSON.stringify(updatedAchievements)
+          );
         }
       },
 
       unlockAchievement: async (achievementId: string) => {
         const { achievements, userStats } = get();
         if (!userStats) return;
-        
+
         const achievement = achievements.find(a => a.id === achievementId);
         if (!achievement || achievement.isUnlocked) return;
-        
+
         const updatedAchievements = achievements.map(a =>
           a.id === achievementId
             ? {
                 ...a,
                 isUnlocked: true,
                 unlockedAt: new Date().toISOString(),
-                progress: a.requirement.target
+                progress: a.requirement.target,
               }
             : a
         );
-        
+
         set({ achievements: updatedAchievements });
-        
+
         // Adicionar pontos da conquista
-        await get().addPoints(achievement.points, `Conquista: ${achievement.name}`);
-        
+        await get().addPoints(
+          achievement.points,
+          `Conquista: ${achievement.name}`
+        );
+
         // Adicionar evento
         await get().addEvent({
           userId: userStats.userId,
           type: 'achievement_unlocked',
-          data: { achievementId, achievementName: achievement.name, points: achievement.points }
+          data: {
+            achievementId,
+            achievementName: achievement.name,
+            points: achievement.points,
+          },
         });
-        
+
         toast.success(`🏆 Conquista desbloqueada: ${achievement.name}!`);
       },
 
       updateStreak: async () => {
         const { userStats } = get();
         if (!userStats) return;
-        
+
         const now = new Date();
         const lastActivity = new Date(userStats.lastActivity);
-        const daysDiff = Math.floor((now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
-        
+        const daysDiff = Math.floor(
+          (now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
         let newStreak = userStats.streak;
-        
+
         if (daysDiff === 1) {
           // Dia consecutivo
           newStreak++;
@@ -361,39 +400,45 @@ export const useGamificationStore = create<GamificationState>()(
           newStreak = 1;
         }
         // Se daysDiff === 0, é o mesmo dia, manter streak
-        
+
         const updatedStats = {
           ...userStats,
           streak: newStreak,
           lastActivity: now.toISOString(),
-          updated_at: now.toISOString()
+          updated_at: now.toISOString(),
         };
-        
+
         set({ userStats: updatedStats });
-        localStorage.setItem(`gamification_${userStats.userId}`, JSON.stringify(updatedStats));
+        localStorage.setItem(
+          `gamification_${userStats.userId}`,
+          JSON.stringify(updatedStats)
+        );
       },
 
       levelUp: async () => {
         const { userStats } = get();
         if (!userStats) return;
-        
+
         const newLevel = get().calculateLevel(userStats.experience);
         const updatedStats = {
           ...userStats,
           level: newLevel,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
-        
+
         set({ userStats: updatedStats });
-        localStorage.setItem(`gamification_${userStats.userId}`, JSON.stringify(updatedStats));
-        
+        localStorage.setItem(
+          `gamification_${userStats.userId}`,
+          JSON.stringify(updatedStats)
+        );
+
         // Adicionar evento
         await get().addEvent({
           userId: userStats.userId,
           type: 'level_up',
-          data: { newLevel, previousLevel: userStats.level }
+          data: { newLevel, previousLevel: userStats.level },
         });
-        
+
         toast.success(`🎉 Nível ${newLevel} alcançado!`);
       },
 
@@ -426,15 +471,17 @@ export const useGamificationStore = create<GamificationState>()(
                 level: stats.level || 1,
                 points: stats.points || 0,
                 position: 0,
-                achievements: stats.achievements?.filter((a: Achievement) => a.isUnlocked).length || 0
+                achievements:
+                  stats.achievements?.filter((a: Achievement) => a.isUnlocked)
+                    .length || 0,
               };
             })
             .sort((a, b) => b.points - a.points)
             .map((user, index) => ({
               ...user,
-              position: index + 1
+              position: index + 1,
             }));
-          
+
           set({ leaderboard: allUsers });
         } catch (error) {
           console.error('Erro ao atualizar leaderboard:', error);
@@ -450,17 +497,20 @@ export const useGamificationStore = create<GamificationState>()(
       addEvent: async (event: Omit<GamificationEvent, 'id' | 'timestamp'>) => {
         const { events, userStats } = get();
         if (!userStats) return;
-        
+
         const newEvent: GamificationEvent = {
           ...event,
           id: Date.now().toString(),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        
+
         const updatedEvents = [newEvent, ...events].slice(0, 50); // Manter apenas os últimos 50 eventos
-        
+
         set({ events: updatedEvents });
-        localStorage.setItem(`events_${userStats.userId}`, JSON.stringify(updatedEvents));
+        localStorage.setItem(
+          `events_${userStats.userId}`,
+          JSON.stringify(updatedEvents)
+        );
       },
 
       getRecentEvents: (limit = 10) => {
@@ -479,7 +529,10 @@ export const useGamificationStore = create<GamificationState>()(
         return nextLevelExp - currentLevelExp;
       },
 
-      getProgressToNextLevel: (currentExperience: number, currentLevel: number) => {
+      getProgressToNextLevel: (
+        currentExperience: number,
+        currentLevel: number
+      ) => {
         const currentLevelExp = Math.pow(currentLevel - 1, 2) * 100;
         const nextLevelExp = Math.pow(currentLevel, 2) * 100;
         const progressExp = currentExperience - currentLevelExp;
@@ -494,15 +547,15 @@ export const useGamificationStore = create<GamificationState>()(
           events: [],
           leaderboard: [],
           loading: false,
-          error: null
+          error: null,
         });
-      }
+      },
     }),
     {
       name: 'gamification-storage',
-      partialize: (state) => ({
+      partialize: () => ({
         // Não persistir estados temporários
-      })
+      }),
     }
   )
 );

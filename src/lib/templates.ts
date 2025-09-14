@@ -4,27 +4,11 @@
 // Sistema para criação e gerenciamento de templates de relatórios
 // ============================================================================
 
+import { TemplateField, TemplateInstance } from '@/types/global';
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
-
-export interface TemplateField {
-  id: string;
-  name: string;
-  type: 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect' | 'textarea';
-  label: string;
-  required: boolean;
-  defaultValue?: any;
-  options?: { value: string; label: string }[];
-  validation?: {
-    min?: number;
-    max?: number;
-    pattern?: string;
-    message?: string;
-  };
-  placeholder?: string;
-  helpText?: string;
-}
 
 export interface TemplateSection {
   id: string;
@@ -86,18 +70,7 @@ export interface TemplateConfig {
   };
 }
 
-export interface TemplateInstance {
-  id: string;
-  templateId: string;
-  name: string;
-  data: Record<string, any>;
-  status: 'draft' | 'ready' | 'generating' | 'completed' | 'error';
-  createdAt: Date;
-  updatedAt: Date;
-  generatedAt?: Date;
-  filePath?: string;
-  error?: string;
-}
+// TemplateInstance importado do global.ts
 
 export interface TemplateData {
   [key: string]: any;
@@ -165,7 +138,7 @@ export const PREDEFINED_TEMPLATES: TemplateConfig[] = [
           {
             id: 'status',
             name: 'status',
-            type: 'multiselect',
+            type: 'select',
             label: 'Status da Consulta',
             required: false,
             options: [
@@ -228,7 +201,8 @@ export const PREDEFINED_TEMPLATES: TemplateConfig[] = [
       },
       footer: {
         enabled: true,
-        content: 'Página {{page}} de {{totalPages}} - Gerado em {{generatedAt}}',
+        content:
+          'Página {{page}} de {{totalPages}} - Gerado em {{generatedAt}}',
         height: 20,
       },
     },
@@ -445,7 +419,7 @@ export class TemplateManager {
   // ============================================================================
   // INICIALIZAÇÃO
   // ============================================================================
-  
+
   private initializePredefinedTemplates(): void {
     PREDEFINED_TEMPLATES.forEach(template => {
       this.templates.set(template.id, template);
@@ -455,7 +429,7 @@ export class TemplateManager {
   // ============================================================================
   // GERENCIAMENTO DE TEMPLATES
   // ============================================================================
-  
+
   getTemplate(id: string): TemplateConfig | undefined {
     return this.templates.get(id);
   }
@@ -465,7 +439,9 @@ export class TemplateManager {
   }
 
   getTemplatesByCategory(category: string): TemplateConfig[] {
-    return this.getAllTemplates().filter(template => template.category === category);
+    return this.getAllTemplates().filter(
+      template => template.category === category
+    );
   }
 
   createTemplate(template: TemplateConfig): void {
@@ -479,7 +455,7 @@ export class TemplateManager {
     const updatedTemplate = {
       ...template,
       ...updates,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     };
 
     this.templates.set(id, updatedTemplate);
@@ -493,18 +469,19 @@ export class TemplateManager {
   // ============================================================================
   // GERENCIAMENTO DE INSTÂNCIAS
   // ============================================================================
-  
+
   createInstance(templateId: string, name: string, data: TemplateData): string {
     const instanceId = `instance_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const instance: TemplateInstance = {
       id: instanceId,
       templateId,
       name,
       data,
-      status: 'draft',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      generatedContent: '',
+      createdBy: 'system',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     this.instances.set(instanceId, instance);
@@ -526,7 +503,7 @@ export class TemplateManager {
     const updatedInstance = {
       ...instance,
       ...updates,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     };
 
     this.instances.set(id, updatedInstance);
@@ -540,8 +517,10 @@ export class TemplateManager {
   // ============================================================================
   // GERAÇÃO DE RELATÓRIOS
   // ============================================================================
-  
-  async generateReport(instanceId: string): Promise<{ success: boolean; filePath?: string; error?: string }> {
+
+  async generateReport(
+    instanceId: string
+  ): Promise<{ success: boolean; filePath?: string; error?: string }> {
     const instance = this.instances.get(instanceId);
     if (!instance) {
       return { success: false, error: 'Instância não encontrada' };
@@ -577,9 +556,9 @@ export class TemplateManager {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
       });
 
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
       };
     }
   }
@@ -587,8 +566,11 @@ export class TemplateManager {
   // ============================================================================
   // MÉTODOS AUXILIARES
   // ============================================================================
-  
-  private async fetchTemplateData(template: TemplateConfig, instanceData: TemplateData): Promise<any[]> {
+
+  private async fetchTemplateData(
+    template: TemplateConfig,
+    instanceData: TemplateData
+  ): Promise<any[]> {
     switch (template.dataSource.type) {
       case 'query':
         // Em produção, executaria a query no banco de dados
@@ -603,37 +585,50 @@ export class TemplateManager {
     }
   }
 
-  private async executeQuery(query: string, params: Record<string, any>): Promise<any[]> {
+  private async executeQuery(
+    query: string,
+    params: Record<string, any>
+  ): Promise<any[]> {
     // Simular execução de query
     // Em produção, isso seria executado no banco de dados
     console.log('Executando query:', query, 'com parâmetros:', params);
     return [];
   }
 
-  private async callAPI(endpoint: string, params: Record<string, any>): Promise<any[]> {
+  private async callAPI(
+    endpoint: string,
+    params: Record<string, any>
+  ): Promise<any[]> {
     // Simular chamada para API
     // Em produção, isso faria uma requisição HTTP
     console.log('Chamando API:', endpoint, 'com parâmetros:', params);
     return [];
   }
 
-  private async renderTemplate(template: TemplateConfig, data: any[], _instanceData: TemplateData): Promise<string> {
+  private async renderTemplate(
+    template: TemplateConfig,
+    data: any[],
+    _instanceData: TemplateData
+  ): Promise<string> {
     // Simular renderização do template
     // Em produção, isso usaria uma biblioteca como Handlebars ou similar
     console.log('Renderizando template:', template.name, 'com dados:', data);
-    
+
     // Gerar nome do arquivo
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileName = `${template.name}_${timestamp}.pdf`;
-    
+
     return `/reports/${fileName}`;
   }
 
   // ============================================================================
   // VALIDAÇÃO DE DADOS
   // ============================================================================
-  
-  validateTemplateData(template: TemplateConfig, data: TemplateData): { valid: boolean; errors: string[] } {
+
+  validateTemplateData(
+    template: TemplateConfig,
+    data: TemplateData
+  ): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
     template.sections.forEach(section => {
@@ -641,7 +636,10 @@ export class TemplateManager {
         const value = data[field.name];
 
         // Verificar campos obrigatórios
-        if (field.required && (value === undefined || value === null || value === '')) {
+        if (
+          field.required &&
+          (value === undefined || value === null || value === '')
+        ) {
           errors.push(`Campo '${field.label}' é obrigatório`);
           return;
         }
@@ -651,18 +649,31 @@ export class TemplateManager {
           if (field.validation) {
             if (field.type === 'number') {
               const numValue = Number(value);
-              if (field.validation.min !== undefined && numValue < field.validation.min) {
-                errors.push(`Campo '${field.label}' deve ser maior ou igual a ${field.validation.min}`);
+              if (
+                field.validation.min !== undefined &&
+                numValue < field.validation.min
+              ) {
+                errors.push(
+                  `Campo '${field.label}' deve ser maior ou igual a ${field.validation.min}`
+                );
               }
-              if (field.validation.max !== undefined && numValue > field.validation.max) {
-                errors.push(`Campo '${field.label}' deve ser menor ou igual a ${field.validation.max}`);
+              if (
+                field.validation.max !== undefined &&
+                numValue > field.validation.max
+              ) {
+                errors.push(
+                  `Campo '${field.label}' deve ser menor ou igual a ${field.validation.max}`
+                );
               }
             }
 
             if (field.validation.pattern) {
               const regex = new RegExp(field.validation.pattern);
               if (!regex.test(String(value))) {
-                errors.push(field.validation.message || `Campo '${field.label}' tem formato inválido`);
+                errors.push(
+                  field.validation.message ||
+                    `Campo '${field.label}' tem formato inválido`
+                );
               }
             }
           }
@@ -697,7 +708,7 @@ export function createCustomTemplate(
   sections: TemplateSection[]
 ): TemplateConfig {
   const id = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   return {
     id,
     name,
@@ -744,7 +755,7 @@ export function exportTemplate(template: TemplateConfig): string {
 export function importTemplate(json: string): TemplateConfig | null {
   try {
     const template = JSON.parse(json);
-    
+
     // Validar estrutura básica
     if (!template.id || !template.name || !template.sections) {
       return null;
