@@ -10,37 +10,22 @@ import { Helmet } from 'react-helmet-async';
 import {
   MessageCircle,
   Send,
-  Phone,
-  Calendar,
   Clock,
   CheckCircle,
   XCircle,
   AlertCircle,
   Settings,
-  Users,
-  History,
-  Template,
   Bot,
-  Zap,
-  Shield,
   Download,
   Upload,
   RefreshCw,
-  Filter,
-  Search,
-  Plus,
-  Edit,
   Trash2,
   Eye,
   Copy,
-  Share2,
-  Bell,
-  Star,
-  Archive,
+  DollarSign,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import { useThemeStore } from '@/stores/themeStore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/design-system';
+import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import toast from 'react-hot-toast';
 
@@ -272,7 +257,6 @@ const MOCK_CONFIGURACAO: ConfiguracaoWhatsApp = {
 // ============================================================================
 
 const WhatsApp: React.FC = () => {
-  const { isDark } = useThemeStore();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<
     'mensagens' | 'templates' | 'campanhas' | 'configuracoes'
@@ -292,9 +276,6 @@ const WhatsApp: React.FC = () => {
     dataFim: '',
     busca: '',
   });
-  const [showCriarMensagem, setShowCriarMensagem] = useState(false);
-  const [showCriarTemplate, setShowCriarTemplate] = useState(false);
-  const [showCriarCampanha, setShowCriarCampanha] = useState(false);
 
   // ============================================================================
   // EFEITOS
@@ -322,81 +303,6 @@ const WhatsApp: React.FC = () => {
       toast.error('Erro ao carregar dados do WhatsApp');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleEnviarMensagem = async (mensagem: Partial<MensagemWhatsApp>) => {
-    try {
-      // Simular envio
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const novaMensagem: MensagemWhatsApp = {
-        id: Date.now().toString(),
-        numero: mensagem.numero || '',
-        nome: mensagem.nome || '',
-        tipo: mensagem.tipo || 'texto',
-        conteudo: mensagem.conteudo || '',
-        status: 'enviada',
-        dataEnvio: new Date().toISOString(),
-        custo: configuracao.custoPorMensagem,
-        ...mensagem,
-      };
-
-      setMensagens(prev => [novaMensagem, ...prev]);
-      toast.success('Mensagem enviada com sucesso!');
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-      toast.error('Erro ao enviar mensagem');
-    }
-  };
-
-  const handleCriarTemplate = async (template: Partial<TemplateWhatsApp>) => {
-    try {
-      const novoTemplate: TemplateWhatsApp = {
-        id: Date.now().toString(),
-        nome: template.nome || '',
-        categoria: template.categoria || 'informativo',
-        conteudo: template.conteudo || '',
-        variaveis: template.variaveis || [],
-        aprovado: false,
-        dataCriacao: new Date().toISOString(),
-        uso: 0,
-        status: 'rascunho',
-        exemplo: template.exemplo || '',
-        ...template,
-      };
-
-      setTemplates(prev => [novoTemplate, ...prev]);
-      toast.success('Template criado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao criar template:', error);
-      toast.error('Erro ao criar template');
-    }
-  };
-
-  const handleCriarCampanha = async (campanha: Partial<CampanhaWhatsApp>) => {
-    try {
-      const novaCampanha: CampanhaWhatsApp = {
-        id: Date.now().toString(),
-        nome: campanha.nome || '',
-        descricao: campanha.descricao || '',
-        template: campanha.template || templates[0],
-        destinatarios: campanha.destinatarios || [],
-        status: 'rascunho',
-        dataCriacao: new Date().toISOString(),
-        totalEnviadas: 0,
-        totalEntregues: 0,
-        totalLidas: 0,
-        totalFalhas: 0,
-        custoTotal: 0,
-        ...campanha,
-      };
-
-      setCampanhas(prev => [novaCampanha, ...prev]);
-      toast.success('Campanha criada com sucesso!');
-    } catch (error) {
-      console.error('Erro ao criar campanha:', error);
-      toast.error('Erro ao criar campanha');
     }
   };
 
