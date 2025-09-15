@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Lock, User, Building2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, User } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import toast from 'react-hot-toast';
 
@@ -94,32 +94,44 @@ const Login: React.FC = () => {
         <title>Login - Sistema Clínica</title>
       </Helmet>
 
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-md w-full space-y-8'>
+      <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-4 px-4 sm:py-12 sm:px-6 lg:px-8'>
+        <div className='max-w-md w-full space-y-6 sm:space-y-8'>
           {/* Header */}
           <div className='text-center'>
-            <div className='mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4'>
-              <Building2 size={32} className='text-white' />
+            <div className='inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mb-6 sm:mb-8 shadow-lg'>
+              <img
+                src='/logo-large.png'
+                alt='Sistema Clínico'
+                className='w-full h-full'
+              />
             </div>
-            <h2 className='text-3xl font-bold text-gray-900 mb-2'>
+            <h2 className='text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2'>
               Entrar no Sistema
             </h2>
-            <p className='text-gray-600'>Acesse sua conta para continuar</p>
+            <p className='text-sm sm:text-base text-gray-600 dark:text-gray-300'>
+              Acesse sua conta para continuar
+            </p>
           </div>
 
           {/* Form */}
-          <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
+          <form
+            className='mt-6 sm:mt-8 space-y-4 sm:space-y-6'
+            onSubmit={handleSubmit}
+          >
             <div className='space-y-4'>
               <div>
                 <label
                   htmlFor='cpf'
-                  className='block text-sm font-medium text-gray-700 mb-1'
+                  className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
                 >
                   CPF *
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <User size={16} className='text-gray-400' />
+                    <User
+                      size={16}
+                      className='text-gray-400 dark:text-gray-500'
+                    />
                   </div>
                   <input
                     id='cpf'
@@ -127,7 +139,7 @@ const Login: React.FC = () => {
                     type='text'
                     autoComplete='username'
                     required
-                    className='w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                    className='w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base'
                     placeholder='000.000.000-00'
                     value={cpf}
                     onChange={handleCPFChange}
@@ -138,13 +150,16 @@ const Login: React.FC = () => {
               <div>
                 <label
                   htmlFor='password'
-                  className='block text-sm font-medium text-gray-700 mb-1'
+                  className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
                 >
                   Senha *
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <Lock size={16} className='text-gray-400' />
+                    <Lock
+                      size={16}
+                      className='text-gray-400 dark:text-gray-500'
+                    />
                   </div>
                   <input
                     id='password'
@@ -152,7 +167,7 @@ const Login: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete='current-password'
                     required
-                    className='w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                    className='w-full pl-10 pr-10 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base'
                     placeholder='Digite sua senha'
                     value={password}
                     onChange={e => setPassword(e.target.value)}
@@ -163,20 +178,26 @@ const Login: React.FC = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff size={16} className='text-gray-400' />
+                      <EyeOff
+                        size={16}
+                        className='text-gray-400 dark:text-gray-500'
+                      />
                     ) : (
-                      <Eye size={16} className='text-gray-400' />
+                      <Eye
+                        size={16}
+                        className='text-gray-400 dark:text-gray-500'
+                      />
                     )}
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0'>
               <button
                 type='button'
                 onClick={handleForgotPassword}
-                className='text-sm text-blue-600 hover:text-blue-500 transition-colors'
+                className='text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors'
                 disabled={isSubmitting}
               >
                 Esqueceu sua senha?
@@ -184,7 +205,7 @@ const Login: React.FC = () => {
               <button
                 type='button'
                 onClick={() => navigate('/register')}
-                className='text-sm text-green-600 hover:text-green-500 transition-colors font-medium'
+                className='text-sm text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition-colors font-medium'
                 disabled={isSubmitting}
               >
                 Cadastrar
@@ -192,8 +213,10 @@ const Login: React.FC = () => {
             </div>
 
             {error && (
-              <div className='bg-red-50 border border-red-200 rounded-md p-3'>
-                <p className='text-sm text-red-600'>{error}</p>
+              <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3'>
+                <p className='text-sm text-red-600 dark:text-red-400'>
+                  {error}
+                </p>
               </div>
             )}
 
@@ -201,7 +224,7 @@ const Login: React.FC = () => {
               <button
                 type='submit'
                 disabled={isSubmitting}
-                className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+                className='w-full flex justify-center py-3 sm:py-2 px-4 border border-transparent rounded-md shadow-sm text-base sm:text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
               >
                 {isSubmitting ? (
                   <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
@@ -210,12 +233,10 @@ const Login: React.FC = () => {
                 )}
               </button>
             </div>
-
-
           </form>
 
           {/* Footer */}
-          <div className='text-center text-xs text-gray-500'>
+          <div className='text-center text-xs text-gray-500 dark:text-gray-400'>
             <p>Sistema de Gestão de Clínica</p>
             <p>© Todos os direitos reservados</p>
           </div>

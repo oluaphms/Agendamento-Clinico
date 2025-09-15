@@ -121,7 +121,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 shadow-sm border-b px-6 py-3 z-30 transition-colors duration-300 ${
+      className={`fixed top-0 left-0 right-0 shadow-sm border-b px-4 sm:px-6 py-2 sm:py-3 z-30 transition-colors duration-300 ${
         isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}
     >
@@ -130,14 +130,16 @@ const Header: React.FC = () => {
         {isInternalPage && (
           <button
             onClick={() => navigate('/app/dashboard')}
-            className={`flex items-center space-x-2 p-2 rounded-lg transition-colors ${
+            className={`flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2 rounded-lg transition-colors ${
               isDark
                 ? 'text-white hover:text-blue-100 hover:bg-blue-800'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
-            <ArrowLeft size={20} />
-            <span className='text-sm font-medium'>Voltar</span>
+            <ArrowLeft size={16} />
+            <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
+              Voltar
+            </span>
           </button>
         )}
 
@@ -145,14 +147,14 @@ const Header: React.FC = () => {
         <div className='flex-1 flex justify-center'>
           <div className='text-center'>
             <h1
-              className={`text-xl font-bold transition-colors duration-300 ${
+              className={`text-lg sm:text-xl font-bold transition-colors duration-300 ${
                 isDark ? 'text-white' : 'text-gray-900'
               }`}
             >
               {getPageTitle(location.pathname)}
             </h1>
             <p
-              className={`text-sm transition-colors duration-300 ${
+              className={`text-xs sm:text-sm transition-colors duration-300 hidden sm:block ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}
             >
@@ -162,11 +164,11 @@ const Header: React.FC = () => {
         </div>
 
         {/* Right Side */}
-        <div className='flex items-center space-x-4'>
+        <div className='flex items-center space-x-2 sm:space-x-4'>
           {/* Menu Cardíaco Button */}
           <motion.button
             onClick={() => setIsCardiacMenuOpen(true)}
-            className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 group ${
+            className={`relative flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-300 group ${
               isDark
                 ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30'
                 : 'text-red-500 hover:text-red-600 hover:bg-red-50'
@@ -182,12 +184,14 @@ const Header: React.FC = () => {
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: 'easeInOut',
               }}
             >
-              <Heart size={18} />
+              <Heart size={16} />
             </motion.div>
-            <span className='text-sm font-medium'>Cardíaco</span>
+            <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
+              Cardíaco
+            </span>
 
             {/* Efeito de brilho no hover */}
             <motion.div
@@ -196,11 +200,10 @@ const Header: React.FC = () => {
             />
           </motion.button>
 
-
           {/* Theme Toggle Button */}
           <motion.button
             onClick={toggleTheme}
-            className={`relative p-2 rounded-lg transition-all duration-300 group ${
+            className={`relative p-1 sm:p-2 rounded-lg transition-all duration-300 group ${
               isDark
                 ? 'text-yellow-300 hover:text-yellow-200 hover:bg-yellow-900/30'
                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
@@ -222,7 +225,7 @@ const Header: React.FC = () => {
                 stiffness: 200,
               }}
             >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </motion.div>
 
             {/* Efeito de brilho no hover */}
@@ -236,14 +239,14 @@ const Header: React.FC = () => {
           <div className='relative'>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className={`flex items-center space-x-3 p-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-2 sm:space-x-3 p-1 sm:p-2 rounded-lg transition-colors ${
                 isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
               }`}
             >
-              <div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center'>
-                <User size={16} className='text-white' />
+              <div className='w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center'>
+                <User size={12} className='text-white' />
               </div>
-              <div className='text-left'>
+              <div className='text-left hidden sm:block'>
                 <p
                   className={`text-sm font-medium transition-colors duration-300 ${
                     isDark ? 'text-white' : 'text-gray-900'
@@ -260,7 +263,7 @@ const Header: React.FC = () => {
                 </div>
               </div>
               <ChevronDown
-                size={16}
+                size={14}
                 className={`transition-colors duration-300 ${
                   isDark ? 'text-gray-400' : 'text-gray-500'
                 }`}
@@ -345,9 +348,9 @@ const Header: React.FC = () => {
       </div>
 
       {/* Menu Cardíaco */}
-      <MenuCardiaco 
-        isOpen={isCardiacMenuOpen} 
-        onClose={() => setIsCardiacMenuOpen(false)} 
+      <MenuCardiaco
+        isOpen={isCardiacMenuOpen}
+        onClose={() => setIsCardiacMenuOpen(false)}
       />
     </header>
   );

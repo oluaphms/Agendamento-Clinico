@@ -503,61 +503,61 @@ const Dashboard: React.FC = () => {
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isDark ? 'dark' : ''}`}
       >
         {/* Header */}
-        <div className='mb-8'>
-          <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
+        <div className='mb-6 sm:mb-8'>
+          <h1 className='text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
             <BarChart3
-              className='mr-3 !text-blue-600'
-              size={32}
+              className='mr-2 sm:mr-3 !text-blue-600'
+              size={24}
               style={{ color: '#2563eb !important' }}
             />
             Dashboard
           </h1>
-          <p className='text-gray-600 dark:text-gray-300 mt-2'>
+          <p className='text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2'>
             Visão geral e métricas importantes da clínica
           </p>
         </div>
 
         {/* Cards de Estatísticas */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8'>
           <div
-            className={`rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
+            className={`rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
           >
             <div className='flex items-center'>
               <div className='flex-1'>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
                   Total de Pacientes
                 </p>
-                <p className='text-2xl font-bold text-gray-900 dark:text-white'>
+                <p className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
                   {stats.totalPacientes.toLocaleString()}
                 </p>
                 <p className='text-xs text-green-600 dark:text-green-300 mt-1'>
                   +12% este mês
                 </p>
               </div>
-              <div className='p-3 bg-blue-100 dark:bg-blue-900 rounded-lg'>
-                <Users size={24} className='text-blue-600 dark:text-blue-200' />
+              <div className='p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-lg'>
+                <Users size={20} className='text-blue-600 dark:text-blue-200' />
               </div>
             </div>
           </div>
 
           <div
-            className={`rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
+            className={`rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
           >
             <div className='flex items-center'>
               <div className='flex-1'>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
                   Profissionais
                 </p>
-                <p className='text-2xl font-bold text-gray-900 dark:text-white'>
+                <p className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
                   {stats.totalProfissionais}
                 </p>
                 <p className='text-xs text-blue-600 dark:text-blue-300 mt-1'>
                   +2 este mês
                 </p>
               </div>
-              <div className='p-3 bg-green-100 dark:bg-green-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-lg'>
                 <User
-                  size={24}
+                  size={20}
                   className='text-green-600 dark:text-green-200'
                 />
               </div>
@@ -565,23 +565,23 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div
-            className={`rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
+            className={`rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
           >
             <div className='flex items-center'>
               <div className='flex-1'>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
                   Agendamentos Hoje
                 </p>
-                <p className='text-2xl font-bold text-gray-900 dark:text-white'>
+                <p className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
                   {stats.agendamentosHoje}
                 </p>
                 <p className='text-xs text-purple-600 dark:text-purple-300 mt-1'>
                   8 pendentes
                 </p>
               </div>
-              <div className='p-3 bg-purple-100 dark:bg-purple-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-lg'>
                 <Calendar
-                  size={24}
+                  size={20}
                   className='text-purple-600 dark:text-purple-200'
                 />
               </div>
@@ -589,23 +589,23 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div
-            className={`rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
+            className={`rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow ${getCardClasses()}`}
           >
             <div className='flex items-center'>
               <div className='flex-1'>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wide'>
                   Receita do Mês
                 </p>
-                <p className='text-2xl font-bold text-gray-900 dark:text-white'>
+                <p className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
                   R$ {stats.receitaMes.toLocaleString()}
                 </p>
                 <p className='text-xs text-green-600 dark:text-green-300 mt-1'>
                   +8% vs mês anterior
                 </p>
               </div>
-              <div className='p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg'>
                 <DollarSign
-                  size={24}
+                  size={20}
                   className='text-yellow-600 dark:text-yellow-200'
                 />
               </div>
@@ -614,58 +614,64 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Cards de Status das Ordens de Serviço */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-          <div className={`rounded-lg shadow-sm p-6 ${getCardClasses()}`}>
+        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8'>
+          <div
+            className={`rounded-lg shadow-sm p-4 sm:p-6 ${getCardClasses()}`}
+          >
             <div className='flex items-center justify-between'>
               <div>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200'>
                   Total de Ordens
                 </p>
-                <p className='text-2xl font-bold text-gray-900 dark:text-white'>
+                <p className='text-xl sm:text-2xl font-bold text-gray-900 dark:text-white'>
                   {stats.ordensServico}
                 </p>
               </div>
-              <div className='p-3 bg-blue-100 dark:bg-blue-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-lg'>
                 <FileText
-                  size={24}
+                  size={20}
                   className='text-blue-600 dark:text-blue-200'
                 />
               </div>
             </div>
           </div>
 
-          <div className={`rounded-lg shadow-sm p-6 ${getCardClasses()}`}>
+          <div
+            className={`rounded-lg shadow-sm p-4 sm:p-6 ${getCardClasses()}`}
+          >
             <div className='flex items-center justify-between'>
               <div>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200'>
                   Concluídas
                 </p>
-                <p className='text-2xl font-bold text-green-600 dark:text-green-300'>
+                <p className='text-xl sm:text-2xl font-bold text-green-600 dark:text-green-300'>
                   {stats.ordensConcluidas}
                 </p>
               </div>
-              <div className='p-3 bg-green-100 dark:bg-green-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-lg'>
                 <CheckCircle
-                  size={24}
+                  size={20}
                   className='text-green-600 dark:text-green-200'
                 />
               </div>
             </div>
           </div>
 
-          <div className={`rounded-lg shadow-sm p-6 ${getCardClasses()}`}>
+          <div
+            className={`rounded-lg shadow-sm p-4 sm:p-6 ${getCardClasses()}`}
+          >
             <div className='flex items-center justify-between'>
               <div>
-                <p className='text-sm font-medium text-gray-700 dark:text-gray-200'>
+                <p className='text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200'>
                   Pendentes
                 </p>
-                <p className='text-2xl font-bold text-orange-600 dark:text-orange-300'>
+                <p className='text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-300'>
                   {stats.ordensPendentes}
                 </p>
               </div>
-              <div className='p-3 bg-orange-100 dark:bg-orange-900 rounded-lg'>
+              <div className='p-2 sm:p-3 bg-orange-100 dark:bg-orange-900 rounded-lg'>
                 <AlertCircle
-                  size={24}
+                  size={20}
                   className='text-orange-600 dark:text-orange-200'
                 />
               </div>
@@ -674,13 +680,15 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Gráficos */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8'>
           {/* Gráfico de Pacientes */}
-          <div className={`rounded-lg shadow-sm p-6 ${getCardClasses()}`}>
-            <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+          <div
+            className={`rounded-lg shadow-sm p-4 sm:p-6 ${getCardClasses()}`}
+          >
+            <h3 className='text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4'>
               Evolução de Pacientes
             </h3>
-            <ResponsiveContainer width='100%' height={300}>
+            <ResponsiveContainer width='100%' height={250}>
               <BarChart data={dadosGraficoPacientes}>
                 <CartesianGrid strokeDasharray='3 3' />
                 <XAxis dataKey='mes' />
@@ -693,11 +701,13 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Gráfico de Serviços */}
-          <div className={`rounded-lg shadow-sm p-6 ${getCardClasses()}`}>
-            <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+          <div
+            className={`rounded-lg shadow-sm p-4 sm:p-6 ${getCardClasses()}`}
+          >
+            <h3 className='text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4'>
               Distribuição de Serviços
             </h3>
-            <ResponsiveContainer width='100%' height={300}>
+            <ResponsiveContainer width='100%' height={250}>
               <PieChart>
                 <Pie
                   data={dadosGraficoServicos}
@@ -707,7 +717,7 @@ const Dashboard: React.FC = () => {
                   label={({ nome, percent }) =>
                     `${nome} ${(percent * 100).toFixed(0)}%`
                   }
-                  outerRadius={80}
+                  outerRadius={60}
                   fill='#8884d8'
                   dataKey='valor'
                 >
@@ -722,11 +732,13 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Gráfico de Ordens de Serviço */}
-        <div className={`rounded-lg shadow-sm p-6 mb-8 ${getCardClasses()}`}>
-          <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+        <div
+          className={`rounded-lg shadow-sm p-4 sm:p-6 mb-6 sm:mb-8 ${getCardClasses()}`}
+        >
+          <h3 className='text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4'>
             Ordens de Serviço por Semana
           </h3>
-          <ResponsiveContainer width='100%' height={300}>
+          <ResponsiveContainer width='100%' height={250}>
             <AreaChart data={dadosGraficoOrdens}>
               <CartesianGrid strokeDasharray='3 3' />
               <XAxis dataKey='dia' />
