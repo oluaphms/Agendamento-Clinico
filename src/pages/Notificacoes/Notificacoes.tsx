@@ -419,18 +419,6 @@ const Notificacoes: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <BellRing className="mr-3 !text-blue-600" size={32} style={{ color: '#2563eb !important' }} />
-                Centro de Notificações
-                {notificacoesNaoLidas > 0 && (
-                  <span className="ml-3 bg-red-500 text-white text-sm font-bold px-2 py-1 rounded-full">
-                    {notificacoesNaoLidas}
-                  </span>
-                )}
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-2">
-                Gerencie alertas, lembretes e comunicações do sistema
-              </p>
             </div>
             <div className="flex items-center space-x-4">
               <button

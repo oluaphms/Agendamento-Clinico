@@ -214,7 +214,7 @@ export default function MenuCardiaco({
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             >
               <Heart size={32} className='text-blue-400 animate-pulse' />
-              Menu Cardíaco
+              Menu
             </motion.h2>
 
             {/* Botão Fechar ao lado do título */}
@@ -304,7 +304,7 @@ export default function MenuCardiaco({
             })}
           </div>
 
-          {/* Monitor Cardíaco Central */}
+          {/* Monitor Central */}
           <div className='relative w-full h-[100px] flex items-center justify-center'>
             <svg viewBox='0 0 500 100' className='w-full h-full'>
               <defs>

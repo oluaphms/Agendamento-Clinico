@@ -570,16 +570,6 @@ const Configuracoes: React.FC = () => {
 
       <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-          {/* Header */}
-          <div className='mb-8'>
-            <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-              <Settings className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
-              Configurações do Sistema
-            </h1>
-            <p className='text-gray-600 dark:text-gray-300 mt-2'>
-              Gerencie as configurações e preferências do sistema
-            </p>
-          </div>
 
           <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
             {/* Sidebar com abas */}

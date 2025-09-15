@@ -482,13 +482,6 @@ const Usuarios: React.FC = () => {
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-                <Users className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
-                Usuários do Sistema
-              </h1>
-              <p className='text-gray-600 dark:text-gray-300 mt-2'>
-                Gerencie usuários, permissões e acessos ao sistema
-              </p>
             </div>
             <Button onClick={handleCreateUser} className='flex items-center'>
               <Plus size={20} className='mr-2' />

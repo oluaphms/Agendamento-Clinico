@@ -43,6 +43,7 @@ interface AuthState {
   updateProfile: (
     updates: Record<string, unknown>
   ) => Promise<{ success: boolean; error?: string }>;
+  skipPasswordChange: () => Promise<{ success: boolean; error?: string }>;
 
   // Gerenciamento de estado
   setLoading: (loading: boolean) => void;
@@ -297,6 +298,68 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
 
       toast.success('Senha alterada com sucesso!');
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro inesperado';
+      set({ error: errorMessage, loading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  skipPasswordChange: async () => {
+    try {
+      const { user } = get();
+      if (!user) {
+        return { success: false, error: 'Usuário não autenticado' };
+      }
+
+      set({ loading: true, error: null });
+
+      // Para banco local, marcar que o usuário não precisa mais alterar a senha
+      if (!supabase || supabase._isLocalDb) {
+        console.log('Skipping password change for local database');
+        
+        // Atualizar usuários aprovados no localStorage
+        const storedUsers = JSON.parse(
+          localStorage.getItem('pendingUsers') || '[]'
+        );
+        const userIndex = storedUsers.findIndex(
+          (u: any) => u.cpf === user.user_metadata?.cpf
+        );
+        
+        if (userIndex !== -1) {
+          storedUsers[userIndex].primeiro_acesso = false;
+          storedUsers[userIndex].updated_at = new Date().toISOString();
+          localStorage.setItem('pendingUsers', JSON.stringify(storedUsers));
+        }
+        
+        // Atualizar dados mock se o usuário estiver lá
+        const { mockData } = await import('@/lib/mockData');
+        const mockUserIndex = mockData.usuarios.findIndex(
+          (u: any) => u.cpf === user.user_metadata?.cpf
+        );
+        
+        if (mockUserIndex !== -1) {
+          mockData.usuarios[mockUserIndex].primeiro_acesso = false;
+        }
+      }
+
+      // Atualizar o estado do usuário para indicar que não precisa mais alterar a senha
+      set({
+        user: {
+          ...user,
+          user_metadata: {
+            ...user.user_metadata,
+            primeiro_acesso: false,
+          },
+        } as any,
+        mustChangePassword: false,
+        loading: false,
+        error: null,
+      });
+
+      toast.success('Continuando com senha padrão');
       return { success: true };
     } catch (error) {
       const errorMessage =

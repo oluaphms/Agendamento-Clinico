@@ -9,11 +9,12 @@ interface ThemeState {
   toggleTheme: () => void;
   initializeTheme: () => void;
   applyTheme: (theme: Theme) => void;
+  resetTheme: () => void;
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  theme: 'dark', // Tema escuro como padrão conforme memória
-  isDark: true,
+  theme: 'light', // Tema claro como padrão
+  isDark: false,
 
   setTheme: (theme: Theme) => {
     set({ theme });
@@ -29,8 +30,14 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   },
 
   initializeTheme: () => {
-    // Carregar tema do localStorage ou usar padrão
-    const savedTheme = (localStorage.getItem('theme') as Theme) || 'dark';
+    // Carregar tema do localStorage ou usar padrão claro
+    const savedTheme = (localStorage.getItem('theme') as Theme) || 'light';
+    
+    // Se não há tema salvo, garantir que o tema claro seja aplicado
+    if (!localStorage.getItem('theme')) {
+      localStorage.setItem('theme', 'light');
+    }
+    
     set({ theme: savedTheme });
     get().applyTheme(savedTheme);
   },
@@ -61,6 +68,13 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         body.classList.add('light-theme');
       }
     }
+  },
+
+  resetTheme: () => {
+    // Resetar para tema claro e limpar localStorage
+    localStorage.removeItem('theme');
+    set({ theme: 'light', isDark: false });
+    get().applyTheme('light');
   },
 }));
 

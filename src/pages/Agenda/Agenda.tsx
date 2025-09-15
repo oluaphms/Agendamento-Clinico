@@ -602,24 +602,12 @@ const Agenda: React.FC = () => {
         {/* Header */}
         <div className='mb-8'>
           <div className='mb-6'>
-            <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-              <Calendar
-                className='mr-3 !text-blue-600'
-                size={32}
-                style={{ color: '#2563eb !important' }}
-              />
-              Agenda de Consultas
-            </h1>
-            <p className='text-gray-600 dark:text-gray-300 mt-2'>
-              Gerencie agendamentos, consultas e horários disponíveis
-            </p>
-          </div>
-          <div
-            className={`flex flex-col ${isMobile ? 'gap-3' : 'sm:flex-row justify-between items-start sm:items-center gap-4'}`}
-          >
             <div
-              className={`flex flex-wrap gap-2 ${isMobile ? 'justify-center' : 'gap-3'}`}
+              className={`flex flex-col ${isMobile ? 'gap-3' : 'sm:flex-row justify-between items-start sm:items-center gap-4'}`}
             >
+              <div
+                className={`flex flex-wrap gap-2 ${isMobile ? 'justify-center' : 'gap-3'}`}
+              >
               {/* Botão de Impressão */}
               <button
                 className={`btn btn-outline-info btn-sm d-flex align-items-center gap-2 ${isMobile ? 'w-full justify-center' : ''}`}
@@ -651,6 +639,7 @@ const Agenda: React.FC = () => {
                   </button>
                 </>
               )}
+              </div>
             </div>
           </div>
         </div>

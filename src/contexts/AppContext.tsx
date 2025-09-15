@@ -120,7 +120,7 @@ const initialState: AppState = {
   },
   filters: {},
   settings: {
-    theme: 'dark',
+    theme: 'light',
     language: 'pt-BR',
     timezone: 'America/Sao_Paulo',
   },

@@ -390,17 +390,6 @@ const Relatorios: React.FC = () => {
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-                <FileText
-                  className='mr-3 !text-blue-600'
-                  size={32}
-                  style={{ color: '#2563eb !important' }}
-                />
-                Relatórios Avançados
-              </h1>
-              <p className='text-gray-600 dark:text-gray-300 mt-2'>
-                Gere e exporte relatórios em múltiplos formatos
-              </p>
             </div>
             <div className='flex items-center space-x-4'>
               <button

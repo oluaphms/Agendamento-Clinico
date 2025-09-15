@@ -12,7 +12,7 @@ const FirstAccessPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { updatePassword, user } = useAuthStore();
+  const { updatePassword, skipPasswordChange, user } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +46,24 @@ const FirstAccessPassword: React.FC = () => {
     }
   };
 
+  const handleSkipPasswordChange = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const result = await skipPasswordChange();
+      if (result.success) {
+        toast.success('Continuando com senha padrão');
+        navigate('/app/dashboard', { replace: true });
+      } else {
+        toast.error(result.error || 'Erro ao continuar com senha padrão');
+      }
+    } catch (error) {
+      toast.error('Erro inesperado');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -67,6 +85,10 @@ const FirstAccessPassword: React.FC = () => {
               <br />
               <span className='font-medium text-blue-600 dark:text-blue-400'>
                 Por segurança, altere sua senha antes de continuar.
+              </span>
+              <br />
+              <span className='text-sm text-gray-500 dark:text-gray-400'>
+                Ou continue com sua senha padrão se preferir.
               </span>
             </p>
           </div>
@@ -149,8 +171,9 @@ const FirstAccessPassword: React.FC = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div>
+            {/* Buttons */}
+            <div className='space-y-3'>
+              {/* Submit Button */}
               <button
                 type='submit'
                 disabled={isSubmitting}
@@ -160,6 +183,20 @@ const FirstAccessPassword: React.FC = () => {
                   <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
                 ) : (
                   'Alterar Senha e Continuar'
+                )}
+              </button>
+
+              {/* Cancel Button */}
+              <button
+                type='button'
+                onClick={handleSkipPasswordChange}
+                disabled={isSubmitting}
+                className='w-full flex justify-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+              >
+                {isSubmitting ? (
+                  <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-400'></div>
+                ) : (
+                  'Continuar com Senha Padrão'
                 )}
               </button>
             </div>
@@ -174,6 +211,7 @@ const FirstAccessPassword: React.FC = () => {
                 <li>• Não há limite mínimo de caracteres</li>
                 <li>• Recomendamos usar letras, números e símbolos</li>
                 <li>• Esta é sua senha definitiva para o sistema</li>
+                <li>• Você pode continuar com sua senha padrão se preferir</li>
               </ul>
             </div>
           </form>

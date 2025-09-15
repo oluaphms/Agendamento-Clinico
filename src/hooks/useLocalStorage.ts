@@ -99,7 +99,7 @@ function useUserPreferences() {
   const [preferences, setPreferences, removePreferences] = useLocalStorage(
     'user-preferences',
     {
-      theme: 'dark' as 'light' | 'dark' | 'auto',
+      theme: 'light' as 'light' | 'dark' | 'auto',
       language: 'pt-BR',
       notifications: true,
       sidebarCollapsed: false,

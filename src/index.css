@@ -16,7 +16,7 @@
   --transition-speed: 0.3s;
 }
 
-/* Tema escuro como padrão - será aplicado pelo ThemeProvider */
+/* Tema claro como padrão - será aplicado pelo ThemeProvider */
 
 html.dark {
   color-scheme: dark;

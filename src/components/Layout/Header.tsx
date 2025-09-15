@@ -10,7 +10,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAuthStore, usePermissions } from '@/stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import MenuCardiaco from '@/components/MenuCardiaco';
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   const [isCardiacMenuOpen, setIsCardiacMenuOpen] = useState(false);
 
   const { user, signOut } = useAuthStore();
-  const permissions = usePermissions();
+  // const permissions = usePermissions();
   const { isDark, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -80,38 +80,62 @@ const Header: React.FC = () => {
   // Mapeamento de títulos das páginas
   const getPageTitle = (pathname: string) => {
     const titleMap: { [key: string]: string } = {
-      '/app/dashboard': '🏥 Sistema de Clínica',
-      '/app/agenda': '📅 Agenda',
-      '/app/pacientes': '👥 Pacientes',
-      '/app/profissionais': '👨‍⚕️ Profissionais',
-      '/app/servicos': '🩺 Serviços',
-      '/app/usuarios': '👤 Usuários',
-      '/app/configuracoes': '⚙️ Configurações',
-      '/app/permissions': '🔐 Permissões',
+      '/app/dashboard': 'Dashboard',
+      '/app/agenda': 'Agenda',
+      '/app/pacientes': 'Pacientes',
+      '/app/profissionais': 'Profissionais',
+      '/app/servicos': 'Serviços',
+      '/app/usuarios': 'Usuários',
+      '/app/configuracoes': 'Configurações',
+      '/app/permissions': 'Permissões',
+      '/app/relatorios': 'Relatórios',
+      '/app/notificacoes': 'Notificações',
+      '/app/analytics': 'Analytics',
+      '/app/whatsapp': 'WhatsApp',
+      '/app/backup': 'Backup',
     };
 
-    return titleMap[pathname] || '🏥 Sistema de Clínica';
+    return titleMap[pathname] || 'Dashboard';
+  };
+
+  const getPageIcon = (pathname: string) => {
+    const iconMap: { [key: string]: string } = {
+      '/app/dashboard': '📊',
+      '/app/agenda': '📅',
+      '/app/pacientes': '👥',
+      '/app/profissionais': '👨‍⚕️',
+      '/app/servicos': '🩺',
+      '/app/usuarios': '👤',
+      '/app/configuracoes': '⚙️',
+      '/app/permissions': '🔐',
+      '/app/relatorios': '📋',
+      '/app/notificacoes': '🔔',
+      '/app/analytics': '📈',
+      '/app/whatsapp': '💬',
+      '/app/backup': '💾',
+    };
+
+    return iconMap[pathname] || '📊';
   };
 
   const getPageDescription = (pathname: string) => {
     const descriptionMap: { [key: string]: string } = {
-      '/app/dashboard':
-        'Sistema de Gestão de Clínica - Controle total sobre pacientes, profissionais, serviços e agendamentos',
+      '/app/dashboard': 'Visão geral e métricas importantes da clínica',
       '/app/agenda': 'Gerencie agendamentos, consultas e horários disponíveis',
       '/app/pacientes': 'Cadastro e gestão completa de pacientes',
-      '/app/profissionais':
-        'Administre profissionais de saúde e suas especialidades',
+      '/app/profissionais': 'Administre profissionais de saúde e suas especialidades',
       '/app/servicos': 'Configure serviços médicos e procedimentos oferecidos',
-      '/app/usuarios':
-        'Controle de acesso e permissões dos usuários do sistema',
+      '/app/usuarios': 'Controle de acesso e permissões dos usuários do sistema',
       '/app/configuracoes': 'Configurações gerais e personalização do sistema',
       '/app/permissions': 'Gerenciamento de permissões e níveis de acesso',
+      '/app/relatorios': 'Gere e exporte relatórios em múltiplos formatos',
+      '/app/notificacoes': 'Central de notificações e alertas do sistema',
+      '/app/analytics': 'Análises avançadas e métricas de performance',
+      '/app/whatsapp': 'Integração e comunicação via WhatsApp',
+      '/app/backup': 'Backup e restauração de dados do sistema',
     };
 
-    return (
-      descriptionMap[pathname] ||
-      'Sistema de Gestão de Clínica - Controle total sobre pacientes, profissionais, serviços e agendamentos'
-    );
+    return descriptionMap[pathname] || 'Visão geral e métricas importantes da clínica';
   };
 
   // Se não há usuário autenticado, não renderizar o header
@@ -121,233 +145,170 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 shadow-sm border-b px-4 sm:px-6 py-2 sm:py-3 z-30 transition-colors duration-300 ${
-        isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-      }`}
+      className='fixed top-0 left-0 right-0 shadow-lg z-30 transition-colors duration-300'
+      style={{ backgroundColor: '#2196F3' }}
     >
-      <div className='flex items-center justify-between'>
-        {/* Botão Voltar - Só aparece em páginas internas */}
-        {isInternalPage && (
-          <button
-            onClick={() => navigate('/app/dashboard')}
-            className={`flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2 rounded-lg transition-colors ${
-              isDark
-                ? 'text-white hover:text-blue-100 hover:bg-blue-800'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <ArrowLeft size={16} />
-            <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
-              Voltar
-            </span>
-          </button>
-        )}
-
-        {/* Logo/Brand - Centralizado */}
-        <div className='flex-1 flex justify-center'>
-          <div className='text-center'>
-            <h1
-              className={`text-lg sm:text-xl font-bold transition-colors duration-300 ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              {getPageTitle(location.pathname)}
-            </h1>
-            <p
-              className={`text-xs sm:text-sm transition-colors duration-300 hidden sm:block ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}
-            >
-              {getPageDescription(location.pathname)}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side */}
-        <div className='flex items-center space-x-2 sm:space-x-4'>
-          {/* Menu Cardíaco Button */}
-          <motion.button
-            onClick={() => setIsCardiacMenuOpen(true)}
-            className={`relative flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-300 group ${
-              isDark
-                ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30'
-                : 'text-red-500 hover:text-red-600 hover:bg-red-50'
-            }`}
-            title='Menu Cardíaco'
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              animate={{
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            >
-              <Heart size={16} />
-            </motion.div>
-            <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
-              Cardíaco
-            </span>
-
-            {/* Efeito de brilho no hover */}
-            <motion.div
-              className={`absolute inset-0 rounded-lg bg-gradient-to-r from-red-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-              initial={false}
-            />
-          </motion.button>
-
-          {/* Theme Toggle Button */}
-          <motion.button
-            onClick={toggleTheme}
-            className={`relative p-1 sm:p-2 rounded-lg transition-all duration-300 group ${
-              isDark
-                ? 'text-yellow-300 hover:text-yellow-200 hover:bg-yellow-900/30'
-                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-            title={
-              isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro'
-            }
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              animate={{
-                rotate: isDark ? 0 : 180,
-                scale: isDark ? 1 : 1.1,
-              }}
-              transition={{
-                duration: 0.3,
-                type: 'spring',
-                stiffness: 200,
-              }}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </motion.div>
-
-            {/* Efeito de brilho no hover */}
-            <motion.div
-              className='absolute inset-0 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-              initial={false}
-            />
-          </motion.button>
-
-          {/* User Menu */}
-          <div className='relative'>
+      <div className='px-4 sm:px-6 py-4 sm:py-6'>
+        <div className='flex items-center justify-between'>
+          {/* Botão Voltar - Só aparece em páginas internas */}
+          {isInternalPage && (
             <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className={`flex items-center space-x-2 sm:space-x-3 p-1 sm:p-2 rounded-lg transition-colors ${
-                isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
-              }`}
+              onClick={() => navigate('/app/dashboard')}
+              className='flex items-center space-x-1 sm:space-x-2 p-2 sm:p-3 rounded-lg transition-colors text-white hover:text-blue-100 hover:bg-blue-600'
             >
-              <div className='w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center'>
-                <User size={12} className='text-white' />
+              <ArrowLeft size={16} />
+              <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
+                Voltar
+              </span>
+            </button>
+          )}
+
+          {/* Cabeçalho Principal - Centralizado */}
+          <div className='flex-1 flex justify-center'>
+            <div className='text-center'>
+              <div className='flex items-center justify-center space-x-3 mb-2'>
+                <span className='text-2xl sm:text-3xl'>{getPageIcon(location.pathname)}</span>
+                <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold text-white'>
+                  {getPageTitle(location.pathname)}
+                </h1>
               </div>
-              <div className='text-left hidden sm:block'>
-                <p
-                  className={`text-sm font-medium transition-colors duration-300 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
-                  {user.user_metadata?.nome ||
-                    user.email?.split('@')[0] ||
-                    'Usuário'}
-                </p>
-                <div
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(permissions.userRole || '')}`}
-                >
-                  {getRoleName(permissions.userRole || '')}
-                </div>
-              </div>
-              <ChevronDown
-                size={14}
-                className={`transition-colors duration-300 ${
-                  isDark ? 'text-gray-400' : 'text-gray-500'
-                }`}
-              />
+              <p className='text-sm sm:text-base text-blue-100 font-medium'>
+                {getPageDescription(location.pathname)}
+              </p>
+            </div>
+          </div>
+
+          {/* Right Side */}
+          <div className='flex items-center space-x-2 sm:space-x-4'>
+            {/* Menu Button */}
+            <motion.button
+              onClick={() => setIsCardiacMenuOpen(true)}
+              className={`relative flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-300 group ${
+                isDark
+                  ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30'
+                  : 'text-red-500 hover:text-red-600 hover:bg-red-50'
+              }`}
+              title='Menu'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                <Heart size={16} />
+              </motion.div>
+              <span className='text-xs sm:text-sm font-medium hidden sm:inline'>
+                Menu
+              </span>
+            </motion.button>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors ${
+                isDark
+                  ? 'text-yellow-400 hover:bg-yellow-900/20'
+                  : 'text-yellow-600 hover:bg-yellow-50'
+              }`}
+              title={isDark ? 'Modo claro' : 'Modo escuro'}
+            >
+              {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
 
-            {/* User Dropdown Menu */}
-            {showUserMenu && (
-              <div
-                className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg border py-2 z-50 transition-colors duration-300 ${
+            {/* User Menu */}
+            <div className='relative'>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                   isDark
-                    ? 'bg-gray-800 border-gray-700'
-                    : 'bg-white border-gray-200'
+                    ? 'text-white hover:bg-blue-800/50'
+                    : 'text-white hover:bg-blue-600/80'
                 }`}
               >
-                {/* User Info */}
-                <div className='px-4 py-3 border-b border-gray-700'>
-                  <p className='text-sm font-medium text-white'>
-                    {user.user_metadata?.nome ||
-                      user.email?.split('@')[0] ||
-                      'Usuário'}
+                <div className='w-8 h-8 rounded-full bg-white/20 flex items-center justify-center'>
+                  <User size={16} />
+                </div>
+                <div className='hidden sm:block text-left'>
+                  <p className='text-sm font-medium'>{user.user_metadata?.nome || 'Usuário'}</p>
+                  <p className='text-xs opacity-75'>
+                    {getRoleName(user.user_metadata?.nivel_acesso || 'usuario')}
                   </p>
-                  <p className='text-sm text-gray-400'>{user.email}</p>
-                  <div
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 ${getRoleBadgeColor(permissions.userRole || '')}`}
-                  >
-                    {getRoleName(permissions.userRole || '')}
+                </div>
+                <ChevronDown size={16} />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showUserMenu && (
+                <div className='absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50'>
+                  <div className='p-4 border-b border-gray-200 dark:border-gray-700'>
+                    <div className='flex items-center space-x-3'>
+                      <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center'>
+                        <User size={20} className='text-blue-600 dark:text-blue-300' />
+                      </div>
+                      <div>
+                        <p className='font-medium text-gray-900 dark:text-white'>
+                          {user.user_metadata?.nome || 'Usuário'}
+                        </p>
+                        <p className='text-sm text-gray-500 dark:text-gray-400'>
+                          {user.email}
+                        </p>
+                        <span
+                          className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${getRoleBadgeColor(
+                            user.user_metadata?.nivel_acesso || 'usuario'
+                          )}`}
+                        >
+                          {getRoleName(user.user_metadata?.nivel_acesso || 'usuario')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='p-2'>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        navigate('/app/configuracoes');
+                      }}
+                      className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors ${
+                        isDark
+                          ? 'text-gray-300 hover:bg-gray-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <Settings size={16} className='mr-3' />
+                      Configurações
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        handleLogout();
+                      }}
+                      className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors ${
+                        isDark
+                          ? 'text-red-400 hover:bg-red-900/20'
+                          : 'text-red-600 hover:bg-red-50'
+                      }`}
+                    >
+                      <LogOut size={16} className='mr-3' />
+                      Sair
+                    </button>
                   </div>
                 </div>
-
-                {/* Menu Items */}
-                <div className='py-1'>
-                  <button
-                    onClick={() => {
-                      setShowUserMenu(false);
-                      navigate('/profile');
-                    }}
-                    className={`w-full text-left px-4 py-2 text-sm flex items-center transition-colors ${
-                      isDark
-                        ? 'text-white hover:bg-blue-800'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <User size={16} className='mr-3' />
-                    Meu Perfil
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setShowUserMenu(false);
-                      navigate('/change-password');
-                    }}
-                    className={`w-full text-left px-4 py-2 text-sm flex items-center transition-colors ${
-                      isDark
-                        ? 'text-white hover:bg-blue-800'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Settings size={16} className='mr-3' />
-                    Alterar Senha
-                  </button>
-                </div>
-
-                {/* Logout */}
-                <div className='border-t border-gray-700 py-1'>
-                  <button
-                    onClick={handleLogout}
-                    className={`w-full text-left px-4 py-2 text-sm flex items-center transition-colors ${
-                      isDark
-                        ? 'text-red-400 hover:bg-red-900/20'
-                        : 'text-red-600 hover:bg-red-50'
-                    }`}
-                  >
-                    <LogOut size={16} className='mr-3' />
-                    Sair
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Menu Cardíaco */}
+      {/* Menu */}
       <MenuCardiaco
         isOpen={isCardiacMenuOpen}
         onClose={() => setIsCardiacMenuOpen(false)}

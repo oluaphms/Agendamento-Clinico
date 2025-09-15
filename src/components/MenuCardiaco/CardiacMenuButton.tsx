@@ -1,8 +1,8 @@
 // ============================================================================
-// COMPONENTE: CardiacMenuButton - Botão Flutuante do Menu Cardíaco
+// COMPONENTE: CardiacMenuButton - Botão Flutuante do Menu
 // ============================================================================
 // Botão flutuante que pode ser usado como alternativa ao botão do header
-// para acessar o menu cardíaco de qualquer lugar da aplicação.
+// para acessar o menu de qualquer lugar da aplicação.
 // ============================================================================
 
 // import React from 'react';
@@ -76,7 +76,7 @@ export default function CardiacMenuButton({ onClick, className = '' }: CardiacMe
         initial={{ opacity: 0, x: 10 }}
         whileHover={{ opacity: 1, x: 0 }}
       >
-        Menu Cardíaco
+        Menu
         <div className="absolute left-full top-1/2 -translate-y-1/2
                         border-4 border-transparent border-l-gray-900" />
       </motion.div>

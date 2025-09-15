@@ -268,7 +268,7 @@ const WhatsApp: React.FC = () => {
     useState<TemplateWhatsApp[]>(MOCK_TEMPLATES);
   const [campanhas, setCampanhas] =
     useState<CampanhaWhatsApp[]>(MOCK_CAMPANHAS);
-  const [configuracao, setConfiguracao] =
+  const [, setConfiguracao] =
     useState<ConfiguracaoWhatsApp>(MOCK_CONFIGURACAO);
   const [filtros, setFiltros] = useState({
     status: '',
@@ -390,23 +390,6 @@ const WhatsApp: React.FC = () => {
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-                <MessageCircle className='mr-3 text-green-600' size={32} />
-                WhatsApp Business
-                <span
-                  className={`ml-3 px-2 py-1 rounded-full text-sm font-medium ${
-                    configuracao.ativo
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                  }`}
-                >
-                  {configuracao.ativo ? 'Ativo' : 'Inativo'}
-                </span>
-              </h1>
-              <p className='text-gray-600 dark:text-gray-300 mt-2'>
-                Integração completa com WhatsApp Business para comunicação com
-                pacientes
-              </p>
             </div>
             <div className='flex items-center space-x-4'>
               <button

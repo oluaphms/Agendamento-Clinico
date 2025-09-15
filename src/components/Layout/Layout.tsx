@@ -22,7 +22,7 @@ const Layout: React.FC = () => {
       <Header />
 
       {/* Main Content */}
-      <main className='pt-14 pb-20 px-6'>
+      <main className='pt-24 pb-20 px-6'>
         <div className='max-w-7xl mx-auto'>
           {/* Breadcrumb */}
           <Breadcrumb />
@@ -38,7 +38,7 @@ const Layout: React.FC = () => {
       {/* Status de Conectividade */}
       <ConnectivityStatus />
 
-      {/* Menu Cardíaco Global */}
+      {/* Menu Global */}
       <MenuCardiaco
         isOpen={isCardiacMenuOpen}
         onClose={() => setIsCardiacMenuOpen(false)}

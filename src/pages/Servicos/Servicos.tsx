@@ -410,13 +410,6 @@ const Servicos: React.FC = () => {
         <div className='row mb-4'>
           <div className='col-12'>
             <div className='mb-6'>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center'>
-                <Settings className='mr-3 !text-blue-600' size={32} style={{ color: '#2563eb !important' }} />
-                Cadastro de Serviços
-              </h1>
-              <p className='text-gray-600 dark:text-gray-300 mt-2'>
-                Gerencie os serviços e procedimentos oferecidos pela clínica
-              </p>
             </div>
             <div className='d-flex justify-content-between align-items-center'>
               <div></div>
