@@ -98,9 +98,9 @@ const Login: React.FC = () => {
         <div className='max-w-md w-full space-y-6 sm:space-y-8'>
           {/* Header */}
           <div className='text-center'>
-            <div className='inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mb-6 sm:mb-8 shadow-lg'>
+            <div className='inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 mb-6 sm:mb-8 shadow-lg'>
               <img
-                src='/logo-large.png'
+                src='/icons/logo-principal.png'
                 alt='Sistema Clínico'
                 className='w-full h-full'
               />

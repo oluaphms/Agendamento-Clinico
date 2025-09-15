@@ -84,9 +84,15 @@ const Apresentacao: React.FC = () => {
           >
             <div className='w-8 h-8 sm:w-10 sm:h-10'>
               <img
-                src='/logo.svg'
+                src='/icons/logo-principal.png'
                 alt='Sistema Clínico'
-                className='w-full h-full'
+                className='w-full h-full object-contain'
+                onError={(e) => {
+                  console.log('Erro ao carregar logo-principal.png no header');
+                }}
+                onLoad={() => {
+                  console.log('Logo-principal.png carregado no header');
+                }}
               />
             </div>
             <span className='text-lg sm:text-xl font-bold text-gray-800 dark:text-white'>
@@ -107,7 +113,7 @@ const Apresentacao: React.FC = () => {
           {/* Hero Section */}
           <div className='text-center mb-12 sm:mb-16'>
             <motion.div
-              className='inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mb-6 sm:mb-8 shadow-lg'
+              className='inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mb-6 sm:mb-8 shadow-lg'
               variants={itemVariants}
               whileHover={{
                 scale: 1.1,
@@ -116,9 +122,16 @@ const Apresentacao: React.FC = () => {
               }}
             >
               <img
-                src='/logo-large.svg'
+                src='/icons/logo-principal.png'
                 alt='Sistema Clínico'
-                className='w-full h-full'
+                className='w-full h-full object-contain'
+                onError={(e) => {
+                  console.log('Erro ao carregar logo-principal.png');
+                  e.currentTarget.style.display = 'none';
+                }}
+                onLoad={() => {
+                  console.log('Logo-principal.png carregado com sucesso');
+                }}
               />
             </motion.div>
 
@@ -199,7 +212,7 @@ const Apresentacao: React.FC = () => {
       >
         <div className='max-w-7xl mx-auto text-center'>
           <p className='text-gray-600 dark:text-gray-400'>
-            © Sistema de Gestão de Clínica. Todos os direitos reservados.
+            © 2025Sistema de Gestão de Clínica. Todos os direitos reservados.
           </p>
         </div>
       </motion.footer>

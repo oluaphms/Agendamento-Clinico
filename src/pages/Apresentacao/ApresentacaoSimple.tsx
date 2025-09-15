@@ -46,10 +46,6 @@ const ApresentacaoSimple: React.FC = () => {
       <header className='w-full py-6 px-4 relative z-10'>
         <div className='max-w-7xl mx-auto flex justify-between items-center'>
           <div className='flex items-center space-x-3'>
-            <div className='w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center'>
-              <Stethoscope className='w-6 h-6 text-white' />
-            </div>
-            <span className='text-xl font-bold text-gray-800'>Clínica</span>
           </div>
         </div>
       </header>
@@ -59,14 +55,21 @@ const ApresentacaoSimple: React.FC = () => {
         <div className='w-full max-w-4xl mx-auto'>
           {/* Hero Section */}
           <div className='text-center mb-16'>
-            <div className='inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-8 shadow-lg'>
-              <Heart className='w-10 h-10 text-white' />
+            <div className='inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 mb-8'>
+              <img
+                src='/icons/1024.png'
+                alt='Sistema Clínico'
+                className='w-full h-full object-contain'
+                onError={(e) => {
+                  console.log('Erro ao carregar 1024.png, usando fallback');
+                  e.currentTarget.src = '/icons/logo-principal.png';
+                }}
+              />
             </div>
 
             <h1 className='text-4xl md:text-6xl font-bold text-gray-900 mb-6'>
-              Sistema de{' '}
               <span className='bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-                Gestão de Clínica
+                Agendamento Clínico
               </span>
             </h1>
 
@@ -112,7 +115,7 @@ const ApresentacaoSimple: React.FC = () => {
       <footer className='w-full py-6 px-4 border-t border-white/20 relative z-10'>
         <div className='max-w-7xl mx-auto text-center'>
           <p className='text-gray-600'>
-            © 2024 Sistema de Gestão de Clínica. Todos os direitos reservados.
+            © Agendamento Clínico. Todos os direitos reservados.
           </p>
         </div>
       </footer>

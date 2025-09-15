@@ -14,17 +14,12 @@
   "categories": ["medical", "health", "productivity"],
   "icons": [
     {
-      "src": "/logo.svg",
-      "sizes": "64x64",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-192x192.svg",
+      "src": "/icons/icon-mobile.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512x512.svg",
+      "src": "/icons/logo-principal.png",
       "sizes": "512x512",
       "type": "image/png"
     }

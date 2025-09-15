@@ -1,0 +1,39 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fundo branco -->
+  <rect width="64" height="64" fill="white"/>
+  
+  <!-- Calendário azul com cantos arredondados -->
+  <rect x="8" y="16" width="32" height="32" rx="4" fill="#2196F3"/>
+  
+  <!-- Anéis do calendário (retângulos no topo) -->
+  <rect x="14" y="8" width="4" height="8" rx="2" fill="#2196F3"/>
+  <rect x="30" y="8" width="4" height="8" rx="2" fill="#2196F3"/>
+  
+  <!-- Estetoscópio verde -->
+  <!-- Tubo principal (lateral esquerda) -->
+  <path d="M8 20V40" stroke="#4DD0A4" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Hastes auriculares (curvas duplas elegantes saindo do topo) -->
+  <path d="M8 20Q12 16 16 20" stroke="#4DD0A4" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M8 22Q12 18 16 22" stroke="#4DD0A4" stroke-width="2" stroke-linecap="round" fill="none"/>
+  
+  <!-- Tubo conectando (diagonal suave do meio do calendário) -->
+  <path d="M20 28Q28 32 36 44" stroke="#4DD0A4" stroke-width="2" stroke-linecap="round" fill="none"/>
+  
+  <!-- Campânula (canto inferior direito) -->
+  <circle cx="36" cy="44" r="4" fill="#4DD0A4"/>
+  
+  <!-- Linha curva interna na campânula (detalhe crucial) -->
+  <path d="M34 42Q36 44 38 42" stroke="white" stroke-width="1" stroke-linecap="round" fill="none"/>
+  
+  <!-- Linhas internas do calendário (horizontais) -->
+  <path d="M12 24H36" stroke="white" stroke-width="1" opacity="0.7"/>
+  <path d="M12 28H36" stroke="white" stroke-width="1" opacity="0.7"/>
+  <path d="M12 32H36" stroke="white" stroke-width="1" opacity="0.7"/>
+  <path d="M12 36H36" stroke="white" stroke-width="1" opacity="0.7"/>
+  <path d="M12 40H36" stroke="white" stroke-width="1" opacity="0.7"/>
+  
+  <!-- Linhas verticais do calendário -->
+  <path d="M20 20V44" stroke="white" stroke-width="1" opacity="0.7"/>
+  <path d="M28 20V44" stroke="white" stroke-width="1" opacity="0.7"/>
+</svg>
