@@ -18,6 +18,7 @@ import {
   UsuariosLazy,
   ConfiguracoesLazy,
   ChangePasswordLazy,
+  FirstAccessPasswordLazy,
   PermissionsLazy,
   AnalyticsLazy,
   RelatoriosLazy,
@@ -102,6 +103,10 @@ function App() {
                       <Route
                         path='/change-password'
                         element={<ChangePasswordLazy />}
+                      />
+                      <Route
+                        path='/first-access-password'
+                        element={<FirstAccessPasswordLazy />}
                       />
 
                       {/* Rotas Protegidas */}

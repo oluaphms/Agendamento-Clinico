@@ -60,8 +60,8 @@ const Login: React.FC = () => {
       const result = await signIn(cpf, password);
       if (result.success) {
         if (result.mustChangePassword) {
-          // Redirecionar para alteração de senha
-          navigate('/change-password', { replace: true });
+          // Redirecionar para alteração de senha no primeiro acesso
+          navigate('/first-access-password', { replace: true });
         } else {
           // Redirecionar para dashboard
           const from = location.state?.from?.pathname || '/app/dashboard';

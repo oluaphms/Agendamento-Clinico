@@ -95,7 +95,7 @@ export const mockData: MockData = {
       senha: '333',
       email: 'dev@clinica.com',
       nivel_acesso: 'desenvolvedor',
-      primeiro_acesso: false,
+      primeiro_acesso: true, // Usuário para testar primeiro acesso
     },
     {
       id: 5,

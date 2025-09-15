@@ -74,6 +74,10 @@ export const LazyChangePassword = createLazyComponent(
   () => import('@/pages/Auth/ChangePassword'),
   { chunkName: 'change-password' }
 );
+export const LazyFirstAccessPassword = createLazyComponent(
+  () => import('@/pages/Auth/FirstAccessPassword'),
+  { chunkName: 'first-access-password' }
+);
 export const LazyApresentacao = createLazyComponent(
   () => import('@/pages/Apresentacao/ApresentacaoSimple'),
   { chunkName: 'apresentacao', preload: true }
@@ -355,6 +359,18 @@ export const ChangePasswordLazy = () => (
     }
   >
     <LazyChangePassword />
+  </LazyWrapper>
+);
+
+export const FirstAccessPasswordLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='min-h-screen flex items-center justify-center'>
+        <CardSkeleton />
+      </div>
+    }
+  >
+    <LazyFirstAccessPassword />
   </LazyWrapper>
 );
 

@@ -207,18 +207,35 @@ export const localDb = {
           }
         }
 
+        // Verificar se é senha padrão (3 primeiros dígitos do CPF)
+        const cpfLimpoUsuario = usuario.cpf.replace(/[.\-\s]/g, '');
+        const senhaPadrao = cpfLimpoUsuario.substring(0, 3);
+        const isSenhaPadrao = credentials.password === senhaPadrao;
+        
+        // Determinar se precisa trocar senha
+        const precisaTrocarSenha = usuario.primeiro_acesso || isSenhaPadrao;
+
+        console.log('🔍 [Database] Verificação de senha padrão:', {
+          cpfLimpoUsuario,
+          senhaPadrao,
+          senhaDigitada: credentials.password,
+          isSenhaPadrao,
+          primeiro_acesso: usuario.primeiro_acesso,
+          precisaTrocarSenha
+        });
+
         // Criar objeto de usuário compatível
         const user = {
           id: usuario.id.toString(),
           email: usuario.email || `${usuario.cpf}@clinica.local`,
           cpf: usuario.cpf,
           password: credentials.password,
-          must_change_password: usuario.primeiro_acesso || false,
+          must_change_password: precisaTrocarSenha,
           user_metadata: {
             nome: usuario.nome,
             cpf: usuario.cpf,
             nivel_acesso: usuario.nivel_acesso,
-            primeiro_acesso: usuario.primeiro_acesso || false,
+            primeiro_acesso: precisaTrocarSenha,
             telefone: '',
             cargo: 'Funcionário',
             status: 'ativo',

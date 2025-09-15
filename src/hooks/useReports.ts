@@ -129,7 +129,7 @@ function useReports() {
     setError(null);
 
     try {
-      const reportData = await reportService.generateReport(reportId, Object.values(filters), userId);
+        const reportData = await reportService.generateReport(reportId, Object.values(filters), userId);
       setCurrentReport(reportData);
       setGeneratedReports(prev => [reportData, ...prev]);
       toast.success('Relatório gerado com sucesso!');

@@ -252,12 +252,45 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           return { success: false, error: error.message };
         }
       } else {
-        // Para banco local, apenas simular sucesso
-        console.log('Password change simulated for local database');
+        // Para banco local, atualizar o usuário no localStorage
+        console.log('Updating password for local database');
+        
+        // Atualizar usuários aprovados no localStorage
+        const storedUsers = JSON.parse(
+          localStorage.getItem('pendingUsers') || '[]'
+        );
+        const userIndex = storedUsers.findIndex(
+          (u: any) => u.cpf === user.user_metadata?.cpf
+        );
+        
+        if (userIndex !== -1) {
+          storedUsers[userIndex].senha = password;
+          storedUsers[userIndex].primeiro_acesso = false;
+          storedUsers[userIndex].updated_at = new Date().toISOString();
+          localStorage.setItem('pendingUsers', JSON.stringify(storedUsers));
+        }
+        
+        // Atualizar dados mock se o usuário estiver lá
+        const { mockData } = await import('@/lib/mockData');
+        const mockUserIndex = mockData.usuarios.findIndex(
+          (u: any) => u.cpf === user.user_metadata?.cpf
+        );
+        
+        if (mockUserIndex !== -1) {
+          mockData.usuarios[mockUserIndex].senha = password;
+          mockData.usuarios[mockUserIndex].primeiro_acesso = false;
+        }
       }
 
-      // Atualizar o estado para indicar que a senha foi alterada
+      // Atualizar o estado do usuário para indicar que a senha foi alterada
       set({
+        user: {
+          ...user,
+          user_metadata: {
+            ...user.user_metadata,
+            primeiro_acesso: false,
+          },
+        } as any,
         mustChangePassword: false,
         loading: false,
         error: null,
