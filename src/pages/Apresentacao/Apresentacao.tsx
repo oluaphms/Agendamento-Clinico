@@ -87,7 +87,7 @@ const Apresentacao: React.FC = () => {
                 src='/icons/logo-principal.png'
                 alt='Sistema Clínico'
                 className='w-full h-full object-contain'
-                onError={(e) => {
+                onError={() => {
                   console.log('Erro ao carregar logo-principal.png no header');
                 }}
                 onLoad={() => {

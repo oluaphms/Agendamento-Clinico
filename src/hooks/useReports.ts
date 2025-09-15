@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import { reportService, ReportConfig, ReportData, ReportFilter } from '@/services/reportService';
+import { reportService, ReportConfig, ReportData, ReportFilter } from '@/services/mockServices';
 import toast from 'react-hot-toast';
 
 // ============================================================================
@@ -129,7 +129,7 @@ function useReports() {
     setError(null);
 
     try {
-      const reportData = await reportService.generateReport(reportId, filters, userId);
+      const reportData = await reportService.generateReport(reportId, Object.values(filters), userId);
       setCurrentReport(reportData);
       setGeneratedReports(prev => [reportData, ...prev]);
       toast.success('Relatório gerado com sucesso!');
@@ -422,7 +422,7 @@ function useReportGeneration() {
     setError(null);
 
     try {
-      const reportData = await reportService.generateReport(reportId, filters, userId);
+      const reportData = await reportService.generateReport(reportId, Object.values(filters), userId);
       setCurrentReport(reportData);
       return reportData;
     } catch (err) {

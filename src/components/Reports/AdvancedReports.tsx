@@ -32,11 +32,7 @@ import {
   AlertDescription,
 } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import {
-  // ReportConfig,
-  ReportData,
-  ReportFilter,
-} from '@/services/reportService';
+import { ReportData, ReportFilter } from '@/services/mockServices';
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -220,7 +216,7 @@ export const AdvancedReports: React.FC = () => {
                   </p>
                 </div>
                 <Badge variant='secondary'>
-                  {getReportTypeLabel(report.type)}
+                  {getReportTypeLabel(report.type || '')}
                 </Badge>
               </div>
             </CardHeader>
@@ -229,10 +225,10 @@ export const AdvancedReports: React.FC = () => {
                 {/* Gráficos */}
                 <div>
                   <h4 className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                    Gráficos ({report.charts.length})
+                    Gráficos ({report.charts?.length || 0})
                   </h4>
                   <div className='flex flex-wrap gap-1'>
-                    {report.charts.map(chart => (
+                    {report.charts?.map((chart: any) => (
                       <Badge
                         key={chart.id}
                         variant='outline'
@@ -323,7 +319,7 @@ export const AdvancedReports: React.FC = () => {
               <div className='text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg'>
                 <Users className='h-8 w-8 text-blue-500 mx-auto mb-2' />
                 <p className='text-2xl font-bold text-blue-600 dark:text-blue-400'>
-                  {currentReport.summary.totalRecords}
+                  {currentReport.summary?.totalRecords || 0}
                 </p>
                 <p className='text-sm text-gray-600 dark:text-gray-400'>
                   Total de Registros
@@ -332,7 +328,7 @@ export const AdvancedReports: React.FC = () => {
               <div className='text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg'>
                 <DollarSign className='h-8 w-8 text-green-500 mx-auto mb-2' />
                 <p className='text-2xl font-bold text-green-600 dark:text-green-400'>
-                  R$ {currentReport.summary.totalValue.toLocaleString()}
+                  R$ {(currentReport.summary?.totalValue || 0).toLocaleString()}
                 </p>
                 <p className='text-sm text-gray-600 dark:text-gray-400'>
                   Valor Total
@@ -341,7 +337,7 @@ export const AdvancedReports: React.FC = () => {
               <div className='text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg'>
                 <TrendingUp className='h-8 w-8 text-yellow-500 mx-auto mb-2' />
                 <p className='text-2xl font-bold text-yellow-600 dark:text-yellow-400'>
-                  {currentReport.summary.growthRate}%
+                  {currentReport.summary?.growthRate || 0}%
                 </p>
                 <p className='text-sm text-gray-600 dark:text-gray-400'>
                   Taxa de Crescimento
@@ -350,7 +346,7 @@ export const AdvancedReports: React.FC = () => {
               <div className='text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg'>
                 <Activity className='h-8 w-8 text-purple-500 mx-auto mb-2' />
                 <p className='text-2xl font-bold text-purple-600 dark:text-purple-400'>
-                  {currentReport.summary.averageValue.toFixed(2)}
+                  {(currentReport.summary?.averageValue || 0).toFixed(2)}
                 </p>
                 <p className='text-sm text-gray-600 dark:text-gray-400'>
                   Valor Médio
@@ -360,7 +356,7 @@ export const AdvancedReports: React.FC = () => {
 
             {/* Gráficos */}
             <div className='space-y-6'>
-              {currentReport.charts.map(chart => (
+              {currentReport.charts?.map((chart: any) => (
                 <div
                   key={chart.chartId}
                   className='border border-gray-200 dark:border-gray-700 rounded-lg p-4'
@@ -402,7 +398,7 @@ export const AdvancedReports: React.FC = () => {
                     Gerado em:
                   </span>
                   <p className='font-medium'>
-                    {formatDate(currentReport.generatedAt)}
+                    {formatDate(currentReport.generatedAt?.toString() || '')}
                   </p>
                 </div>
                 <div>
@@ -410,7 +406,7 @@ export const AdvancedReports: React.FC = () => {
                     Processamento:
                   </span>
                   <p className='font-medium'>
-                    {currentReport.metadata.processingTime}ms
+                    {currentReport.metadata?.processingTime || 0}ms
                   </p>
                 </div>
                 <div>
@@ -418,7 +414,7 @@ export const AdvancedReports: React.FC = () => {
                     Registros:
                   </span>
                   <p className='font-medium'>
-                    {currentReport.metadata.recordCount}
+                    {currentReport.metadata?.recordCount || 0}
                   </p>
                 </div>
               </div>

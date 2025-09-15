@@ -32,7 +32,7 @@ import {
   AlertDescription,
   Input,
 } from '@/design-system';
-import PermissionService from '@/services/permissionService';
+import { PermissionService } from '@/services/mockServices';
 
 // ============================================================================
 // TIPOS E INTERFACES
@@ -495,8 +495,7 @@ export const PermissionManager: React.FC = () => {
       });
 
       const success = await PermissionService.saveAllPermissions(
-        funcaoPermissions,
-        users
+        funcaoPermissions
       );
 
       if (success) {

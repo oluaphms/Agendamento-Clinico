@@ -1,13 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Stethoscope,
   Users,
   Calendar,
   BarChart3,
   Shield,
   ArrowRight,
-  Heart,
 } from 'lucide-react';
 
 const ApresentacaoSimple: React.FC = () => {

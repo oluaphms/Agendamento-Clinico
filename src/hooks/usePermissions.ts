@@ -4,11 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { Permission } from '../services/permissionService';
-
-// ============================================================================
-// TIPOS E INTERFACES
-// ============================================================================
+import { Permission } from '@/services/mockServices';
 
 interface Role {
   id: string;
