@@ -79,7 +79,24 @@ const authenticateUser = async (cpf: string, password: string) => {
       return null;
     }
 
-    if (data && data.senha === password) {
+    // Verificar senha (pode ser senha_hash ou senha simples)
+    let senhaValida = false;
+    
+    if (data.senha_hash) {
+      // Se tem hash, verificar se é senha padrão (3 primeiros dígitos do CPF)
+      const senhaPadrao = cpfLimpo.substring(0, 3);
+      senhaValida = (password === senhaPadrao) || (data.senha === password);
+    } else {
+      // Fallback para senha simples
+      senhaValida = (data.senha === password);
+    }
+    
+    if (data && senhaValida) {
+      // Verificar se precisa trocar senha (primeiro acesso ou senha padrão)
+      const senhaPadrao = cpfLimpo.substring(0, 3);
+      const isSenhaPadrao = password === senhaPadrao;
+      const precisaTrocarSenha = data.primeiro_acesso || isSenhaPadrao;
+
       // Criar objeto de usuário compatível
       const user = {
         id: data.id,
@@ -88,9 +105,9 @@ const authenticateUser = async (cpf: string, password: string) => {
           nome: data.nome,
           cpf: cpf,
           nivel_acesso: data.nivel_acesso,
-          primeiro_acesso: data.primeiro_acesso || false,
+          primeiro_acesso: precisaTrocarSenha,
         },
-        must_change_password: data.primeiro_acesso || false,
+        must_change_password: precisaTrocarSenha,
       };
 
       // Criar sessão simulada
