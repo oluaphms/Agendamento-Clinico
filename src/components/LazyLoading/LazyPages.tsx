@@ -75,7 +75,7 @@ export const LazyChangePassword = createLazyComponent(
   { chunkName: 'change-password' }
 );
 export const LazyApresentacao = createLazyComponent(
-  () => import('@/pages/Apresentacao/Apresentacao'),
+  () => import('@/pages/Apresentacao/ApresentacaoSimple'),
   { chunkName: 'apresentacao', preload: true }
 );
 
