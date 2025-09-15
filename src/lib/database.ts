@@ -161,7 +161,8 @@ export const localDb = {
           tipoSenha: typeof usuario.senha,
         });
 
-        if (usuario.senha) {
+        // Verificar se a senha é um hash ou texto simples
+        if (usuario.senha && usuario.senha.startsWith('$2b$10$')) {
           // Usar hash se disponível
           const { isValid, needsUpdate } = verifyPassword(
             credentials.password,
