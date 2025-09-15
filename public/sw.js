@@ -13,8 +13,9 @@ const DYNAMIC_CACHE_NAME = 'sistema-clinico-dynamic-v1.0.0';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
-  '/icons/icon-192x192.svg',
-  '/icons/icon-512x512.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/favicon.ico',
 ];
 
 const DYNAMIC_ASSETS = ['/api/', '/static/'];
