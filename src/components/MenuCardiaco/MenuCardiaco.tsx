@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 import {
   Calendar, // Ícone para Agenda
   User, // Ícone para Pacientes
-  BarChart3, // Ícone para Analytics
   FileText, // Ícone para Relatórios
   Bell, // Ícone para Notificações
   Users, // Ícone para Usuários
@@ -78,13 +77,6 @@ export default function MenuCardiaco({
       path: '/app/pacientes',
       roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
       position: { x: 200, y: 20 }, // Acima do monitor
-    },
-    {
-      icon: BarChart3,
-      label: 'Analytics',
-      path: '/app/analytics',
-      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
-      position: { x: 300, y: 20 }, // Acima do monitor
     },
     {
       icon: Bell,
@@ -198,41 +190,63 @@ export default function MenuCardiaco({
       style={{ zIndex: 9999 }}
     >
       {/* Container Principal - Centralizado */}
-      <div className='relative flex flex-col items-center justify-center min-h-screen w-full px-4'>
+      <div className='relative flex flex-col items-center justify-center min-h-screen w-full px-2 sm:px-4 overflow-y-auto'>
         {/* Título do Menu com Botão Fechar */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.3 }}
-          className='mb-8 relative'
+          className='mb-4 sm:mb-8 relative'
         >
-          <div className='flex items-center justify-center gap-4'>
+          <div className='flex items-center justify-center gap-2 sm:gap-4'>
             <motion.h2
-              className='text-3xl md:text-4xl font-bold text-white text-center flex items-center justify-center gap-3'
+              className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center flex items-center justify-center gap-2 sm:gap-3'
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             >
-              <Heart size={32} className='text-blue-400 animate-pulse' />
+              <Heart
+                size={20}
+                className='text-blue-400 animate-pulse sm:hidden'
+              />
+              <Heart
+                size={24}
+                className='text-blue-400 animate-pulse hidden sm:block md:hidden'
+              />
+              <Heart
+                size={28}
+                className='text-blue-400 animate-pulse hidden md:block lg:hidden'
+              />
+              <Heart
+                size={32}
+                className='text-blue-400 animate-pulse hidden lg:block'
+              />
               Menu
             </motion.h2>
 
             {/* Botão Fechar ao lado do título */}
             <motion.button
               onClick={handleClose}
-              className='p-2 rounded-full bg-red-500/20 hover:bg-red-500/30 transition-colors group'
+              className='p-1.5 sm:p-2 rounded-full bg-red-500/20 hover:bg-red-500/30 transition-colors group'
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <X size={20} className='text-red-400 group-hover:text-red-300' />
+              <X
+                size={16}
+                className='text-red-400 group-hover:text-red-300 sm:hidden'
+              />
+              <X
+                size={20}
+                className='text-red-400 group-hover:text-red-300 hidden sm:block'
+              />
             </motion.button>
           </div>
 
           <motion.p
-            className='text-center text-white/70 text-base md:text-lg mt-2'
+            className='text-center text-white/70 text-sm sm:text-base md:text-lg mt-1 sm:mt-2'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -241,10 +255,10 @@ export default function MenuCardiaco({
           </motion.p>
         </motion.div>
 
-        {/* Container Principal com Layout Fixo */}
-        <div className='relative w-[95vw] max-w-7xl h-[300px] flex flex-col items-center justify-between'>
+        {/* Container Principal com Layout Responsivo */}
+        <div className='relative w-full max-w-7xl min-h-[200px] sm:min-h-[300px] flex flex-col items-center justify-between px-2 sm:px-4'>
           {/* Linha Superior - 4 Ícones */}
-          <div className='flex items-center justify-center gap-16 mb-8'>
+          <div className='flex flex-wrap items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 mb-4 sm:mb-6 md:mb-8'>
             {menuItems.slice(0, 4).map(item => {
               const Icon = item.icon;
               return (
@@ -267,7 +281,7 @@ export default function MenuCardiaco({
                 >
                   <motion.div
                     className={`
-                      bg-black/80 p-3 rounded-full transition-all duration-300 border-2
+                      bg-black/80 p-2 sm:p-3 rounded-full transition-all duration-300 border-2
                       ${
                         isActive(item.path)
                           ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white border-blue-300 shadow-lg shadow-blue-500/40'
@@ -286,17 +300,17 @@ export default function MenuCardiaco({
                             : 'text-blue-300 group-hover:text-blue-200 group-hover:drop-shadow-[0_0_8px_rgba(0,224,255,0.6)]'
                         }
                       `}
-                      size={20}
+                      size={16}
                     />
                   </motion.div>
-                  <span className='text-white text-xs mt-1 font-medium drop-shadow-lg'>
+                  <span className='text-white text-xs sm:text-sm mt-1 font-medium drop-shadow-lg text-center'>
                     {item.label}
                   </span>
                   {isActive(item.path) && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full shadow-lg'
+                      className='absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full shadow-lg'
                     />
                   )}
                 </motion.div>
@@ -305,7 +319,7 @@ export default function MenuCardiaco({
           </div>
 
           {/* Monitor Central */}
-          <div className='relative w-full h-[100px] flex items-center justify-center'>
+          <div className='relative w-full h-[60px] sm:h-[80px] md:h-[100px] flex items-center justify-center'>
             <svg viewBox='0 0 500 100' className='w-full h-full'>
               <defs>
                 <filter
@@ -340,7 +354,7 @@ export default function MenuCardiaco({
           </div>
 
           {/* Linha Inferior - 5 Ícones */}
-          <div className='flex items-center justify-center gap-12 mt-8'>
+          <div className='flex flex-wrap items-center justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-12 mt-4 sm:mt-6 md:mt-8'>
             {menuItems.slice(4, 9).map(item => {
               const Icon = item.icon;
               return (
@@ -363,7 +377,7 @@ export default function MenuCardiaco({
                 >
                   <motion.div
                     className={`
-                      bg-black/80 p-3 rounded-full transition-all duration-300 border-2
+                      bg-black/80 p-2 sm:p-3 rounded-full transition-all duration-300 border-2
                       ${
                         isActive(item.path)
                           ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white border-blue-300 shadow-lg shadow-blue-500/40'
@@ -382,17 +396,17 @@ export default function MenuCardiaco({
                             : 'text-blue-300 group-hover:text-blue-200 group-hover:drop-shadow-[0_0_8px_rgba(0,224,255,0.6)]'
                         }
                       `}
-                      size={20}
+                      size={16}
                     />
                   </motion.div>
-                  <span className='text-white text-xs mt-1 font-medium drop-shadow-lg'>
+                  <span className='text-white text-xs sm:text-sm mt-1 font-medium drop-shadow-lg text-center'>
                     {item.label}
                   </span>
                   {isActive(item.path) && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className='absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full shadow-lg'
+                      className='absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full shadow-lg'
                     />
                   )}
                 </motion.div>

@@ -13,7 +13,6 @@ import {
   Settings, // Ícone para Configurações
   Calendar, // Ícone para Agenda
   Shield, // Ícone para Permissões
-  BarChart3, // Ícone para Analytics
   FileText, // Ícone para Relatórios
   Bell, // Ícone para Notificações
   X, // Ícone para fechar o menu
@@ -91,12 +90,6 @@ export default function MenuRaioX({ isOpen = false, onClose }: MenuRaioXProps) {
       icon: <Calendar size={20} />,
       label: 'Agenda',
       path: '/app/agenda',
-      roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
-    },
-    {
-      icon: <BarChart3 size={20} />,
-      label: 'Analytics',
-      path: '/app/analytics',
       roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
     },
     {

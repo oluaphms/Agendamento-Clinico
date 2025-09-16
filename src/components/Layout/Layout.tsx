@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import Breadcrumb from './Breadcrumb';
 import FirstAccessHandler from '../Auth/FirstAccessHandler';
 import MenuCardiaco from '../MenuCardiaco';
 import { ConnectivityStatus } from '../UI';
@@ -24,9 +23,6 @@ const Layout: React.FC = () => {
       {/* Main Content */}
       <main className='pt-24 pb-20 px-6'>
         <div className='max-w-7xl mx-auto'>
-          {/* Breadcrumb */}
-          <Breadcrumb />
-
           {/* Page Content */}
           <Outlet />
         </div>

@@ -586,10 +586,10 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Gráfico de Ordens de Serviço */}
+        {/* Gráfico de Agendamentos por Semana */}
         <div className={`rounded-lg shadow-sm p-6 mb-8 ${getCardClasses()}`}>
           <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
-            Ordens de Serviço por Semana
+            Agendamentos por Semana
           </h3>
           <ResponsiveContainer width='100%' height={300}>
             <AreaChart data={dadosGraficoOrdens}>
@@ -600,7 +600,7 @@ const Dashboard: React.FC = () => {
               <Legend />
               <Area
                 type='monotone'
-                dataKey='ordens'
+                dataKey='agendamentos'
                 stroke='#10B981'
                 fill='#10B981'
                 fillOpacity={0.3}

@@ -110,7 +110,6 @@ const Header: React.FC = () => {
       '/app/permissions': '🔐',
       '/app/relatorios': '📋',
       '/app/notificacoes': '🔔',
-      '/app/analytics': '📈',
       '/app/whatsapp': '💬',
       '/app/backup': '💾',
     };
@@ -123,19 +122,23 @@ const Header: React.FC = () => {
       '/app/dashboard': 'Visão geral e métricas importantes da clínica',
       '/app/agenda': 'Gerencie agendamentos, consultas e horários disponíveis',
       '/app/pacientes': 'Cadastro e gestão completa de pacientes',
-      '/app/profissionais': 'Administre profissionais de saúde e suas especialidades',
+      '/app/profissionais':
+        'Administre profissionais de saúde e suas especialidades',
       '/app/servicos': 'Configure serviços médicos e procedimentos oferecidos',
-      '/app/usuarios': 'Controle de acesso e permissões dos usuários do sistema',
+      '/app/usuarios':
+        'Controle de acesso e permissões dos usuários do sistema',
       '/app/configuracoes': 'Configurações gerais e personalização do sistema',
       '/app/permissions': 'Gerenciamento de permissões e níveis de acesso',
       '/app/relatorios': 'Gere e exporte relatórios em múltiplos formatos',
       '/app/notificacoes': 'Central de notificações e alertas do sistema',
-      '/app/analytics': 'Análises avançadas e métricas de performance',
       '/app/whatsapp': 'Integração e comunicação via WhatsApp',
       '/app/backup': 'Backup e restauração de dados do sistema',
     };
 
-    return descriptionMap[pathname] || 'Visão geral e métricas importantes da clínica';
+    return (
+      descriptionMap[pathname] ||
+      'Visão geral e métricas importantes da clínica'
+    );
   };
 
   // Se não há usuário autenticado, não renderizar o header
@@ -164,15 +167,17 @@ const Header: React.FC = () => {
           )}
 
           {/* Cabeçalho Principal - Centralizado */}
-          <div className='flex-1 flex justify-center'>
-            <div className='text-center'>
-              <div className='flex items-center justify-center space-x-3 mb-2'>
-                <span className='text-2xl sm:text-3xl'>{getPageIcon(location.pathname)}</span>
-                <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold text-white'>
+          <div className='flex-1 flex justify-center items-center'>
+            <div className='text-center max-w-md mx-auto'>
+              <div className='flex items-center justify-center space-x-3 mb-1'>
+                <span className='text-2xl sm:text-3xl'>
+                  {getPageIcon(location.pathname)}
+                </span>
+                <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold text-white truncate'>
                   {getPageTitle(location.pathname)}
                 </h1>
               </div>
-              <p className='text-sm sm:text-base text-blue-100 font-medium'>
+              <p className='text-xs sm:text-sm text-blue-100 font-medium leading-tight px-2'>
                 {getPageDescription(location.pathname)}
               </p>
             </div>
@@ -236,7 +241,9 @@ const Header: React.FC = () => {
                   <User size={16} />
                 </div>
                 <div className='hidden sm:block text-left'>
-                  <p className='text-sm font-medium'>{user.user_metadata?.nome || 'Usuário'}</p>
+                  <p className='text-sm font-medium'>
+                    {user.user_metadata?.nome || 'Usuário'}
+                  </p>
                   <p className='text-xs opacity-75'>
                     {getRoleName(user.user_metadata?.nivel_acesso || 'usuario')}
                   </p>
@@ -250,7 +257,10 @@ const Header: React.FC = () => {
                   <div className='p-4 border-b border-gray-200 dark:border-gray-700'>
                     <div className='flex items-center space-x-3'>
                       <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center'>
-                        <User size={20} className='text-blue-600 dark:text-blue-300' />
+                        <User
+                          size={20}
+                          className='text-blue-600 dark:text-blue-300'
+                        />
                       </div>
                       <div>
                         <p className='font-medium text-gray-900 dark:text-white'>
@@ -264,7 +274,9 @@ const Header: React.FC = () => {
                             user.user_metadata?.nivel_acesso || 'usuario'
                           )}`}
                         >
-                          {getRoleName(user.user_metadata?.nivel_acesso || 'usuario')}
+                          {getRoleName(
+                            user.user_metadata?.nivel_acesso || 'usuario'
+                          )}
                         </span>
                       </div>
                     </div>

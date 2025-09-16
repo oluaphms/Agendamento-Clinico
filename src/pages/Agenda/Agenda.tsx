@@ -598,16 +598,12 @@ const Agenda: React.FC = () => {
         <title>Agenda - Sistema Clínica</title>
       </Helmet>
 
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        {/* Header */}
-        <div className='mb-8'>
-          <div className='mb-6'>
-            <div
-              className={`flex flex-col ${isMobile ? 'gap-3' : 'sm:flex-row justify-between items-start sm:items-center gap-4'}`}
-            >
-              <div
-                className={`flex flex-wrap gap-2 ${isMobile ? 'justify-center' : 'gap-3'}`}
-              >
+      <div className='max-w-7xl mx-auto'>
+        {/* Botões de Ação */}
+        <div className='mb-8 mt-8'>
+          <div className='flex items-center justify-between'>
+            <div></div>
+            <div className='flex flex-wrap gap-2'>
               {/* Botão de Impressão */}
               <button
                 className={`btn btn-outline-info btn-sm d-flex align-items-center gap-2 ${isMobile ? 'w-full justify-center' : ''}`}
@@ -639,7 +635,6 @@ const Agenda: React.FC = () => {
                   </button>
                 </>
               )}
-              </div>
             </div>
           </div>
         </div>

@@ -40,10 +40,6 @@ export const LazyConfiguracoes = createLazyComponent(
   () => import('@/pages/Configuracoes/Configuracoes'),
   { chunkName: 'configuracoes' }
 );
-export const LazyAnalytics = createLazyComponent(
-  () => import('@/pages/Analytics/Analytics'),
-  { chunkName: 'analytics' }
-);
 export const LazyRelatorios = createLazyComponent(
   () => import('@/pages/Relatorios/Relatorios'),
   { chunkName: 'relatorios' }
@@ -77,6 +73,10 @@ export const LazyChangePassword = createLazyComponent(
 export const LazyFirstAccessPassword = createLazyComponent(
   () => import('@/pages/Auth/FirstAccessPassword'),
   { chunkName: 'first-access-password' }
+);
+export const LazyForgotPassword = createLazyComponent(
+  () => import('@/pages/Auth/ForgotPassword'),
+  { chunkName: 'forgot-password' }
 );
 export const LazyApresentacao = createLazyComponent(
   () => import('@/pages/Apresentacao/ApresentacaoSimple'),
@@ -204,30 +204,6 @@ export const ConfiguracoesLazy = () => (
     }
   >
     <LazyConfiguracoes />
-  </LazyWrapper>
-);
-
-// Analytics com skeleton de gráficos
-export const AnalyticsLazy = () => (
-  <LazyWrapper
-    fallback={
-      <div className='p-6 space-y-6'>
-        {/* Métricas */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div>
-        {/* Gráficos */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <CardSkeleton key={index} height='300px' />
-          ))}
-        </div>
-      </div>
-    }
-  >
-    <LazyAnalytics />
   </LazyWrapper>
 );
 
@@ -371,6 +347,18 @@ export const FirstAccessPasswordLazy = () => (
     }
   >
     <LazyFirstAccessPassword />
+  </LazyWrapper>
+);
+
+export const ForgotPasswordLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='min-h-screen flex items-center justify-center'>
+        <CardSkeleton />
+      </div>
+    }
+  >
+    <LazyForgotPassword />
   </LazyWrapper>
 );
 

@@ -79,18 +79,42 @@ const authenticateUser = async (cpf: string, password: string) => {
       return null;
     }
 
-    // Verificar senha (pode ser senha_hash ou senha simples)
+    // No Supabase, a senha é gerenciada pelo sistema de auth
+    // Para desenvolvimento, vamos verificar senhas no localStorage também
     let senhaValida = false;
-    
-    if (data.senha_hash) {
-      // Se tem hash, verificar se é senha padrão (3 primeiros dígitos do CPF)
-      const senhaPadrao = cpfLimpo.substring(0, 3);
-      senhaValida = (password === senhaPadrao) || (data.senha === password);
-    } else {
-      // Fallback para senha simples
-      senhaValida = (data.senha === password);
+
+    // Primeiro, verificar senha padrão (3 primeiros dígitos do CPF)
+    const senhaPadrao = cpfLimpo.substring(0, 3);
+    if (password === senhaPadrao) {
+      senhaValida = true;
     }
-    
+
+    // Se não passou na verificação padrão, verificar no localStorage
+    if (!senhaValida) {
+      try {
+        const storedUsers = JSON.parse(
+          localStorage.getItem('pendingUsers') || '[]'
+        );
+        const storedUser = storedUsers.find(
+          (u: any) => u.cpf === cpfLimpo || u.cpf === cpf
+        );
+
+        if (storedUser && storedUser.senha === password) {
+          senhaValida = true;
+        }
+      } catch (error) {
+        console.warn('Erro ao verificar senha no localStorage:', error);
+      }
+    }
+
+    console.log('🔍 Verificação de senha Supabase:', {
+      senhaDigitada: password,
+      senhaPadrao,
+      senhaValida,
+      cpfLimpo,
+      cpf,
+    });
+
     if (data && senhaValida) {
       // Verificar se precisa trocar senha (primeiro acesso ou senha padrão)
       const senhaPadrao = cpfLimpo.substring(0, 3);

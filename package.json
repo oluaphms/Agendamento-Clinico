@@ -20,6 +20,7 @@
     "setup:win": "powershell -ExecutionPolicy Bypass -File scripts/setup.ps1"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.38.4",
     "@tanstack/react-query": "^5.85.6",

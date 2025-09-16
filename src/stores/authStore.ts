@@ -34,9 +34,6 @@ interface AuthState {
     senha: string;
   }) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
-  resetPassword: (
-    email: string
-  ) => Promise<{ success: boolean; error?: string }>;
   updatePassword: (
     password: string
   ) => Promise<{ success: boolean; error?: string }>;
@@ -76,17 +73,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
           if (supabaseResult) {
             const { user, session } = supabaseResult;
-            const mustChangePassword = user.must_change_password || false;
+
+            // Buscar dados do usuário na tabela usuarios para verificar primeiro_acesso
+            let primeiroAcesso = false;
+            try {
+              const { data: userData, error: userError } = await supabase
+                .from('usuarios')
+                .select('primeiro_acesso')
+                .eq('id', user.id)
+                .single();
+
+              if (!userError && userData) {
+                primeiroAcesso = userData.primeiro_acesso || false;
+              } else {
+                // Se não encontrar o usuário na tabela, assumir primeiro acesso
+                console.warn(
+                  'Usuário não encontrado na tabela usuarios, assumindo primeiro acesso'
+                );
+                primeiroAcesso = true;
+              }
+            } catch (error) {
+              console.warn('Erro ao buscar dados do usuário:', error);
+              // Em caso de erro, assumir primeiro acesso
+              primeiroAcesso = true;
+            }
 
             set({
               user: user as any,
               session: session as any,
               error: null,
               loading: false,
-              mustChangePassword,
+              mustChangePassword: primeiroAcesso,
             });
 
-            if (mustChangePassword) {
+            if (primeiroAcesso) {
               toast('Por favor, altere sua senha no primeiro acesso', {
                 icon: '🔐',
               });
@@ -209,6 +229,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         await supabase.auth.signOut();
       }
 
+      // Marcar que o usuário fez logout para redirecionamento correto
+      localStorage.setItem('userLoggedOut', 'true');
+      localStorage.removeItem('lastVisitedPath');
+
       set({
         user: null,
         session: null,
@@ -220,14 +244,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.error('Erro no logout:', error);
       toast.error('Erro ao fazer logout');
     }
-  },
-
-  resetPassword: async (_email: string) => {
-    // Funcionalidade de reset de senha não implementada no banco mock
-    return {
-      success: false,
-      error: 'Reset de senha não disponível no modo de desenvolvimento',
-    };
   },
 
   updatePassword: async (password: string) => {
@@ -244,18 +260,72 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         typeof supabase.auth === 'object' &&
         'updateUser' in supabase.auth
       ) {
+        // Verificar se há sessão ativa antes de atualizar a senha
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error('Erro ao obter sessão:', sessionError);
+          set({
+            error: 'Erro de sessão. Tente fazer login novamente.',
+            loading: false,
+          });
+          return {
+            success: false,
+            error: 'Erro de sessão. Tente fazer login novamente.',
+          };
+        }
+
+        if (!session) {
+          console.error('Nenhuma sessão ativa encontrada');
+          set({
+            error: 'Sessão expirada. Tente fazer login novamente.',
+            loading: false,
+          });
+          return {
+            success: false,
+            error: 'Sessão expirada. Tente fazer login novamente.',
+          };
+        }
+
+        // Atualizar a senha
         const { error } = await supabase.auth.updateUser({
           password: password,
         });
 
         if (error) {
+          console.error('Erro ao atualizar senha:', error);
           set({ error: error.message, loading: false });
           return { success: false, error: error.message };
+        }
+
+        // Atualizar o campo primeiro_acesso no banco de dados
+        try {
+          const { error: updateError } = await supabase
+            .from('usuarios')
+            .update({
+              primeiro_acesso: false,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
+
+          if (updateError) {
+            console.warn(
+              'Erro ao atualizar primeiro_acesso no banco:',
+              updateError
+            );
+            // Não falhar a operação por causa disso
+          }
+        } catch (dbError) {
+          console.warn('Erro ao atualizar primeiro_acesso:', dbError);
+          // Não falhar a operação por causa disso
         }
       } else {
         // Para banco local, atualizar o usuário no localStorage
         console.log('Updating password for local database');
-        
+
         // Atualizar usuários aprovados no localStorage
         const storedUsers = JSON.parse(
           localStorage.getItem('pendingUsers') || '[]'
@@ -263,20 +333,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const userIndex = storedUsers.findIndex(
           (u: any) => u.cpf === user.user_metadata?.cpf
         );
-        
+
         if (userIndex !== -1) {
           storedUsers[userIndex].senha = password;
           storedUsers[userIndex].primeiro_acesso = false;
           storedUsers[userIndex].updated_at = new Date().toISOString();
           localStorage.setItem('pendingUsers', JSON.stringify(storedUsers));
         }
-        
+
         // Atualizar dados mock se o usuário estiver lá
         const { mockData } = await import('@/lib/mockData');
         const mockUserIndex = mockData.usuarios.findIndex(
           (u: any) => u.cpf === user.user_metadata?.cpf
         );
-        
+
         if (mockUserIndex !== -1) {
           mockData.usuarios[mockUserIndex].senha = password;
           mockData.usuarios[mockUserIndex].primeiro_acesso = false;
@@ -316,10 +386,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       set({ loading: true, error: null });
 
-      // Para banco local, marcar que o usuário não precisa mais alterar a senha
-      if (!supabase || supabase._isLocalDb) {
+      // Atualizar o campo primeiro_acesso no banco de dados
+      if (supabase && !supabase._isLocalDb) {
+        try {
+          const { error: updateError } = await supabase
+            .from('usuarios')
+            .update({
+              primeiro_acesso: false,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
+
+          if (updateError) {
+            console.warn(
+              'Erro ao atualizar primeiro_acesso no Supabase:',
+              updateError
+            );
+            // Continuar mesmo com erro
+          }
+        } catch (dbError) {
+          console.warn(
+            'Erro ao atualizar primeiro_acesso no Supabase:',
+            dbError
+          );
+          // Continuar mesmo com erro
+        }
+      } else {
+        // Para banco local, marcar que o usuário não precisa mais alterar a senha
         console.log('Skipping password change for local database');
-        
+
         // Atualizar usuários aprovados no localStorage
         const storedUsers = JSON.parse(
           localStorage.getItem('pendingUsers') || '[]'
@@ -327,19 +422,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const userIndex = storedUsers.findIndex(
           (u: any) => u.cpf === user.user_metadata?.cpf
         );
-        
+
         if (userIndex !== -1) {
           storedUsers[userIndex].primeiro_acesso = false;
           storedUsers[userIndex].updated_at = new Date().toISOString();
           localStorage.setItem('pendingUsers', JSON.stringify(storedUsers));
         }
-        
+
         // Atualizar dados mock se o usuário estiver lá
         const { mockData } = await import('@/lib/mockData');
         const mockUserIndex = mockData.usuarios.findIndex(
           (u: any) => u.cpf === user.user_metadata?.cpf
         );
-        
+
         if (mockUserIndex !== -1) {
           mockData.usuarios[mockUserIndex].primeiro_acesso = false;
         }

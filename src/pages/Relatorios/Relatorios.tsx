@@ -17,11 +17,12 @@ import {
   AlertCircle,
   Eye,
   Settings,
-  Plus,
   Trash2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
+import { printReport, ReportData } from '@/lib/reportTemplate';
 import toast from 'react-hot-toast';
 
 // ============================================================================
@@ -34,6 +35,7 @@ interface Relatorio {
   tipo:
     | 'agendamentos'
     | 'pacientes'
+    | 'usuarios'
     | 'profissionais'
     | 'financeiro'
     | 'customizado';
@@ -59,15 +61,6 @@ interface RelatorioParametros {
   agruparPor?: 'dia' | 'semana' | 'mes' | 'profissional' | 'servico';
   ordenarPor?: 'data' | 'nome' | 'valor' | 'status';
   direcaoOrdem: 'asc' | 'desc';
-}
-
-interface TemplateRelatorio {
-  id: string;
-  nome: string;
-  descricao: string;
-  tipo: string;
-  parametros: Partial<RelatorioParametros>;
-  isDefault: boolean;
 }
 
 // ============================================================================
@@ -229,34 +222,248 @@ const Relatorios: React.FC = () => {
     }
   };
 
-  const handleCriarRelatorio = (template?: TemplateRelatorio) => {
-    if (template) {
-      // Criar relatório baseado no template
-      const novoRelatorio: Relatorio = {
-        id: Date.now().toString(),
-        nome: `Relatório - ${template.nome}`,
-        tipo: template.tipo as any,
-        formato: 'pdf',
-        status: 'rascunho',
-        dataCriacao: new Date().toISOString(),
-        parametros: {
-          dataInicio: '',
-          dataFim: '',
-          formatoData: 'dd/mm/yyyy',
-          incluirGraficos: true,
-          incluirDetalhes: true,
-          agruparPor: 'dia',
-          ordenarPor: 'data',
-          direcaoOrdem: 'asc',
-          ...template.parametros,
+  const handleCriarRelatorio = (
+    tipo: 'agendamentos' | 'pacientes' | 'usuarios' = 'agendamentos'
+  ) => {
+    const novoRelatorio: Relatorio = {
+      id: Date.now().toString(),
+      nome: `Relatório de ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} - ${new Date().toLocaleDateString('pt-BR')}`,
+      tipo: tipo,
+      formato: 'pdf',
+      status: 'rascunho',
+      dataCriacao: new Date().toISOString(),
+      parametros: {
+        dataInicio: '',
+        dataFim: '',
+        formatoData: 'dd/mm/yyyy',
+        incluirGraficos: true,
+        incluirDetalhes: true,
+        agruparPor: 'dia',
+        ordenarPor: 'data',
+        direcaoOrdem: 'asc',
+      },
+    };
+    setRelatorios(prev => [novoRelatorio, ...prev]);
+    toast.success('Relatório criado com sucesso!');
+  };
+
+  // Função para gerar relatório de Agendamentos
+  const gerarRelatorioAgendamentos = async (relatorio: Relatorio) => {
+    try {
+      setLoading(true);
+
+      // Buscar dados de agendamentos
+      const { data: agendamentos, error } = await supabase
+        .from('agendamentos')
+        .select(
+          `
+          *,
+          pacientes(nome, telefone, email),
+          profissionais(nome, especialidade),
+          servicos(nome, preco, duracao_min)
+        `
+        )
+        .gte('data', relatorio.parametros.dataInicio || '2024-01-01')
+        .lte('data', relatorio.parametros.dataFim || '2024-12-31')
+        .order('data', { ascending: true });
+
+      if (error) throw error;
+
+      const reportData: ReportData = {
+        title: 'Relatório de Agendamentos',
+        subtitle: `Período: ${relatorio.parametros.dataInicio} a ${relatorio.parametros.dataFim}`,
+        data: agendamentos || [],
+        columns: [
+          { key: 'data', label: 'Data' },
+          { key: 'hora', label: 'Hora' },
+          { key: 'pacientes.nome', label: 'Paciente' },
+          { key: 'profissionais.nome', label: 'Profissional' },
+          { key: 'servicos.nome', label: 'Serviço' },
+          { key: 'status', label: 'Status' },
+          { key: 'observacoes', label: 'Observações' },
+        ],
+        summary: [
+          { label: 'Total de Agendamentos', value: agendamentos?.length || 0 },
+          {
+            label: 'Agendados',
+            value:
+              agendamentos?.filter((a: any) => a.status === 'agendado')
+                .length || 0,
+          },
+          {
+            label: 'Confirmados',
+            value:
+              agendamentos?.filter((a: any) => a.status === 'confirmado')
+                .length || 0,
+          },
+          {
+            label: 'Realizados',
+            value:
+              agendamentos?.filter((a: any) => a.status === 'realizado')
+                .length || 0,
+          },
+          {
+            label: 'Cancelados',
+            value:
+              agendamentos?.filter((a: any) => a.status === 'cancelado')
+                .length || 0,
+          },
+        ],
+        filters: {
+          'Data Início': relatorio.parametros.dataInicio,
+          'Data Fim': relatorio.parametros.dataFim,
+          Status: relatorio.parametros.statusAgendamento || 'Todos',
+          Profissional: relatorio.parametros.profissionalId || 'Todos',
+          Serviço: relatorio.parametros.servicoId || 'Todos',
         },
       };
-      setRelatorios(prev => [novoRelatorio, ...prev]);
-      // setRelatorioSelecionado(novoRelatorio);
-      // setShowCriarRelatorio(true);
-      toast.success('Relatório criado com base no template!');
-    } else {
-      // setShowCriarRelatorio(true);
+
+      printReport(reportData);
+      toast.success('Relatório de agendamentos gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar relatório de agendamentos:', error);
+      toast.error('Erro ao gerar relatório de agendamentos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para gerar relatório de Pacientes
+  const gerarRelatorioPacientes = async (relatorio: Relatorio) => {
+    try {
+      setLoading(true);
+
+      // Buscar dados de pacientes
+      const { data: pacientes, error } = await supabase
+        .from('pacientes')
+        .select('*')
+        .gte('created_at', relatorio.parametros.dataInicio || '2024-01-01')
+        .lte('created_at', relatorio.parametros.dataFim || '2024-12-31')
+        .order('nome', { ascending: true });
+
+      if (error) throw error;
+
+      const reportData: ReportData = {
+        title: 'Relatório de Pacientes',
+        subtitle: `Período: ${relatorio.parametros.dataInicio} a ${relatorio.parametros.dataFim}`,
+        data: pacientes || [],
+        columns: [
+          { key: 'nome', label: 'Nome' },
+          { key: 'cpf', label: 'CPF' },
+          { key: 'telefone', label: 'Telefone' },
+          { key: 'email', label: 'Email' },
+          { key: 'convenio', label: 'Convênio' },
+          { key: 'status', label: 'Status' },
+          { key: 'data_nascimento', label: 'Data de Nascimento' },
+        ],
+        summary: [
+          { label: 'Total de Pacientes', value: pacientes?.length || 0 },
+          {
+            label: 'Pacientes Ativos',
+            value:
+              pacientes?.filter((p: any) => p.status === 'ativo').length || 0,
+          },
+          {
+            label: 'Pacientes Inativos',
+            value:
+              pacientes?.filter((p: any) => p.status === 'inativo').length || 0,
+          },
+          {
+            label: 'Com Convênio',
+            value:
+              pacientes?.filter(
+                (p: any) => p.convenio && p.convenio !== 'Particular'
+              ).length || 0,
+          },
+          {
+            label: 'Particulares',
+            value:
+              pacientes?.filter(
+                (p: any) => !p.convenio || p.convenio === 'Particular'
+              ).length || 0,
+          },
+        ],
+        filters: {
+          'Data Início': relatorio.parametros.dataInicio,
+          'Data Fim': relatorio.parametros.dataFim,
+          Status: 'Todos',
+        },
+      };
+
+      printReport(reportData);
+      toast.success('Relatório de pacientes gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar relatório de pacientes:', error);
+      toast.error('Erro ao gerar relatório de pacientes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para gerar relatório de Usuários
+  const gerarRelatorioUsuarios = async (relatorio: Relatorio) => {
+    try {
+      setLoading(true);
+
+      // Buscar dados de usuários
+      const { data: usuarios, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .gte('created_at', relatorio.parametros.dataInicio || '2024-01-01')
+        .lte('created_at', relatorio.parametros.dataFim || '2024-12-31')
+        .order('nome', { ascending: true });
+
+      if (error) throw error;
+
+      const reportData: ReportData = {
+        title: 'Relatório de Usuários',
+        subtitle: `Período: ${relatorio.parametros.dataInicio} a ${relatorio.parametros.dataFim}`,
+        data: usuarios || [],
+        columns: [
+          { key: 'nome', label: 'Nome' },
+          { key: 'email', label: 'Email' },
+          { key: 'role', label: 'Função' },
+          { key: 'status', label: 'Status' },
+          { key: 'created_at', label: 'Data de Criação' },
+          { key: 'last_login', label: 'Último Login' },
+        ],
+        summary: [
+          { label: 'Total de Usuários', value: usuarios?.length || 0 },
+          {
+            label: 'Administradores',
+            value: usuarios?.filter((u: any) => u.role === 'admin').length || 0,
+          },
+          {
+            label: 'Gerentes',
+            value:
+              usuarios?.filter((u: any) => u.role === 'gerente').length || 0,
+          },
+          {
+            label: 'Recepcionistas',
+            value:
+              usuarios?.filter((u: any) => u.role === 'recepcao').length || 0,
+          },
+          {
+            label: 'Profissionais',
+            value:
+              usuarios?.filter((u: any) => u.role === 'profissional').length ||
+              0,
+          },
+        ],
+        filters: {
+          'Data Início': relatorio.parametros.dataInicio,
+          'Data Fim': relatorio.parametros.dataFim,
+          Função: 'Todas',
+        },
+      };
+
+      printReport(reportData);
+      toast.success('Relatório de usuários gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar relatório de usuários:', error);
+      toast.error('Erro ao gerar relatório de usuários');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -269,8 +476,20 @@ const Relatorios: React.FC = () => {
         )
       );
 
-      // Simular geração do relatório
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Chamar função específica baseada no tipo
+      switch (relatorio.tipo) {
+        case 'agendamentos':
+          await gerarRelatorioAgendamentos(relatorio);
+          break;
+        case 'pacientes':
+          await gerarRelatorioPacientes(relatorio);
+          break;
+        case 'usuarios':
+          await gerarRelatorioUsuarios(relatorio);
+          break;
+        default:
+          throw new Error('Tipo de relatório não suportado');
+      }
 
       // Atualizar status para "pronto"
       setRelatorios(prev =>
@@ -286,8 +505,6 @@ const Relatorios: React.FC = () => {
             : r
         )
       );
-
-      toast.success('Relatório gerado com sucesso!');
     } catch (error) {
       console.error('Erro ao gerar relatório:', error);
       setRelatorios(prev =>
@@ -389,22 +606,28 @@ const Relatorios: React.FC = () => {
         {/* Header */}
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
-            <div>
-            </div>
+            <div></div>
             <div className='flex items-center space-x-4'>
               <button
-                onClick={() => {}}
-                className='flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
+                onClick={() => handleCriarRelatorio('agendamentos')}
+                className='flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'
               >
-                <Settings className='mr-2' size={16} />
-                Templates
+                <Calendar className='mr-2' size={16} />
+                Relatório de Agendamentos
               </button>
               <button
-                onClick={() => handleCriarRelatorio()}
+                onClick={() => handleCriarRelatorio('pacientes')}
                 className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
-                <Plus className='mr-2' size={16} />
-                Novo Relatório
+                <FileText className='mr-2' size={16} />
+                Relatório de Pacientes
+              </button>
+              <button
+                onClick={() => handleCriarRelatorio('usuarios')}
+                className='flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors'
+              >
+                <Settings className='mr-2' size={16} />
+                Relatório de Usuários
               </button>
             </div>
           </div>
@@ -428,6 +651,7 @@ const Relatorios: React.FC = () => {
                   <option value=''>Todos os tipos</option>
                   <option value='agendamentos'>Agendamentos</option>
                   <option value='pacientes'>Pacientes</option>
+                  <option value='usuarios'>Usuários</option>
                   <option value='profissionais'>Profissionais</option>
                   <option value='financeiro'>Financeiro</option>
                   <option value='customizado'>Customizado</option>
@@ -600,13 +824,29 @@ const Relatorios: React.FC = () => {
               <p className='text-gray-500 dark:text-gray-400 mb-4'>
                 Crie seu primeiro relatório ou ajuste os filtros de busca.
               </p>
-              <button
-                onClick={() => handleCriarRelatorio()}
-                className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mx-auto'
-              >
-                <Plus className='mr-2' size={16} />
-                Criar Relatório
-              </button>
+              <div className='flex flex-wrap gap-2 justify-center'>
+                <button
+                  onClick={() => handleCriarRelatorio('agendamentos')}
+                  className='flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'
+                >
+                  <Calendar className='mr-2' size={16} />
+                  Relatório de Agendamentos
+                </button>
+                <button
+                  onClick={() => handleCriarRelatorio('pacientes')}
+                  className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+                >
+                  <FileText className='mr-2' size={16} />
+                  Relatório de Pacientes
+                </button>
+                <button
+                  onClick={() => handleCriarRelatorio('usuarios')}
+                  className='flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors'
+                >
+                  <Settings className='mr-2' size={16} />
+                  Relatório de Usuários
+                </button>
+              </div>
             </CardContent>
           </Card>
         )}

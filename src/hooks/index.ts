@@ -11,3 +11,4 @@ export * from './useForm';
 export * from './usePermissions';
 export * from './useBackup';
 export * from './useReports';
+export * from './useNavigationPersistence';

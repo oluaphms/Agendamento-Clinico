@@ -77,15 +77,8 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleForgotPassword = async () => {
-    if (!cpf.trim()) {
-      toast.error('Digite seu CPF primeiro');
-      return;
-    }
-
-    toast('Funcionalidade de recuperação de senha será implementada em breve', {
-      icon: 'ℹ️',
-    });
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
   };
 
   return (

@@ -20,8 +20,8 @@ const FirstAccessHandler: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    // Não permitir fechar o modal se deve alterar a senha
-    toast.error('Você deve alterar sua senha antes de continuar');
+    // Permitir fechar o modal - o usuário pode escolher continuar com senha padrão
+    setShowChangePasswordModal(false);
   };
 
   return (

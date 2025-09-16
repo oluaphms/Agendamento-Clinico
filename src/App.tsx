@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './stores/authStore';
+import { NavigationManager } from './components/Navigation';
 
 // Lazy Pages
 import {
@@ -19,8 +20,8 @@ import {
   ConfiguracoesLazy,
   ChangePasswordLazy,
   FirstAccessPasswordLazy,
+  ForgotPasswordLazy,
   PermissionsLazy,
-  AnalyticsLazy,
   RelatoriosLazy,
   NotificacoesLazy,
   WhatsAppLazy,
@@ -92,6 +93,7 @@ function App() {
             <AccessibilityProvider>
               <PWAProvider>
                 <ErrorBoundary>
+                  <NavigationManager />
                   <div className='min-h-screen'>
                     <Routes>
                       {/* Página de Apresentação */}
@@ -107,6 +109,10 @@ function App() {
                       <Route
                         path='/first-access-password'
                         element={<FirstAccessPasswordLazy />}
+                      />
+                      <Route
+                        path='/forgot-password'
+                        element={<ForgotPasswordLazy />}
                       />
 
                       {/* Rotas Protegidas */}
@@ -160,14 +166,6 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <UsuariosLazy />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path='analytics'
-                          element={
-                            <ProtectedRoute>
-                              <AnalyticsLazy />
                             </ProtectedRoute>
                           }
                         />

@@ -502,7 +502,6 @@ const Dashboard: React.FC = () => {
       <div
         className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isDark ? 'dark' : ''}`}
       >
-
         {/* Cards de Estatísticas */}
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8'>
           <div
@@ -717,12 +716,12 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Gráfico de Ordens de Serviço */}
+        {/* Gráfico de Agendamentos por Semana */}
         <div
           className={`rounded-lg shadow-sm p-4 sm:p-6 mb-6 sm:mb-8 ${getCardClasses()}`}
         >
           <h3 className='text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4'>
-            Ordens de Serviço por Semana
+            Agendamentos por Semana
           </h3>
           <ResponsiveContainer width='100%' height={250}>
             <AreaChart data={dadosGraficoOrdens}>
@@ -733,7 +732,7 @@ const Dashboard: React.FC = () => {
               <Legend />
               <Area
                 type='monotone'
-                dataKey='ordens'
+                dataKey='agendamentos'
                 stroke='#10B981'
                 fill='#10B981'
                 fillOpacity={0.3}
