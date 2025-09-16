@@ -5,8 +5,6 @@
 // de agendamentos, pagamentos, pacientes e outras operações.
 // ============================================================================
 
-import { supabase } from '@/lib/supabase';
-import { localDb } from '@/lib/database';
 import { getDatabase } from '@/lib/connectivityManager';
 import toast from 'react-hot-toast';
 
@@ -114,8 +112,6 @@ export class NotificationService {
 
   private async startRealTimeMonitoring() {
     try {
-      const db = await getDatabase();
-      
       // Verificar agendamentos próximos
       await this.checkAgendamentosProximos();
       

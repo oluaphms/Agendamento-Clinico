@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface ChangePasswordModalProps {
@@ -57,7 +57,8 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
     try {
       // Usar a função real de alteração de senha do authStore
-      const { updatePassword } = await import('@/stores/authStore');
+      const { useAuthStore } = await import('@/stores/authStore');
+      const { updatePassword } = useAuthStore.getState();
       const result = await updatePassword(newPassword);
 
       if (result.success) {
@@ -87,7 +88,8 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
     try {
       // Usar a função de pular alteração de senha do authStore
-      const { skipPasswordChange } = await import('@/stores/authStore');
+      const { useAuthStore } = await import('@/stores/authStore');
+      const { skipPasswordChange } = useAuthStore.getState();
       const result = await skipPasswordChange();
 
       if (result.success) {
