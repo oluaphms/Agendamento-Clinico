@@ -1,3 +1,5 @@
+import { formatDate, formatPhone } from '@/lib/utils';
+import { Activity, Plus, Search, Filter, Download, Eye, Edit, Trash2, Calendar, User, Stethoscope, AlertCircle, CheckCircle, Clock, RefreshCw, FileText, TrendingUp, Heart, Brain, Shield } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Evolução do Paciente - Prontuário Eletrônico
 // ============================================================================
@@ -7,33 +9,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  Activity,
-  Plus,
-  Search,
-  Filter,
-  Download,
-  Eye,
-  Edit,
-  Trash2,
-  Calendar,
-  User,
-  Stethoscope,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  RefreshCw,
-  FileText,
-  TrendingUp,
-  Heart,
-  Brain,
-  Shield,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
+
 import toast from 'react-hot-toast';
-import { formatDate, formatPhone } from '@/lib/utils';
 
 // ============================================================================
 // INTERFACES E TIPOS

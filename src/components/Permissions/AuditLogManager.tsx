@@ -3,21 +3,7 @@
 // ============================================================================
 
 import React, { useState, useEffect } from 'react';
-import {
-  Clock,
-  User,
-  Shield,
-  Edit,
-  Plus,
-  Trash2,
-  Search,
-  Filter,
-  Download,
-  Eye,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Input } from '@/design-system';
 
 // ============================================================================

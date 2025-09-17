@@ -1,3 +1,6 @@
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, LineChart, Line, Legend } from 'recharts';
+import { formatCurrency } from '@/lib/utils';
+import { Users, RefreshCw, Download, Activity, Star, TrendingUp } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Relatórios de Performance - Sistema de Relatórios
 // ============================================================================
@@ -7,132 +10,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  BarChart3,
-  PieChart,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Download,
-  RefreshCw,
-  Filter,
-  Calendar,
-  Building2,
-  MapPin,
-  Phone,
-  Mail,
-  Globe,
-  Shield,
-  CreditCard,
-  FileText,
-  Image,
-  Bell,
-  Lock,
-  Unlock,
-  Copy,
-  ExternalLink,
-  MoreVertical,
-  ChevronDown,
-  ChevronRight,
-  Star,
-  Heart,
-  Award,
-  Target,
-  Activity,
-  Database,
-  Server,
-  Cloud,
-  Wifi,
-  WifiOff,
-  Check,
-  X,
-  AlertTriangle,
-  HelpCircle,
-  BookOpen,
-  MessageSquare,
-  Send,
-  Archive,
-  Tag,
-  Flag,
-  Bookmark,
-  Star as StarIcon,
-  ThumbsUp,
-  ThumbsDown,
-  Share2,
-  Link,
-  QrCode,
-  Key,
-  UserCheck,
-  UserX,
-  UserPlus,
-  UserMinus,
-  UserCog,
-  UserEdit,
-  UserSearch,
-  UserShield,
-  UserStar,
-  UserHeart,
-  UserAward,
-  UserTarget,
-  UserTrendingUp,
-  UserBarChart,
-  UserPieChart,
-  UserActivity,
-  UserDatabase,
-  UserServer,
-  UserCloud,
-  UserWifi,
-  UserWifiOff,
-  UserCheck as UserCheckIcon,
-  UserX as UserXIcon,
-  UserPlus as UserPlusIcon,
-  UserMinus as UserMinusIcon,
-  UserCog as UserCogIcon,
-  UserEdit as UserEditIcon,
-  UserSearch as UserSearchIcon,
-  UserShield as UserShieldIcon,
-  UserStar as UserStarIcon,
-  UserHeart as UserHeartIcon,
-  UserAward as UserAwardIcon,
-  UserTarget as UserTargetIcon,
-  UserTrendingUp as UserTrendingUpIcon,
-  UserBarChart as UserBarChartIcon,
-  UserPieChart as UserPieChartIcon,
-  UserActivity as UserActivityIcon,
-  UserDatabase as UserDatabaseIcon,
-  UserServer as UserServerIcon,
-  UserCloud as UserCloudIcon,
-  UserWifi as UserWifiIcon,
-  UserWifiOff as UserWifiOffIcon,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import {
-  formatDate,
-  formatTime,
-  formatPhone,
-  formatCurrency,
-} from '@/lib/utils';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Cell,
-  Legend,
-  ScatterChart,
-  Scatter,
-} from 'recharts';
 
 // ============================================================================
 // INTERFACES E TIPOS
@@ -427,16 +308,6 @@ const RelatoriosPerformance: React.FC = () => {
     if (satisfacao >= 4.0) return 'bg-yellow-100 dark:bg-yellow-900';
     return 'bg-red-100 dark:bg-red-900';
   };
-
-  // Cores para gráficos
-  const cores = [
-    '#3B82F6',
-    '#10B981',
-    '#F59E0B',
-    '#EF4444',
-    '#8B5CF6',
-    '#06B6D4',
-  ];
 
   // ============================================================================
   // RENDER

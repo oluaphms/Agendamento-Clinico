@@ -1,3 +1,5 @@
+import { formatCurrency, formatDate, formatPhone } from '@/lib/utils';
+import { DollarSign, Plus, Search, Filter, Download, Eye, Edit, Trash2, CheckCircle, Clock, AlertCircle, Calendar, User, CreditCard, Smartphone, Banknote, FileText, RefreshCw } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Gestão de Pagamentos - Sistema Financeiro
 // ============================================================================
@@ -7,32 +9,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  DollarSign,
-  Plus,
-  Search,
-  Filter,
-  Download,
-  Eye,
-  Edit,
-  Trash2,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertCircle,
-  Calendar,
-  User,
-  CreditCard,
-  Smartphone,
-  Banknote,
-  FileText,
-  RefreshCw,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
+
 import toast from 'react-hot-toast';
-import { formatCurrency, formatDate, formatPhone } from '@/lib/utils';
 
 // ============================================================================
 // INTERFACES E TIPOS

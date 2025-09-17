@@ -7,43 +7,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  CreditCard,
-  Clock,
-  AlertTriangle,
-  Calendar,
-  RefreshCw,
-  Download,
-  BarChart3,
-  PieChart,
-  Activity,
-  Target,
-  Users,
-  FileText,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
+
 import toast from 'react-hot-toast';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Cell,
-  AreaChart,
-  Area,
-} from 'recharts';
 
 // ============================================================================
 // INTERFACES E TIPOS
@@ -318,8 +286,6 @@ const DashboardFinanceiro: React.FC = () => {
       despesas?.forEach(despesa => {
         categorias[despesa.categoria] = (categorias[despesa.categoria] || 0) + despesa.valor;
       });
-
-      const cores = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'];
 
       const dados = Object.entries(categorias)
         .map(([categoria, valor], index) => ({

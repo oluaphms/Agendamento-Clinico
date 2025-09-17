@@ -7,30 +7,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  Timer,
-  Play,
-  Pause,
-  Square,
-  RotateCcw,
-  Clock,
-  User,
-  Search,
-  Filter,
-  RefreshCw,
-  Calendar,
-  Stethoscope,
-  AlertCircle,
-  CheckCircle,
-  Activity,
-  Target,
-  Zap,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
+
 import toast from 'react-hot-toast';
-import { formatDate, formatTime, formatPhone } from '@/lib/utils';
 
 // ============================================================================
 // INTERFACES E TIPOS

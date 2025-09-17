@@ -7,43 +7,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import {
-  MessageCircle,
-  Send,
-  Search,
-  Filter,
-  RefreshCw,
-  User,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Phone,
-  Mail,
-  Plus,
-  Eye,
-  Edit,
-  Trash2,
-  Settings,
-  Zap,
-  Bell,
-  Shield,
-  Users,
-  MoreVertical,
-  Paperclip,
-  Smile,
-  Image,
-  File,
-  Video,
-  Mic,
-  Phone as PhoneIcon,
-  Video as VideoIcon,
-} from 'lucide-react';
+
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
-import { supabase } from '@/lib/supabase';
+
 import toast from 'react-hot-toast';
-import { formatDate, formatTime, formatPhone } from '@/lib/utils';
 
 // ============================================================================
 // INTERFACES E TIPOS
