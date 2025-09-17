@@ -10,8 +10,37 @@ import { Helmet } from 'react-helmet-async';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
+import { formatCurrency } from '@/lib/utils';
 
 import toast from 'react-hot-toast';
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Activity,
+  Target,
+  AlertTriangle,
+  Clock,
+  Users,
+  BarChart3,
+  RefreshCw,
+  Download
+} from 'lucide-react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 // ============================================================================
 // INTERFACES E TIPOS
@@ -208,7 +237,7 @@ const DashboardFinanceiro: React.FC = () => {
   const loadDadosGrafico = async () => {
     try {
       const hoje = new Date();
-      const diasAtras = periodo === '7d' ? 7 : periodo === '30d' ? 30 : period === '90d' ? 90 : 365;
+      const diasAtras = periodo === '7d' ? 7 : periodo === '30d' ? 30 : periodo === '90d' ? 90 : 365;
       const dataInicio = new Date(hoje.getTime() - diasAtras * 24 * 60 * 60 * 1000);
 
       const { data: pagamentos } = await supabase
@@ -292,7 +321,7 @@ const DashboardFinanceiro: React.FC = () => {
           categoria,
           valor,
           percentual: totalDespesas > 0 ? (valor / totalDespesas) * 100 : 0,
-          cor: cores[index % cores.length],
+          cor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5],
         }))
         .sort((a, b) => b.valor - a.valor);
 
@@ -535,7 +564,7 @@ const DashboardFinanceiro: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="data" />
                   <YAxis />
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
                   <Area type="monotone" dataKey="receita" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.6} name="Receita" />
                   <Area type="monotone" dataKey="despesas" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.6} name="Despesas" />
                 </AreaChart>
@@ -549,7 +578,7 @@ const DashboardFinanceiro: React.FC = () => {
                 Distribuição de Despesas
               </h3>
               <ResponsiveContainer width="100%" height={300}>
-                <RechartsPieChart>
+                   <PieChart>
                   <Pie
                     data={dadosCategorias}
                     cx="50%"
@@ -564,8 +593,8 @@ const DashboardFinanceiro: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={entry.cor} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                </RechartsPieChart>
+                  <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
+                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -597,7 +626,7 @@ const DashboardFinanceiro: React.FC = () => {
               Resumo por Categoria de Despesas
             </h3>
             <div className="space-y-4">
-              {dadosCategorias.map((categoria, index) => (
+              {dadosCategorias.map((categoria) => (
                 <div key={categoria.categoria} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div 

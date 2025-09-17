@@ -1,5 +1,5 @@
-import { formatDate, formatPhone } from '@/lib/utils';
-import { FileText, Plus, Search, Filter, Download, Eye, Edit, Trash2, Calendar, User, Stethoscope, Pill, Activity, AlertCircle, CheckCircle, Clock, RefreshCw, FileImage, Upload } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import { FileText, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, Stethoscope, Pill, Activity, AlertCircle, CheckCircle, Clock, RefreshCw, FileImage } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Histórico Médico - Prontuário Eletrônico
 // ============================================================================
@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
 
 import toast from 'react-hot-toast';
 
@@ -120,8 +121,6 @@ const HistoricoMedico: React.FC = () => {
     status: '',
     busca: '',
   });
-  const [modalAberto, setModalAberto] = useState(false);
-  const [prontuarioSelecionado, setProntuarioSelecionado] = useState<Prontuario | null>(null);
   const [viewMode, setViewMode] = useState<'lista' | 'timeline'>('lista');
 
   // ============================================================================
@@ -200,7 +199,7 @@ const HistoricoMedico: React.FC = () => {
       let prontuariosFiltrados = data || [];
       if (filtros.busca) {
         const busca = filtros.busca.toLowerCase();
-        prontuariosFiltrados = prontuariosFiltrados.filter(prontuario =>
+        prontuariosFiltrados = prontuariosFiltrados.filter((prontuario: any) =>
           prontuario.paciente?.nome.toLowerCase().includes(busca) ||
           prontuario.diagnostico?.toLowerCase().includes(busca) ||
           prontuario.sintomas?.toLowerCase().includes(busca) ||
@@ -406,7 +405,7 @@ const HistoricoMedico: React.FC = () => {
                 Atualizar
               </button>
               <button
-                onClick={() => setModalAberto(true)}
+                onClick={() => {}}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus className="mr-2" size={16} />
@@ -721,14 +720,14 @@ const HistoricoMedico: React.FC = () => {
 
                     <div className="flex items-center space-x-2 ml-4">
                       <button
-                        onClick={() => setProntuarioSelecionado(prontuario)}
+                        onClick={() => {}}
                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                         title="Ver detalhes"
                       >
                         <Eye size={16} />
                       </button>
                       <button
-                        onClick={() => setProntuarioSelecionado(prontuario)}
+                        onClick={() => {}}
                         className="p-2 text-gray-400 hover:text-green-600 transition-colors"
                         title="Editar"
                       >

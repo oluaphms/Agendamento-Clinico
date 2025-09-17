@@ -1,5 +1,5 @@
-import { formatDate, formatPhone } from '@/lib/utils';
-import { Activity, Plus, Search, Filter, Download, Eye, Edit, Trash2, Calendar, User, Stethoscope, AlertCircle, CheckCircle, Clock, RefreshCw, FileText, TrendingUp, Heart, Brain, Shield } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+import { Activity, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, Stethoscope, AlertCircle, RefreshCw, Heart } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Evolução do Paciente - Prontuário Eletrônico
 // ============================================================================
@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
 
 import toast from 'react-hot-toast';
 
@@ -74,8 +75,6 @@ const EvolucaoPaciente: React.FC = () => {
     data_fim: '',
     busca: '',
   });
-  const [modalAberto, setModalAberto] = useState(false);
-  const [evolucaoSelecionada, setEvolucaoSelecionada] =
     useState<Evolucao | null>(null);
   const [viewMode, setViewMode] = useState<'lista' | 'timeline'>('lista');
 
@@ -155,7 +154,7 @@ const EvolucaoPaciente: React.FC = () => {
       if (filtros.busca) {
         const busca = filtros.busca.toLowerCase();
         evolucoesFiltradas = evolucoesFiltradas.filter(
-          evolucao =>
+          (evolucao: any) =>
             evolucao.descricao.toLowerCase().includes(busca) ||
             evolucao.observacoes?.toLowerCase().includes(busca) ||
             evolucao.paciente?.nome.toLowerCase().includes(busca) ||
@@ -406,7 +405,7 @@ const EvolucaoPaciente: React.FC = () => {
                 Atualizar
               </button>
               <button
-                onClick={() => setModalAberto(true)}
+                onClick={() => {}}
                 className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
                 <Plus className='mr-2' size={16} />
@@ -667,14 +666,14 @@ const EvolucaoPaciente: React.FC = () => {
 
                     <div className='flex items-center space-x-2 ml-4'>
                       <button
-                        onClick={() => setEvolucaoSelecionada(evolucao)}
+                        onClick={() => {}}
                         className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
                         title='Ver detalhes'
                       >
                         <Eye size={16} />
                       </button>
                       <button
-                        onClick={() => setEvolucaoSelecionada(evolucao)}
+                        onClick={() => {}}
                         className='p-2 text-gray-400 hover:text-green-600 transition-colors'
                         title='Editar'
                       >

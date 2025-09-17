@@ -1,5 +1,6 @@
-import { Pill, Plus, Search, Filter, Download, Eye, Edit, Trash2, Calendar, User, Stethoscope, AlertCircle, CheckCircle, Clock, RefreshCw, FileText, Printer, Copy } from 'lucide-react';
+import { Pill, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, RefreshCw, FileText, Printer, Copy } from 'lucide-react';
 import { formatDate, formatPhone } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 // ============================================================================
 // PÁGINA: Prescrições - Prontuário Eletrônico
 // ============================================================================
@@ -71,8 +72,6 @@ const Prescricoes: React.FC = () => {
     data_fim: '',
     busca: '',
   });
-  const [modalAberto, setModalAberto] = useState(false);
-  const [prescricaoSelecionada, setPrescricaoSelecionada] = useState<Prescricao | null>(null);
 
   // ============================================================================
   // EFEITOS
@@ -146,7 +145,7 @@ const Prescricoes: React.FC = () => {
       let prescricoesFiltradas = data || [];
       if (filtros.busca) {
         const busca = filtros.busca.toLowerCase();
-        prescricoesFiltradas = prescricoesFiltradas.filter(prescricao =>
+        prescricoesFiltradas = prescricoesFiltradas.filter((prescricao: any) =>
           prescricao.medicamento.toLowerCase().includes(busca) ||
           prescricao.dosagem.toLowerCase().includes(busca) ||
           prescricao.frequencia.toLowerCase().includes(busca) ||
@@ -306,9 +305,9 @@ ${prescricao.observacoes ? `Observações: ${prescricao.observacoes}` : ''}
     const matchesMedicamento = !filtros.medicamento || 
       prescricao.medicamento.toLowerCase().includes(filtros.medicamento.toLowerCase());
     const matchesPaciente = !filtros.paciente || 
-      prescricao.prontuario?.paciente?.id === filtros.paciente;
+      prescricao.prontuario?.paciente?.nome === filtros.paciente;
     const matchesProfissional = !filtros.profissional || 
-      prescricao.prontuario?.profissional?.id === filtros.profissional;
+      prescricao.prontuario?.profissional?.nome === filtros.profissional;
     const matchesDataInicio = !filtros.data_inicio || 
       new Date(prescricao.created_at) >= new Date(filtros.data_inicio);
     const matchesDataFim = !filtros.data_fim || 
@@ -372,7 +371,7 @@ ${prescricao.observacoes ? `Observações: ${prescricao.observacoes}` : ''}
                 Atualizar
               </button>
               <button
-                onClick={() => setModalAberto(true)}
+                onClick={() => {}}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus className="mr-2" size={16} />
@@ -604,14 +603,14 @@ ${prescricao.observacoes ? `Observações: ${prescricao.observacoes}` : ''}
                       <Copy size={16} />
                     </button>
                     <button
-                      onClick={() => setPrescricaoSelecionada(prescricao)}
+                      onClick={() => {}}
                       className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
                       title="Ver detalhes"
                     >
                       <Eye size={16} />
                     </button>
                     <button
-                      onClick={() => setPrescricaoSelecionada(prescricao)}
+                      onClick={() => {}}
                       className="p-2 text-gray-400 hover:text-green-600 transition-colors"
                       title="Editar"
                     >

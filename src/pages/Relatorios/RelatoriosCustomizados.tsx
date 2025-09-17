@@ -56,24 +56,6 @@ interface RelatorioCustomizado {
   criado_por: string;
 }
 
-interface CampoDisponivel {
-  id: string;
-  nome: string;
-  tipo: string; // 'texto', 'numero', 'data', 'booleano'
-  tabela: string;
-  descricao: string;
-  categoria: string;
-}
-
-interface FiltroDisponivel {
-  id: string;
-  nome: string;
-  tipo: string; // 'texto', 'numero', 'data', 'selecao'
-  campo: string;
-  operador: string;
-  valores: string[];
-}
-
 interface Filtros {
   busca: string;
   tipo: string;
@@ -149,73 +131,8 @@ const RelatoriosCustomizados: React.FC = () => {
 
   const loadCamposDisponiveis = async () => {
     try {
-      // Simular campos disponíveis
-      const camposMock: CampoDisponivel[] = [
-        {
-          id: '1',
-          nome: 'nome_paciente',
-          tipo: 'texto',
-          tabela: 'pacientes',
-          descricao: 'Nome do Paciente',
-          categoria: 'Paciente',
-        },
-        {
-          id: '2',
-          nome: 'data_consulta',
-          tipo: 'data',
-          tabela: 'consultas',
-          descricao: 'Data da Consulta',
-          categoria: 'Consulta',
-        },
-        {
-          id: '3',
-          nome: 'valor_consulta',
-          tipo: 'numero',
-          tabela: 'consultas',
-          descricao: 'Valor da Consulta',
-          categoria: 'Financeiro',
-        },
-        {
-          id: '4',
-          nome: 'nome_profissional',
-          tipo: 'texto',
-          tabela: 'profissionais',
-          descricao: 'Nome do Profissional',
-          categoria: 'Profissional',
-        },
-        {
-          id: '5',
-          nome: 'especialidade',
-          tipo: 'texto',
-          tabela: 'profissionais',
-          descricao: 'Especialidade',
-          categoria: 'Profissional',
-        },
-        {
-          id: '6',
-          nome: 'status_pagamento',
-          tipo: 'texto',
-          tabela: 'pagamentos',
-          descricao: 'Status do Pagamento',
-          categoria: 'Financeiro',
-        },
-        {
-          id: '7',
-          nome: 'data_pagamento',
-          tipo: 'data',
-          tabela: 'pagamentos',
-          descricao: 'Data do Pagamento',
-          categoria: 'Financeiro',
-        },
-        {
-          id: '8',
-          nome: 'valor_pagamento',
-          tipo: 'numero',
-          tabela: 'pagamentos',
-          descricao: 'Valor do Pagamento',
-          categoria: 'Financeiro',
-        },
-      ];
+      // Função para carregar campos disponíveis
+      console.log('Carregando campos disponíveis...');
     } catch (error) {
       console.error('Erro ao carregar campos disponíveis:', error);
     }
@@ -223,55 +140,8 @@ const RelatoriosCustomizados: React.FC = () => {
 
   const loadFiltrosDisponiveis = async () => {
     try {
-      // Simular filtros disponíveis
-      const filtrosMock: FiltroDisponivel[] = [
-        {
-          id: '1',
-          nome: 'Período',
-          tipo: 'data',
-          campo: 'data_consulta',
-          operador: 'entre',
-          valores: [],
-        },
-        {
-          id: '2',
-          nome: 'Especialidade',
-          tipo: 'selecao',
-          campo: 'especialidade',
-          operador: 'igual',
-          valores: [
-            'Cardiologia',
-            'Dermatologia',
-            'Ortopedia',
-            'Pediatria',
-            'Neurologia',
-          ],
-        },
-        {
-          id: '3',
-          nome: 'Status Pagamento',
-          tipo: 'selecao',
-          campo: 'status_pagamento',
-          operador: 'igual',
-          valores: ['Pago', 'Pendente', 'Cancelado'],
-        },
-        {
-          id: '4',
-          nome: 'Valor Mínimo',
-          tipo: 'numero',
-          campo: 'valor_consulta',
-          operador: 'maior_igual',
-          valores: [],
-        },
-        {
-          id: '5',
-          nome: 'Valor Máximo',
-          tipo: 'numero',
-          campo: 'valor_consulta',
-          operador: 'menor_igual',
-          valores: [],
-        },
-      ];
+      // Função para carregar filtros disponíveis
+      console.log('Carregando filtros disponíveis...');
     } catch (error) {
       console.error('Erro ao carregar filtros disponíveis:', error);
     }
@@ -380,6 +250,16 @@ const RelatoriosCustomizados: React.FC = () => {
       default:
         return 'Outros';
     }
+  };
+
+  const handleNovo = () => {
+    // Implementar criação de novo relatório
+    console.log('Criar novo relatório');
+  };
+
+  const handleEditar = (id: string) => {
+    // Implementar edição de relatório
+    console.log('Editar relatório:', id);
   };
 
   const relatoriosFiltrados = relatorios.filter(relatorio => {
@@ -701,7 +581,7 @@ const RelatoriosCustomizados: React.FC = () => {
                       <Copy size={16} />
                     </button>
                     <button
-                      onClick={() => handleEditar(relatorio)}
+                      onClick={() => handleEditar(relatorio.id)}
                       className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
                     >
                       <Edit size={16} />
