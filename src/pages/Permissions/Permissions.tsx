@@ -18,6 +18,7 @@ import {
   RoleManager,
   UserRoleManager,
   PendingUsersManager,
+  AuditLogManager,
 } from '../../components/Permissions';
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
@@ -27,7 +28,12 @@ import toast from 'react-hot-toast';
 // TIPOS E INTERFACES
 // ============================================================================
 
-type TabType = 'permissions' | 'roles' | 'user-roles' | 'pending-users';
+type TabType =
+  | 'permissions'
+  | 'roles'
+  | 'user-roles'
+  | 'pending-users'
+  | 'audit-log';
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -112,13 +118,19 @@ export const Permissions: React.FC = () => {
       description: 'Usuários aguardando aprovação',
       color: 'orange',
     },
+    {
+      id: 'audit-log' as TabType,
+      label: 'Log de Auditoria',
+      icon: Key,
+      description: 'Histórico de mudanças de permissões',
+      color: 'gray',
+    },
   ];
 
   const getTabIcon = (tab: any) => {
     const IconComponent = tab.icon;
     return <IconComponent className='h-5 w-5' />;
   };
-
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -130,6 +142,8 @@ export const Permissions: React.FC = () => {
         return <UserRoleManager />;
       case 'pending-users':
         return <PendingUsersManager />;
+      case 'audit-log':
+        return <AuditLogManager />;
       default:
         return <PermissionManager />;
     }
@@ -162,11 +176,17 @@ export const Permissions: React.FC = () => {
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
             <div>
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>
+                Sistema de Permissões
+              </h1>
+              <p className='text-gray-600 dark:text-gray-400 mt-2'>
+                Gerencie permissões, roles e controle de acesso do sistema
+              </p>
             </div>
             <div className='flex items-center space-x-4'>
               <button
                 onClick={loadStats}
-                className='flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
+                className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
                 <RefreshCw className='mr-2' size={16} />
                 Atualizar

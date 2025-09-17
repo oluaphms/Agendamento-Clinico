@@ -85,3 +85,5 @@ Para usar em produção, você precisará:
 4. **Faça login** → Nova senha funciona
 
 A funcionalidade está **100% operacional**! 🎉
+
+

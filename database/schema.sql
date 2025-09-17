@@ -279,6 +279,252 @@ END;
 $$ language 'plpgsql';
 
 -- =====================================================
+-- SISTEMA FINANCEIRO
+-- =====================================================
+
+-- Tabela de pagamentos
+CREATE TABLE IF NOT EXISTS pagamentos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    profissional_id UUID REFERENCES profissionais(id) ON DELETE SET NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    forma_pagamento VARCHAR(50) NOT NULL CHECK (forma_pagamento IN ('pix', 'cartao_credito', 'cartao_debito', 'dinheiro', 'boleto', 'transferencia')),
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'pago', 'cancelado', 'estornado', 'processando')),
+    data_pagamento TIMESTAMP WITH TIME ZONE,
+    data_vencimento DATE,
+    codigo_transacao VARCHAR(100),
+    observacoes TEXT,
+    dados_pagamento JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de contas a receber
+CREATE TABLE IF NOT EXISTS contas_receber (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    data_vencimento DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'pago', 'vencido', 'cancelado')),
+    forma_pagamento VARCHAR(50),
+    data_pagamento TIMESTAMP WITH TIME ZONE,
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de fluxo de caixa
+CREATE TABLE IF NOT EXISTS fluxo_caixa (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('entrada', 'saida')),
+    categoria VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    data_movimento DATE NOT NULL,
+    forma_pagamento VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'confirmado' CHECK (status IN ('confirmado', 'pendente', 'cancelado')),
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de configurações financeiras
+CREATE TABLE IF NOT EXISTS configuracao_financeira (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    chave VARCHAR(100) UNIQUE NOT NULL,
+    valor JSONB NOT NULL,
+    descricao TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- PRONTUÁRIO ELETRÔNICO
+-- =====================================================
+
+-- Tabela de prontuários
+CREATE TABLE IF NOT EXISTS prontuarios (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    profissional_id UUID REFERENCES profissionais(id) ON DELETE SET NULL,
+    data_consulta TIMESTAMP WITH TIME ZONE NOT NULL,
+    sintomas TEXT,
+    diagnostico TEXT,
+    prescricao TEXT,
+    observacoes TEXT,
+    status VARCHAR(20) DEFAULT 'ativo' CHECK (status IN ('ativo', 'arquivado')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de prescrições
+CREATE TABLE IF NOT EXISTS prescricoes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    prontuario_id UUID REFERENCES prontuarios(id) ON DELETE CASCADE,
+    medicamento VARCHAR(255) NOT NULL,
+    dosagem VARCHAR(100),
+    frequencia VARCHAR(100),
+    duracao VARCHAR(100),
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de exames
+CREATE TABLE IF NOT EXISTS exames (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    prontuario_id UUID REFERENCES prontuarios(id) ON DELETE CASCADE,
+    nome_exame VARCHAR(255) NOT NULL,
+    tipo_exame VARCHAR(100),
+    data_exame DATE,
+    resultado TEXT,
+    arquivo_url TEXT,
+    observacoes TEXT,
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'realizado', 'cancelado')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de evolução do paciente
+CREATE TABLE IF NOT EXISTS evolucao_paciente (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    prontuario_id UUID REFERENCES prontuarios(id) ON DELETE CASCADE,
+    profissional_id UUID REFERENCES profissionais(id) ON DELETE SET NULL,
+    data_evolucao TIMESTAMP WITH TIME ZONE NOT NULL,
+    tipo_evolucao VARCHAR(50) NOT NULL CHECK (tipo_evolucao IN ('consulta', 'retorno', 'emergencia', 'internacao')),
+    descricao TEXT NOT NULL,
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- SISTEMA DE COMUNICAÇÃO
+-- =====================================================
+
+-- Tabela de mensagens WhatsApp
+CREATE TABLE IF NOT EXISTS mensagens_whatsapp (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    numero_telefone VARCHAR(20) NOT NULL,
+    mensagem TEXT NOT NULL,
+    tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('lembrete', 'confirmacao', 'cancelamento', 'reagendamento', 'geral')),
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'enviada', 'entregue', 'falhou')),
+    data_envio TIMESTAMP WITH TIME ZONE,
+    resposta TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de mensagens SMS
+CREATE TABLE IF NOT EXISTS mensagens_sms (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    numero_telefone VARCHAR(20) NOT NULL,
+    mensagem TEXT NOT NULL,
+    tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('lembrete', 'confirmacao', 'cancelamento', 'reagendamento', 'geral')),
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'enviada', 'entregue', 'falhou')),
+    data_envio TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de emails
+CREATE TABLE IF NOT EXISTS emails (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    paciente_id UUID REFERENCES pacientes(id) ON DELETE CASCADE,
+    agendamento_id UUID REFERENCES agendamentos(id) ON DELETE CASCADE,
+    email_destino VARCHAR(255) NOT NULL,
+    assunto VARCHAR(255) NOT NULL,
+    corpo TEXT NOT NULL,
+    tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('lembrete', 'confirmacao', 'cancelamento', 'reagendamento', 'marketing', 'geral')),
+    status VARCHAR(20) DEFAULT 'pendente' CHECK (status IN ('pendente', 'enviado', 'entregue', 'falhou', 'aberto', 'clicado')),
+    data_envio TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de chat interno
+CREATE TABLE IF NOT EXISTS chat_interno (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    remetente_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+    destinatario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+    mensagem TEXT NOT NULL,
+    tipo VARCHAR(20) DEFAULT 'texto' CHECK (tipo IN ('texto', 'imagem', 'arquivo', 'sistema')),
+    arquivo_url TEXT,
+    lida BOOLEAN DEFAULT FALSE,
+    data_leitura TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- CONFIGURAÇÕES AVANÇADAS
+-- =====================================================
+
+-- Tabela de configurações da clínica
+CREATE TABLE IF NOT EXISTS configuracao_clinica (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    nome_clinica VARCHAR(255) NOT NULL,
+    cnpj VARCHAR(18) UNIQUE,
+    endereco TEXT,
+    telefone VARCHAR(20),
+    email VARCHAR(255),
+    site VARCHAR(255),
+    logo_url TEXT,
+    cor_primaria VARCHAR(7),
+    cor_secundaria VARCHAR(7),
+    horario_funcionamento JSONB,
+    configuracoes JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de horários de funcionamento
+CREATE TABLE IF NOT EXISTS horarios_funcionamento (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    dia_semana INTEGER NOT NULL CHECK (dia_semana BETWEEN 0 AND 6), -- 0 = domingo, 6 = sábado
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de feriados
+CREATE TABLE IF NOT EXISTS feriados (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    nome VARCHAR(255) NOT NULL,
+    data DATE NOT NULL,
+    tipo VARCHAR(20) DEFAULT 'nacional' CHECK (tipo IN ('nacional', 'estadual', 'municipal', 'clinica')),
+    ativo BOOLEAN DEFAULT TRUE,
+    observacoes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabela de templates
+CREATE TABLE IF NOT EXISTS templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    nome VARCHAR(255) NOT NULL,
+    tipo VARCHAR(50) NOT NULL CHECK (tipo IN ('email', 'sms', 'whatsapp', 'relatorio', 'documento')),
+    conteudo TEXT NOT NULL,
+    variaveis JSONB,
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
 -- ROW LEVEL SECURITY (RLS)
 -- =====================================================
 
@@ -290,9 +536,42 @@ ALTER TABLE servicos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agendamentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE consultas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pagamentos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contas_receber ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fluxo_caixa ENABLE ROW LEVEL SECURITY;
+ALTER TABLE configuracao_financeira ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prontuarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prescricoes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exames ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evolucao_paciente ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mensagens_whatsapp ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mensagens_sms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE emails ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chat_interno ENABLE ROW LEVEL SECURITY;
+ALTER TABLE configuracao_clinica ENABLE ROW LEVEL SECURITY;
+ALTER TABLE horarios_funcionamento ENABLE ROW LEVEL SECURITY;
+ALTER TABLE feriados ENABLE ROW LEVEL SECURITY;
+ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notificacoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE logs_sistema ENABLE ROW LEVEL SECURITY;
+
+-- Triggers para atualizar updated_at nas novas tabelas
+CREATE TRIGGER update_pagamentos_updated_at BEFORE UPDATE ON pagamentos FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_contas_receber_updated_at BEFORE UPDATE ON contas_receber FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_fluxo_caixa_updated_at BEFORE UPDATE ON fluxo_caixa FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_configuracao_financeira_updated_at BEFORE UPDATE ON configuracao_financeira FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_prontuarios_updated_at BEFORE UPDATE ON prontuarios FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_prescricoes_updated_at BEFORE UPDATE ON prescricoes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_exames_updated_at BEFORE UPDATE ON exames FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_evolucao_paciente_updated_at BEFORE UPDATE ON evolucao_paciente FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_mensagens_whatsapp_updated_at BEFORE UPDATE ON mensagens_whatsapp FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_mensagens_sms_updated_at BEFORE UPDATE ON mensagens_sms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_emails_updated_at BEFORE UPDATE ON emails FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_chat_interno_updated_at BEFORE UPDATE ON chat_interno FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_configuracao_clinica_updated_at BEFORE UPDATE ON configuracao_clinica FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_horarios_funcionamento_updated_at BEFORE UPDATE ON horarios_funcionamento FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_feriados_updated_at BEFORE UPDATE ON feriados FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_templates_updated_at BEFORE UPDATE ON templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Políticas de segurança para usuários
 CREATE POLICY "Usuários podem ver seu próprio perfil" ON usuarios

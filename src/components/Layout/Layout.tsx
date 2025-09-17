@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import FirstAccessHandler from '../Auth/FirstAccessHandler';
-import MenuCardiaco from '../MenuCardiaco';
+import { SideDrawer } from '../MenuCardiaco';
 import { ConnectivityStatus } from '../UI';
 import { useThemeStore } from '@/stores/themeStore';
 
@@ -34,8 +34,8 @@ const Layout: React.FC = () => {
       {/* Status de Conectividade */}
       <ConnectivityStatus />
 
-      {/* Menu Global */}
-      <MenuCardiaco
+      {/* Menu Lateral Global */}
+      <SideDrawer
         isOpen={isCardiacMenuOpen}
         onClose={() => setIsCardiacMenuOpen(false)}
       />

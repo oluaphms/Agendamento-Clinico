@@ -15,6 +15,8 @@ import {
   AgendaLazy,
   PacientesLazy,
   ServicosLazy,
+  ServicosConveniosLazy,
+  ConvenioServicosLazy,
   ProfissionaisLazy,
   UsuariosLazy,
   ConfiguracoesLazy,
@@ -158,6 +160,22 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <ServicosLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='servicos-convenios'
+                          element={
+                            <ProtectedRoute>
+                              <ServicosConveniosLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='convenio-servicos'
+                          element={
+                            <ProtectedRoute>
+                              <ConvenioServicosLazy />
                             </ProtectedRoute>
                           }
                         />

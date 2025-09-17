@@ -60,3 +60,5 @@ O `NavigationManager` gerencia a persistência de navegação do sistema, garant
 O `NavigationManager` é automaticamente incluído no `App.tsx` e funciona de forma transparente, sem
 necessidade de configuração adicional.
 
+
+

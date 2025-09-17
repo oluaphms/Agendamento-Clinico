@@ -7,3 +7,4 @@ export { PermissionGuard, AdminOnly, DoctorOnly, ReceptionistOnly, ReadOnly, Wri
 export { RoleManager } from './RoleManager';
 export { UserRoleManager } from './UserRoleManager';
 export { PendingUsersManager } from './PendingUsersManager';
+export { AuditLogManager } from './AuditLogManager';

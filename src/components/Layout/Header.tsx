@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useNavigate, useLocation } from 'react-router-dom';
-import MenuCardiaco from '@/components/MenuCardiaco';
+import { SideDrawer } from '@/components/MenuCardiaco';
 import toast from 'react-hot-toast';
 
 const Header: React.FC = () => {
@@ -85,6 +85,7 @@ const Header: React.FC = () => {
       '/app/pacientes': 'Pacientes',
       '/app/profissionais': 'Profissionais',
       '/app/servicos': 'Serviços',
+      '/app/convenio-servicos': 'Convênio/Serviços',
       '/app/usuarios': 'Usuários',
       '/app/configuracoes': 'Configurações',
       '/app/permissions': 'Permissões',
@@ -105,6 +106,7 @@ const Header: React.FC = () => {
       '/app/pacientes': '👥',
       '/app/profissionais': '👨‍⚕️',
       '/app/servicos': '🩺',
+      '/app/convenio-servicos': '📋',
       '/app/usuarios': '👤',
       '/app/configuracoes': '⚙️',
       '/app/permissions': '🔐',
@@ -125,6 +127,7 @@ const Header: React.FC = () => {
       '/app/profissionais':
         'Administre profissionais de saúde e suas especialidades',
       '/app/servicos': 'Configure serviços médicos e procedimentos oferecidos',
+      '/app/convenio-servicos': 'Gerencie convênios e serviços da clínica',
       '/app/usuarios':
         'Controle de acesso e permissões dos usuários do sistema',
       '/app/configuracoes': 'Configurações gerais e personalização do sistema',
@@ -320,8 +323,8 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Menu */}
-      <MenuCardiaco
+      {/* Menu Lateral */}
+      <SideDrawer
         isOpen={isCardiacMenuOpen}
         onClose={() => setIsCardiacMenuOpen(false)}
       />

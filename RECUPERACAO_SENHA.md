@@ -207,3 +207,5 @@ PASSWORD_RESET_TOKEN_EXPIRY=3600 # 1 hora em segundos
 5. **Adicionar notificações** de redefinição bem-sucedida
 
 A funcionalidade está **100% operacional** e pronta para uso! 🎉
+
+

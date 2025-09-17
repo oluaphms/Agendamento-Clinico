@@ -62,3 +62,5 @@
 **Configure o EmailJS** seguindo as instruções e os emails serão enviados de verdade!
 
 **A funcionalidade está 100% pronta!** 🎉
+
+

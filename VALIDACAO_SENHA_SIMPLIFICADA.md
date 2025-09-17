@@ -129,3 +129,5 @@ const validatePassword = (password: string) => {
 - ❌ **12345** - Rejeitado (menos de 6 caracteres)
 
 **A validação está 100% flexível e funcional!** 🎉
+
+

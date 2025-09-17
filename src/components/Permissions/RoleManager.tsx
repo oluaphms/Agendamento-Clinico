@@ -58,16 +58,258 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
     permissions: [],
   });
 
-  const {
-    roles,
-    permissions,
-    loading,
-    error,
-    createRole,
-    updateRole,
-    deleteRole,
-    clearError,
-  } = usePermissions();
+  // Mock data para demonstração
+  const [roles, setRoles] = useState<Role[]>([
+    {
+      id: '1',
+      name: 'Administrador',
+      description: 'Acesso total ao sistema',
+      permissions: [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+        '13',
+        '14',
+        '15',
+        '16',
+        '17',
+        '18',
+        '19',
+        '20',
+        '21',
+        '22',
+        '23',
+        '24',
+        '25',
+        '26',
+        '27',
+        '28',
+        '29',
+        '30',
+        '31',
+      ],
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    },
+    {
+      id: '2',
+      name: 'Médico',
+      description: 'Acesso a pacientes, agenda e relatórios',
+      permissions: [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+        '13',
+      ],
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    },
+    {
+      id: '3',
+      name: 'Recepcionista',
+      description: 'Acesso a pacientes e agenda (sem exclusão)',
+      permissions: ['1', '2', '3', '6', '7', '8', '9'],
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    },
+    {
+      id: '4',
+      name: 'Enfermeiro',
+      description: 'Acesso a pacientes e agenda (sem exclusão)',
+      permissions: ['1', '2', '3', '6', '7', '8', '9'],
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    },
+    {
+      id: '5',
+      name: 'Analista',
+      description: 'Acesso a relatórios e analytics',
+      permissions: ['11', '12', '13', '28', '29'],
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    },
+  ]);
+
+  const [permissions] = useState([
+    {
+      id: '1',
+      name: 'Visualizar Pacientes',
+      description: 'Permite visualizar informações dos pacientes',
+    },
+    {
+      id: '2',
+      name: 'Criar Pacientes',
+      description: 'Permite criar novos pacientes',
+    },
+    {
+      id: '3',
+      name: 'Editar Pacientes',
+      description: 'Permite editar informações dos pacientes',
+    },
+    {
+      id: '4',
+      name: 'Excluir Pacientes',
+      description: 'Permite excluir pacientes',
+    },
+    {
+      id: '5',
+      name: 'Gerenciar Pacientes',
+      description: 'Controle total sobre pacientes',
+    },
+    {
+      id: '6',
+      name: 'Visualizar Agenda',
+      description: 'Permite visualizar a agenda de consultas',
+    },
+    {
+      id: '7',
+      name: 'Criar Agendamentos',
+      description: 'Permite criar novos agendamentos',
+    },
+    {
+      id: '8',
+      name: 'Editar Agendamentos',
+      description: 'Permite editar agendamentos existentes',
+    },
+    {
+      id: '9',
+      name: 'Cancelar Agendamentos',
+      description: 'Permite cancelar agendamentos',
+    },
+    {
+      id: '10',
+      name: 'Gerenciar Agenda',
+      description: 'Controle total sobre a agenda',
+    },
+    {
+      id: '11',
+      name: 'Visualizar Relatórios',
+      description: 'Permite visualizar relatórios do sistema',
+    },
+    {
+      id: '12',
+      name: 'Criar Relatórios',
+      description: 'Permite criar novos relatórios',
+    },
+    {
+      id: '13',
+      name: 'Gerenciar Relatórios',
+      description: 'Controle total sobre relatórios',
+    },
+    {
+      id: '14',
+      name: 'Visualizar Usuários',
+      description: 'Permite visualizar usuários do sistema',
+    },
+    {
+      id: '15',
+      name: 'Criar Usuários',
+      description: 'Permite criar novos usuários',
+    },
+    {
+      id: '16',
+      name: 'Editar Usuários',
+      description: 'Permite editar usuários existentes',
+    },
+    {
+      id: '17',
+      name: 'Excluir Usuários',
+      description: 'Permite excluir usuários',
+    },
+    {
+      id: '18',
+      name: 'Gerenciar Usuários',
+      description: 'Controle total sobre usuários',
+    },
+    {
+      id: '19',
+      name: 'Visualizar Configurações',
+      description: 'Permite visualizar configurações do sistema',
+    },
+    {
+      id: '20',
+      name: 'Editar Configurações',
+      description: 'Permite editar configurações do sistema',
+    },
+    {
+      id: '21',
+      name: 'Gerenciar Configurações',
+      description: 'Controle total sobre configurações',
+    },
+    {
+      id: '22',
+      name: 'Visualizar Backups',
+      description: 'Permite visualizar backups do sistema',
+    },
+    {
+      id: '23',
+      name: 'Criar Backups',
+      description: 'Permite criar backups do sistema',
+    },
+    {
+      id: '24',
+      name: 'Gerenciar Backups',
+      description: 'Controle total sobre backups',
+    },
+    {
+      id: '25',
+      name: 'Visualizar Notificações',
+      description: 'Permite visualizar notificações',
+    },
+    {
+      id: '26',
+      name: 'Criar Notificações',
+      description: 'Permite criar notificações',
+    },
+    {
+      id: '27',
+      name: 'Gerenciar Notificações',
+      description: 'Controle total sobre notificações',
+    },
+    {
+      id: '28',
+      name: 'Visualizar Analytics',
+      description: 'Permite visualizar dados analíticos',
+    },
+    {
+      id: '29',
+      name: 'Gerenciar Analytics',
+      description: 'Controle total sobre analytics',
+    },
+    {
+      id: '30',
+      name: 'Visualizar Gamificação',
+      description: 'Permite visualizar sistema de gamificação',
+    },
+    {
+      id: '31',
+      name: 'Gerenciar Gamificação',
+      description: 'Controle total sobre gamificação',
+    },
+  ]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearError = () => setError(null);
 
   // ============================================================================
   // FUNÇÕES AUXILIARES
@@ -91,6 +333,58 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ onClose }) => {
       permissions: role.permissions.map((p: any) => p.id || p),
     });
     setShowForm(true);
+  };
+
+  const createRole = async (
+    roleData: Omit<Role, 'id' | 'created_at' | 'updated_at'>
+  ) => {
+    setLoading(true);
+    try {
+      const newRole: Role = {
+        id: (roles.length + 1).toString(),
+        name: roleData.name,
+        description: roleData.description,
+        permissions: roleData.permissions,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setRoles(prev => [...prev, newRole]);
+    } catch (error) {
+      setError('Erro ao criar role');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateRole = async (id: string, roleData: Partial<Role>) => {
+    setLoading(true);
+    try {
+      setRoles(prev =>
+        prev.map(role =>
+          role.id === id
+            ? { ...role, ...roleData, updated_at: new Date().toISOString() }
+            : role
+        )
+      );
+    } catch (error) {
+      setError('Erro ao atualizar role');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteRole = async (id: string) => {
+    setLoading(true);
+    try {
+      setRoles(prev => prev.filter(role => role.id !== id));
+    } catch (error) {
+      setError('Erro ao excluir role');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

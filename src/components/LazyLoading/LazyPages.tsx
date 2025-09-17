@@ -32,6 +32,14 @@ export const LazyServicos = createLazyComponent(
   () => import('@/pages/Servicos/Servicos'),
   { chunkName: 'servicos' }
 );
+export const LazyServicosConvenios = createLazyComponent(
+  () => import('@/pages/ServicosConvenios/ServicosConvenios'),
+  { chunkName: 'servicos-convenios' }
+);
+export const LazyConvenioServicos = createLazyComponent(
+  () => import('@/pages/ConvenioServicos/ConvenioServicos'),
+  { chunkName: 'convenio-servicos' }
+);
 export const LazyUsuarios = createLazyComponent(
   () => import('@/pages/Usuarios/Usuarios'),
   { chunkName: 'usuarios' }
@@ -164,7 +172,7 @@ export const ProfissionaisLazy = () => (
   </LazyWrapper>
 );
 
-// Serviços com skeleton de cards
+// Serviços com skeleton of cards
 export const ServicosLazy = () => (
   <LazyWrapper
     fallback={
@@ -176,6 +184,76 @@ export const ServicosLazy = () => (
     }
   >
     <LazyServicos />
+  </LazyWrapper>
+);
+
+// Serviços/Convênios com skeleton de formulário e lista
+export const ServicosConveniosLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center space-x-3 mb-6'>
+          <div className='h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded'></div>
+          <div>
+            <div className='h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-2'></div>
+            <div className='h-4 bg-gray-200 dark:bg-gray-700 rounded w-64'></div>
+          </div>
+        </div>
+        {/* Tabs */}
+        <div className='flex space-x-1 bg-gray-200 dark:bg-gray-700 rounded-lg p-1'>
+          <div className='flex-1 h-10 bg-gray-300 dark:bg-gray-600 rounded'></div>
+          <div className='flex-1 h-10 bg-gray-300 dark:bg-gray-600 rounded'></div>
+        </div>
+        {/* Grid */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          {/* Formulário */}
+          <CardSkeleton height='400px' />
+          {/* Lista */}
+          <CardSkeleton height='400px' />
+        </div>
+      </div>
+    }
+  >
+    <LazyServicosConvenios />
+  </LazyWrapper>
+);
+
+// Convênio/Serviços com skeleton de cards
+export const ConvenioServicosLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div>
+              <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-2'></div>
+              <div className='h-5 bg-gray-200 dark:bg-gray-700 rounded w-80'></div>
+            </div>
+          </div>
+          <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+        </div>
+        {/* Tabs */}
+        <div className='border-b border-gray-200 dark:border-gray-700'>
+          <div className='flex space-x-8'>
+            <div className='h-10 bg-gray-200 dark:bg-gray-700 rounded w-40'></div>
+            <div className='h-10 bg-gray-200 dark:bg-gray-700 rounded w-40'></div>
+          </div>
+        </div>
+        {/* Search */}
+        <div className='h-10 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+        {/* Cards Grid */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CardSkeleton key={index} height='200px' />
+          ))}
+        </div>
+      </div>
+    }
+  >
+    <LazyConvenioServicos />
   </LazyWrapper>
 );
 
