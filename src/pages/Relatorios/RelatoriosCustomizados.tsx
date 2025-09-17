@@ -1,6 +1,20 @@
-import { FileText, Settings, RefreshCw, Plus, CheckCircle, Globe, Tag, Search, Eye, Copy, Edit, Trash2, BarChart3, Activity } from 'lucide-react';
-import { formatDate, formatTime, formatPhone, formatCurrency } from '@/lib/utils';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Cell, Legend, ScatterChart, Scatter } from 'recharts';
+import {
+  FileText,
+  Settings,
+  RefreshCw,
+  Plus,
+  CheckCircle,
+  Globe,
+  Tag,
+  Search,
+  Eye,
+  Copy,
+  Edit,
+  Trash2,
+  BarChart3,
+  Activity,
+} from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 // ============================================================================
 // PÁGINA: Relatórios Customizados - Sistema de Relatórios
 // ============================================================================
@@ -77,12 +91,6 @@ interface Filtros {
 const RelatoriosCustomizados: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [relatorios, setRelatorios] = useState<RelatorioCustomizado[]>([]);
-  const [camposDisponiveis, setCamposDisponiveis] = useState<CampoDisponivel[]>(
-    []
-  );
-  const [filtrosDisponiveis, setFiltrosDisponiveis] = useState<
-    FiltroDisponivel[]
-  >([]);
   const [filtros, setFiltros] = useState<Filtros>({
     busca: '',
     tipo: '',
@@ -92,13 +100,6 @@ const RelatoriosCustomizados: React.FC = () => {
     data_inicio: '',
     data_fim: '',
   });
-  const [modalAberto, setModalAberto] = useState(false);
-  const [relatorioSelecionado, setRelatorioSelecionado] =
-    useState<RelatorioCustomizado | null>(null);
-  const [editando, setEditando] = useState(false);
-  const [formData, setFormData] = useState<Partial<RelatorioCustomizado>>({});
-  const [previewAberto, setPreviewAberto] = useState(false);
-  const [dadosPreview, setDadosPreview] = useState<any[]>([]);
 
   // ============================================================================
   // EFEITOS
@@ -215,8 +216,6 @@ const RelatoriosCustomizados: React.FC = () => {
           categoria: 'Financeiro',
         },
       ];
-
-      setCamposDisponiveis(camposMock);
     } catch (error) {
       console.error('Erro ao carregar campos disponíveis:', error);
     }
@@ -273,53 +272,8 @@ const RelatoriosCustomizados: React.FC = () => {
           valores: [],
         },
       ];
-
-      setFiltrosDisponiveis(filtrosMock);
     } catch (error) {
       console.error('Erro ao carregar filtros disponíveis:', error);
-    }
-  };
-
-  const salvarRelatorio = async () => {
-    if (!formData.nome || !formData.tipo || !formData.categoria) {
-      toast.error('Preencha todos os campos obrigatórios');
-      return;
-    }
-
-    try {
-      if (relatorioSelecionado) {
-        // Atualizar relatório existente
-        const { error } = await supabase
-          .from('relatorios_customizados')
-          .update(formData)
-          .eq('id', relatorioSelecionado.id);
-
-        if (error) {
-          console.error('Erro ao atualizar relatório:', error);
-          toast.error('Erro ao atualizar relatório');
-          return;
-        }
-      } else {
-        // Criar novo relatório
-        const { error } = await supabase
-          .from('relatorios_customizados')
-          .insert([formData]);
-
-        if (error) {
-          console.error('Erro ao criar relatório:', error);
-          toast.error('Erro ao criar relatório');
-          return;
-        }
-      }
-
-      toast.success('Relatório salvo com sucesso');
-      loadRelatorios();
-      setModalAberto(false);
-      setRelatorioSelecionado(null);
-      setFormData({});
-    } catch (error) {
-      console.error('Erro ao salvar relatório:', error);
-      toast.error('Erro ao salvar relatório');
     }
   };
 
@@ -348,52 +302,13 @@ const RelatoriosCustomizados: React.FC = () => {
     }
   };
 
-  const handleEditar = (relatorio: RelatorioCustomizado) => {
-    setRelatorioSelecionado(relatorio);
-    setFormData(relatorio);
-    setEditando(true);
-    setModalAberto(true);
-  };
-
-  const handleNovo = () => {
-    setRelatorioSelecionado(null);
-    setFormData({});
-    setEditando(false);
-    setModalAberto(true);
-  };
-
-  const handlePreview = async (relatorio: RelatorioCustomizado) => {
-    try {
-      // Simular dados de preview
-      const dadosMock = [
-        { nome: 'João Silva', data: '2024-01-15', valor: 150, status: 'Pago' },
-        {
-          nome: 'Maria Santos',
-          data: '2024-01-16',
-          valor: 200,
-          status: 'Pendente',
-        },
-        { nome: 'Pedro Costa', data: '2024-01-17', valor: 180, status: 'Pago' },
-      ];
-
-      setDadosPreview(dadosMock);
-      setPreviewAberto(true);
-    } catch (error) {
-      console.error('Erro ao gerar preview:', error);
-      toast.error('Erro ao gerar preview');
-    }
-  };
-
   const handleDuplicar = async (relatorio: RelatorioCustomizado) => {
     try {
-      const novoRelatorio = {
+      const { id, created_at, updated_at, ...novoRelatorio } = {
         ...relatorio,
         nome: `${relatorio.nome} (Cópia)`,
         publico: false,
       };
-      delete novoRelatorio.id;
-      delete novoRelatorio.created_at;
-      delete novoRelatorio.updated_at;
 
       const { error } = await supabase
         .from('relatorios_customizados')
@@ -776,10 +691,7 @@ const RelatoriosCustomizados: React.FC = () => {
                     >
                       {relatorio.ativo ? 'Ativo' : 'Inativo'}
                     </span>
-                    <button
-                      onClick={() => handlePreview(relatorio)}
-                      className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
-                    >
+                    <button className='p-2 text-gray-400 hover:text-blue-600 transition-colors'>
                       <Eye size={16} />
                     </button>
                     <button
@@ -812,4 +724,3 @@ const RelatoriosCustomizados: React.FC = () => {
 };
 
 export default RelatoriosCustomizados;
-
