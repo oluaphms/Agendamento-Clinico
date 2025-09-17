@@ -1,5 +1,5 @@
 import { formatDate } from '@/lib/utils';
-import { FileText, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, Stethoscope, Pill, Activity, AlertCircle, CheckCircle, Clock, RefreshCw, FileImage } from 'lucide-react';
+import { FileText, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, Stethoscope, Pill, Activity, AlertCircle, CheckCircle, Clock, RefreshCw, FileImage, User } from 'lucide-react';
 // ============================================================================
 // PÁGINA: Histórico Médico - Prontuário Eletrônico
 // ============================================================================

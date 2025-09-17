@@ -169,23 +169,23 @@ const DashboardFinanceiro: React.FC = () => {
         .lt('data_vencimento', hoje.toISOString().split('T')[0]);
 
       // Calcular métricas
-      const receitaTotal = receitas?.reduce((acc, r) => acc + r.valor, 0) || 0;
-      const receitaMes = receitas?.filter(r => 
+      const receitaTotal = receitas?.reduce((acc: any, r: any) => acc + r.valor, 0) || 0;
+      const receitaMes = receitas?.filter((r: any) => 
         new Date(r.created_at) >= inicioMes
-      ).reduce((acc, r) => acc + r.valor, 0) || 0;
-      const receitaAnterior = receitas?.filter(r => {
+      ).reduce((acc: any, r: any) => acc + r.valor, 0) || 0;
+      const receitaAnterior = receitas?.filter((r: any) => {
         const data = new Date(r.created_at);
         return data >= inicioMesAnterior && data <= fimMesAnterior;
-      }).reduce((acc, r) => acc + r.valor, 0) || 0;
+      }).reduce((acc: any, r: any) => acc + r.valor, 0) || 0;
 
-      const despesasTotal = despesas?.reduce((acc, d) => acc + d.valor, 0) || 0;
-      const despesasMes = despesas?.filter(d => 
+      const despesasTotal = despesas?.reduce((acc: any, d: any) => acc + d.valor, 0) || 0;
+      const despesasMes = despesas?.filter((d: any) => 
         new Date(d.data_movimento) >= inicioMes
-      ).reduce((acc, d) => acc + d.valor, 0) || 0;
-      const despesasAnterior = despesas?.filter(d => {
+      ).reduce((acc: any, d: any) => acc + d.valor, 0) || 0;
+      const despesasAnterior = despesas?.filter((d: any) => {
         const data = new Date(d.data_movimento);
         return data >= inicioMesAnterior && data <= fimMesAnterior;
-      }).reduce((acc, d) => acc + d.valor, 0) || 0;
+      }).reduce((acc: any, d: any) => acc + d.valor, 0) || 0;
 
       const lucroTotal = receitaTotal - despesasTotal;
       const lucroMes = receitaMes - despesasMes;
@@ -195,10 +195,10 @@ const DashboardFinanceiro: React.FC = () => {
 
       const pagamentosPendentesCount = pagamentosPendentes?.length || 0;
       const contasVencidasCount = contasVencidas?.length || 0;
-      const valorContasVencidas = contasVencidas?.reduce((acc, c) => acc + c.valor, 0) || 0;
+      const valorContasVencidas = contasVencidas?.reduce((acc: any, c: any) => acc + c.valor, 0) || 0;
 
       const ticketMedio = receitas?.length ? receitaTotal / receitas.length : 0;
-      const ticketMedioAnterior = receitas?.filter(r => {
+      const ticketMedioAnterior = receitas?.filter((r: any) => {
         const data = new Date(r.created_at);
         return data >= inicioMesAnterior && data <= fimMesAnterior;
       }).length || 0;
@@ -269,7 +269,7 @@ const DashboardFinanceiro: React.FC = () => {
       }
 
       // Processar pagamentos
-      pagamentos?.forEach(pagamento => {
+      pagamentos?.forEach((pagamento: any) => {
         if (pagamento.status === 'pago') {
           const data = pagamento.created_at.split('T')[0];
           if (dadosPorData[data]) {
@@ -280,7 +280,7 @@ const DashboardFinanceiro: React.FC = () => {
       });
 
       // Processar despesas
-      despesas?.forEach(despesa => {
+      despesas?.forEach((despesa: any) => {
         const data = despesa.data_movimento;
         if (dadosPorData[data]) {
           dadosPorData[data].despesas += despesa.valor;
@@ -309,10 +309,10 @@ const DashboardFinanceiro: React.FC = () => {
         .eq('tipo', 'saida')
         .eq('status', 'confirmado');
 
-      const totalDespesas = despesas?.reduce((acc, d) => acc + d.valor, 0) || 0;
+      const totalDespesas = despesas?.reduce((acc: any, d: any) => acc + d.valor, 0) || 0;
 
       const categorias: { [key: string]: number } = {};
-      despesas?.forEach(despesa => {
+      despesas?.forEach((despesa: any) => {
         categorias[despesa.categoria] = (categorias[despesa.categoria] || 0) + despesa.valor;
       });
 

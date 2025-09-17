@@ -202,10 +202,6 @@ const Exames: React.FC = () => {
     }
   };
 
-  const handleStatusChange = async (id: string, novoStatus: string) => {
-    // Implementar mudança de status
-    console.log('Mudar status:', id, novoStatus);
-  };
 
   const handleExcluir = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir este exame?')) {
