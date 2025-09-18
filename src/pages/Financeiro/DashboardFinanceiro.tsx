@@ -23,7 +23,6 @@ import {
   AlertTriangle,
   Clock,
   Users,
-  BarChart3,
   RefreshCw,
   Download,
 } from 'lucide-react';
@@ -404,9 +403,7 @@ const DashboardFinanceiro: React.FC = () => {
         {/* Header */}
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
-            <div>
-             
-            </div>
+            <div></div>
             <div className='flex items-center gap-4'>
               <select
                 value={periodo}
