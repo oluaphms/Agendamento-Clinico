@@ -19,6 +19,7 @@ import {
   X, // Ícone para fechar o menu
   Heart, // Ícone para o botão do menu
   ClipboardList, // Ícone para Convênio/Serviços
+  DollarSign, // Ícone para Financeiro
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
@@ -115,6 +116,13 @@ export default function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
       path: '/app/convenio-servicos',
       roles: ['admin', 'gerente', 'recepcao', 'profissional', 'usuario'],
       description: 'Cadastro de convênios e serviços',
+    },
+    {
+      icon: DollarSign,
+      label: 'Financeiro',
+      path: '/app/financeiro',
+      roles: ['admin', 'gerente', 'recepcao'],
+      description: 'Gestão financeira e relatórios',
     },
   ];
 

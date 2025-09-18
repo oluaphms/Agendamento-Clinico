@@ -28,6 +28,11 @@ import {
   NotificacoesLazy,
   WhatsAppLazy,
   BackupLazy,
+  // Financial Pages
+  DashboardFinanceiroLazy,
+  ContasReceberLazy,
+  PagamentosLazy,
+  FluxoCaixaLazy,
 } from './components/LazyLoading/LazyPages';
 
 // Components
@@ -232,6 +237,39 @@ function App() {
                           element={
                             <ProtectedRoute>
                               <PermissionsLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        {/* Financial Routes */}
+                        <Route
+                          path='financeiro'
+                          element={
+                            <ProtectedRoute>
+                              <DashboardFinanceiroLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='financeiro/contas-receber'
+                          element={
+                            <ProtectedRoute>
+                              <ContasReceberLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='financeiro/pagamentos'
+                          element={
+                            <ProtectedRoute>
+                              <PagamentosLazy />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path='financeiro/fluxo-caixa'
+                          element={
+                            <ProtectedRoute>
+                              <FluxoCaixaLazy />
                             </ProtectedRoute>
                           }
                         />

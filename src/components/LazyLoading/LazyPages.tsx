@@ -97,6 +97,24 @@ export const LazyPermissions = createLazyComponent(
   { chunkName: 'permissions' }
 );
 
+// Financial Pages
+export const LazyDashboardFinanceiro = createLazyComponent(
+  () => import('@/pages/Financeiro/DashboardFinanceiro'),
+  { chunkName: 'dashboard-financeiro' }
+);
+export const LazyContasReceber = createLazyComponent(
+  () => import('@/pages/Financeiro/ContasReceber'),
+  { chunkName: 'contas-receber' }
+);
+export const LazyPagamentos = createLazyComponent(
+  () => import('@/pages/Financeiro/Pagamentos'),
+  { chunkName: 'pagamentos' }
+);
+export const LazyFluxoCaixa = createLazyComponent(
+  () => import('@/pages/Financeiro/FluxoCaixa'),
+  { chunkName: 'fluxo-caixa' }
+);
+
 // ============================================================================
 // PRELOAD DE COMPONENTES CRÍTICOS
 // ============================================================================
@@ -485,6 +503,121 @@ export const PermissionsLazy = () => (
     }
   >
     <LazyPermissions />
+  </LazyWrapper>
+);
+
+// Financial Pages with skeletons
+export const DashboardFinanceiroLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div>
+              <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-2'></div>
+              <div className='h-5 bg-gray-200 dark:bg-gray-700 rounded w-80'></div>
+            </div>
+          </div>
+          <div className='flex space-x-2'>
+            <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+          </div>
+        </div>
+        {/* Metrics Cards */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <CardSkeleton key={index} height='120px' />
+          ))}
+        </div>
+        {/* Charts */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+          <CardSkeleton height='400px' />
+          <CardSkeleton height='400px' />
+        </div>
+      </div>
+    }
+  >
+    <LazyDashboardFinanceiro />
+  </LazyWrapper>
+);
+
+export const ContasReceberLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div>
+              <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-2'></div>
+              <div className='h-5 bg-gray-200 dark:bg-gray-700 rounded w-80'></div>
+            </div>
+          </div>
+          <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+        </div>
+        {/* Filters */}
+        <CardSkeleton height='120px' />
+        {/* Table */}
+        <TableSkeleton rows={10} columns={6} />
+      </div>
+    }
+  >
+    <LazyContasReceber />
+  </LazyWrapper>
+);
+
+export const PagamentosLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div>
+              <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-2'></div>
+              <div className='h-5 bg-gray-200 dark:bg-gray-700 rounded w-80'></div>
+            </div>
+          </div>
+          <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+        </div>
+        {/* Filters */}
+        <CardSkeleton height='120px' />
+        {/* Table */}
+        <TableSkeleton rows={10} columns={6} />
+      </div>
+    }
+  >
+    <LazyPagamentos />
+  </LazyWrapper>
+);
+
+export const FluxoCaixaLazy = () => (
+  <LazyWrapper
+    fallback={
+      <div className='p-6 space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+            <div>
+              <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-2'></div>
+              <div className='h-5 bg-gray-200 dark:bg-gray-700 rounded w-80'></div>
+            </div>
+          </div>
+          <div className='h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg'></div>
+        </div>
+        {/* Filters */}
+        <CardSkeleton height='120px' />
+        {/* Table */}
+        <TableSkeleton rows={10} columns={6} />
+      </div>
+    }
+  >
+    <LazyFluxoCaixa />
   </LazyWrapper>
 );
 

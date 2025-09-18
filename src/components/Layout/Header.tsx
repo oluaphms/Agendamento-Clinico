@@ -94,6 +94,7 @@ const Header: React.FC = () => {
       '/app/analytics': 'Analytics',
       '/app/whatsapp': 'WhatsApp',
       '/app/backup': 'Backup',
+      '/app/financeiro': 'Financeiro',
     };
 
     return titleMap[pathname] || 'Dashboard';
@@ -114,6 +115,7 @@ const Header: React.FC = () => {
       '/app/notificacoes': '🔔',
       '/app/whatsapp': '💬',
       '/app/backup': '💾',
+      '/app/financeiro': '💰',
     };
 
     return iconMap[pathname] || '📊';
@@ -136,6 +138,7 @@ const Header: React.FC = () => {
       '/app/notificacoes': 'Central de notificações e alertas do sistema',
       '/app/whatsapp': 'Integração e comunicação via WhatsApp',
       '/app/backup': 'Backup e restauração de dados do sistema',
+      '/app/financeiro': 'Visão geral das finanças e performance da clínica',
     };
 
     return (
