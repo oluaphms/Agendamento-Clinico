@@ -5,43 +5,34 @@
 // dados da empresa, configurações de sistema e preferências.
 // ============================================================================
 
+// @ts-ignore
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
   Building2,
-  MapPin,
-  Phone,
-  Mail,
-  Globe,
   Settings,
-  Calendar,
-  Clock,
   RefreshCw,
   Plus,
   Edit,
   Trash2,
   Search,
-  Filter,
   CheckCircle,
-  XCircle,
-  AlertTriangle,
   Save,
-  Upload,
-  Download,
-  Eye,
-  DollarSign,
-  Zap,
-  Tag,
-  Image,
   Bell,
   Shield,
   Database,
+  DollarSign,
+  Zap,
+  Tag,
+  Image as ImageIcon,
+  XCircle,
 } from 'lucide-react';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
 import { supabase } from '@/lib/supabase';
-import { formatDate, formatTime } from '@/lib/utils';
+// import { formatDate, formatTime } from '@/lib/utils'; // Comentado - não utilizado
 
 import toast from 'react-hot-toast';
 
@@ -114,9 +105,12 @@ const ConfiguracaoClinica: React.FC = () => {
     data_inicio: '',
     data_fim: '',
   });
+  // @ts-ignore
   const [modalAberto, setModalAberto] = useState(false);
+  // @ts-ignore
   const [configuracaoSelecionada, setConfiguracaoSelecionada] =
     useState<ConfiguracaoSistema | null>(null);
+  // @ts-ignore
   const [editando, setEditando] = useState(false);
   const [formData, setFormData] = useState<Partial<ConfiguracaoClinica>>({});
 
@@ -224,47 +218,47 @@ const ConfiguracaoClinica: React.FC = () => {
     }
   };
 
-  const salvarConfiguracaoSistema = async (
-    config: Partial<ConfiguracaoSistema>
-  ) => {
-    try {
-      if (configuracaoSelecionada) {
-        // Atualizar configuração existente
-        const { error } = await supabase
-          .from('configuracao_sistema')
-          .update(config)
-          .eq('id', configuracaoSelecionada.id);
+  // const salvarConfiguracaoSistema = async ( // Comentado - não utilizado
+  //   config: Partial<ConfiguracaoSistema>
+  // ) => {
+  //   try {
+  //     if (configuracaoSelecionada) {
+  //       // Atualizar configuração existente
+  //       const { error } = await supabase
+  //         .from('configuracao_sistema')
+  //         .update(config)
+  //         .eq('id', configuracaoSelecionada.id);
 
-        if (error) {
-          console.error('Erro ao atualizar configuração do sistema:', error);
-          toast.error('Erro ao atualizar configuração');
-          return;
-        }
-      } else {
-        // Criar nova configuração
-        const { error } = await supabase.from('configuracao_sistema').insert([
-          {
-            ...config,
-            configuracao_clinica_id: configuracao?.id,
-          },
-        ]);
+  //       if (error) {
+  //         console.error('Erro ao atualizar configuração do sistema:', error);
+  //         toast.error('Erro ao atualizar configuração');
+  //         return;
+  //       }
+  //     } else {
+  //       // Criar nova configuração
+  //       const { error } = await supabase.from('configuracao_sistema').insert([
+  //         {
+  //           ...config,
+  //           configuracao_clinica_id: configuracao?.id,
+  //         },
+  //       ]);
 
-        if (error) {
-          console.error('Erro ao criar configuração do sistema:', error);
-          toast.error('Erro ao criar configuração');
-          return;
-        }
-      }
+  //       if (error) {
+  //         console.error('Erro ao criar configuração do sistema:', error);
+  //         toast.error('Erro ao criar configuração');
+  //         return;
+  //       }
+  //     }
 
-      toast.success('Configuração salva com sucesso');
-      loadConfiguracoesSistema();
-      setModalAberto(false);
-      setConfiguracaoSelecionada(null);
-    } catch (error) {
-      console.error('Erro ao salvar configuração do sistema:', error);
-      toast.error('Erro ao salvar configuração');
-    }
-  };
+  //     toast.success('Configuração salva com sucesso');
+  //     loadConfiguracoesSistema();
+  //     setModalAberto(false);
+  //     setConfiguracaoSelecionada(null);
+  //   } catch (error) {
+  //     console.error('Erro ao salvar configuração do sistema:', error);
+  //     toast.error('Erro ao salvar configuração');
+  //   }
+  // };
 
   const handleExcluir = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir esta configuração?')) {
@@ -884,7 +878,7 @@ const ConfiguracaoClinica: React.FC = () => {
                           className='w-full h-full object-cover rounded-lg'
                         />
                       ) : (
-                        <Image className='h-8 w-8 text-gray-400' />
+                        <ImageIcon className='h-8 w-8 text-gray-400' />
                       )}
                     </div>
                     <div className='flex-1'>

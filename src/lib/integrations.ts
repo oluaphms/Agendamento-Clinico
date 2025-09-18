@@ -5,49 +5,7 @@
 // ============================================================================
 
 // Declarações globais para tipos de Request
-declare global {
-  interface RequestInit {
-    method?: string;
-    headers?: HeadersInit;
-    body?: BodyInit | null;
-    mode?: RequestMode;
-    credentials?: RequestCredentials;
-    cache?: RequestCache;
-    redirect?: RequestRedirect;
-    referrer?: string;
-    referrerPolicy?: ReferrerPolicy;
-    integrity?: string;
-    keepalive?: boolean;
-    signal?: AbortSignal;
-  }
-
-  type HeadersInit = Headers | string[][] | Record<string, string>;
-  type BodyInit = Blob | BufferSource | FormData | URLSearchParams | string;
-  type RequestMode = 'cors' | 'navigate' | 'no-cors' | 'same-origin';
-  type RequestCredentials = 'include' | 'omit' | 'same-origin';
-  type RequestCache =
-    | 'default'
-    | 'force-cache'
-    | 'no-cache'
-    | 'no-store'
-    | 'only-if-cached'
-    | 'reload';
-  type RequestRedirect = 'error' | 'follow' | 'manual';
-  type ReferrerPolicy =
-    | 'no-referrer'
-    | 'no-referrer-when-downgrade'
-    | 'origin'
-    | 'origin-when-cross-origin'
-    | 'same-origin'
-    | 'strict-origin'
-    | 'strict-origin-when-cross-origin'
-    | 'unsafe-url';
-
-  // Adicionar declaração para BufferSource
-  interface BufferSource {
-    readonly byteLength: number;
-  }
-}
+// Declarações globais já existem no TypeScript
 
 // ============================================================================
 // TIPOS E INTERFACES

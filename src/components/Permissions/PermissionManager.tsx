@@ -200,7 +200,7 @@ export const PermissionManager: React.FC = () => {
   const [users, setUsers] = useState<UserPermission[]>(REAL_USERS);
   const [pendingUsers] = useState(REAL_PENDING_USERS);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole] = useState('all');
+  // const [filterRole] = useState('all'); // Comentado - não utilizado
   const [filterCategory, setFilterCategory] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [bulkRole, setBulkRole] = useState('');

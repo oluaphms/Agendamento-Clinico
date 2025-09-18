@@ -91,7 +91,11 @@ const Grid: React.FC<GridProps> = ({
   // RENDERIZAÇÃO
   // ============================================================================
 
-  return <Component className={finalClassName}>{children}</Component>;
+  return React.createElement(
+    Component as any,
+    { className: finalClassName },
+    children
+  );
 };
 
 // ============================================================================
@@ -130,7 +134,11 @@ export const GridItem: React.FC<GridItemProps> = ({
   // RENDERIZAÇÃO
   // ============================================================================
 
-  return <Component className={finalClassName}>{children}</Component>;
+  return React.createElement(
+    Component as any,
+    { className: finalClassName },
+    children
+  );
 };
 
 export default Grid;

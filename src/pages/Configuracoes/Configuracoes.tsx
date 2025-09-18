@@ -11,10 +11,6 @@ import {
   AlertCircle,
   Loader2,
   FileSpreadsheet,
-  DollarSign,
-  Zap,
-  Tag,
-  Image,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useThemeStore } from '@/stores/themeStore';

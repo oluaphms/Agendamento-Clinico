@@ -8,51 +8,7 @@ import toast from 'react-hot-toast';
 import { ApiError } from '@/types';
 
 // Declarações globais para resolver erros de tipo
-declare global {
-  interface EventListener {
-    (evt: Event): void;
-  }
-
-  interface Event {
-    type: string;
-    target?: EventTarget | null;
-    currentTarget?: EventTarget | null;
-    preventDefault(): void;
-    stopPropagation(): void;
-    stopImmediatePropagation(): void;
-    bubbles: boolean;
-    cancelable: boolean;
-    defaultPrevented: boolean;
-    eventPhase: number;
-    isTrusted: boolean;
-    timeStamp: number;
-  }
-
-  interface EventTarget {
-    addEventListener(
-      type: string,
-      listener: EventListener,
-      options?: boolean | AddEventListenerOptions
-    ): void;
-    removeEventListener(
-      type: string,
-      listener: EventListener,
-      options?: boolean | EventListenerOptions
-    ): void;
-    dispatchEvent(event: Event): boolean;
-  }
-
-  interface AddEventListenerOptions {
-    capture?: boolean;
-    once?: boolean;
-    passive?: boolean;
-    signal?: AbortSignal;
-  }
-
-  interface EventListenerOptions {
-    capture?: boolean;
-  }
-}
+// Declarações globais já existem no TypeScript
 
 // ============================================================================
 // TIPOS DE ERRO

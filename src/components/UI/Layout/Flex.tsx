@@ -140,7 +140,11 @@ const Flex: React.FC<FlexProps> = ({
   // RENDERIZAÇÃO
   // ============================================================================
 
-  return <Component className={finalClassName}>{children}</Component>;
+  return React.createElement(
+    Component as any,
+    { className: finalClassName },
+    children
+  );
 };
 
 export default Flex;

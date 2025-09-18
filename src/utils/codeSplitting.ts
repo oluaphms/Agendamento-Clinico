@@ -5,13 +5,7 @@
 import { lazy, ComponentType } from 'react';
 
 // Declarações de tipos globais para APIs do navegador
-declare global {
-  interface IntersectionObserverInit {
-    root?: Element | null;
-    rootMargin?: string;
-    threshold?: number | number[];
-  }
-}
+// Declaração global já existe em outros arquivos
 
 // ============================================================================
 // TIPOS E INTERFACES

@@ -7,22 +7,22 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { 
-  Clock, 
-  Play, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  Timer, 
-  RefreshCw, 
-  Calendar, 
-  Activity, 
-  Filter, 
-  Search, 
-  Target, 
-  Pause, 
-  Square, 
-  RotateCcw 
+import {
+  Clock,
+  Play,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Timer,
+  RefreshCw,
+  Calendar,
+  Activity,
+  Filter,
+  Search,
+  Target,
+  Pause,
+  Square,
+  RotateCcw,
 } from 'lucide-react';
 
 import { Card, CardContent } from '@/design-system';
@@ -100,7 +100,9 @@ const CronometroConsulta: React.FC = () => {
     profissional: '',
     busca: '',
   });
-  const [cronometros, setCronometros] = useState<Map<string, Cronometro>>(new Map());
+  const [cronometros, setCronometros] = useState<Map<string, Cronometro>>(
+    new Map()
+  );
   const [consultaAtiva, setConsultaAtiva] = useState<string | null>(null);
 
   // ============================================================================
@@ -119,7 +121,9 @@ const CronometroConsulta: React.FC = () => {
         novosCronometros.forEach((cronometro, id) => {
           if (cronometro.isRunning && !cronometro.isPaused) {
             const agora = new Date();
-            const tempoDecorrido = Math.floor((agora.getTime() - cronometro.tempoInicio.getTime()) / 1000);
+            const tempoDecorrido = Math.floor(
+              (agora.getTime() - cronometro.tempoInicio.getTime()) / 1000
+            );
             novosCronometros.set(id, {
               ...cronometro,
               tempoDecorrido,
@@ -140,10 +144,7 @@ const CronometroConsulta: React.FC = () => {
   const loadDados = useCallback(async () => {
     setLoading(true);
     try {
-      await Promise.all([
-        loadConsultas(),
-        loadProfissionais(),
-      ]);
+      await Promise.all([loadConsultas(), loadProfissionais()]);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast.error('Erro ao carregar dados das consultas');
@@ -156,12 +157,14 @@ const CronometroConsulta: React.FC = () => {
     try {
       let query = supabase
         .from('agendamentos')
-        .select(`
+        .select(
+          `
           *,
           paciente:pacientes(nome, telefone, email, data_nascimento),
           profissional:profissionais(nome, especialidade, crm_cro),
           servico:servicos(nome, valor, duracao_minutos)
-        `)
+        `
+        )
         .eq('data', filtros.data)
         .order('hora', { ascending: true });
 
@@ -185,11 +188,12 @@ const CronometroConsulta: React.FC = () => {
       let consultasFiltradas = data || [];
       if (filtros.busca) {
         const busca = filtros.busca.toLowerCase();
-        consultasFiltradas = consultasFiltradas.filter(consulta =>
-          consulta.paciente?.nome.toLowerCase().includes(busca) ||
-          consulta.profissional?.nome.toLowerCase().includes(busca) ||
-          consulta.servico?.nome.toLowerCase().includes(busca) ||
-          consulta.observacoes?.toLowerCase().includes(busca)
+        consultasFiltradas = consultasFiltradas.filter(
+          (consulta: Consulta) =>
+            consulta.paciente?.nome.toLowerCase().includes(busca) ||
+            consulta.profissional?.nome.toLowerCase().includes(busca) ||
+            consulta.servico?.nome.toLowerCase().includes(busca) ||
+            consulta.observacoes?.toLowerCase().includes(busca)
         );
       }
 
@@ -221,7 +225,7 @@ const CronometroConsulta: React.FC = () => {
 
   const iniciarCronometro = (consultaId: string) => {
     const agora = new Date();
-    
+
     setCronometros(prev => {
       const novosCronometros = new Map(prev);
       novosCronometros.set(consultaId, {
@@ -242,25 +246,25 @@ const CronometroConsulta: React.FC = () => {
 
   const pausarCronometro = (consultaId: string) => {
     const agora = new Date();
-    
+
     setCronometros(prev => {
       const novosCronometros = new Map(prev);
       const cronometro = novosCronometros.get(consultaId);
-      
+
       if (cronometro) {
         const pausa = {
           inicio: agora,
           fim: undefined,
           duracao: 0,
         };
-        
+
         novosCronometros.set(consultaId, {
           ...cronometro,
           isPaused: true,
           pausas: [...cronometro.pausas, pausa],
         });
       }
-      
+
       return novosCronometros;
     });
 
@@ -269,27 +273,29 @@ const CronometroConsulta: React.FC = () => {
 
   const retomarCronometro = (consultaId: string) => {
     const agora = new Date();
-    
+
     setCronometros(prev => {
       const novosCronometros = new Map(prev);
       const cronometro = novosCronometros.get(consultaId);
-      
+
       if (cronometro) {
         const pausasAtualizadas = [...cronometro.pausas];
         const ultimaPausa = pausasAtualizadas[pausasAtualizadas.length - 1];
-        
+
         if (ultimaPausa && !ultimaPausa.fim) {
           ultimaPausa.fim = agora;
-          ultimaPausa.duracao = Math.floor((agora.getTime() - ultimaPausa.inicio.getTime()) / 1000);
+          ultimaPausa.duracao = Math.floor(
+            (agora.getTime() - ultimaPausa.inicio.getTime()) / 1000
+          );
         }
-        
+
         novosCronometros.set(consultaId, {
           ...cronometro,
           isPaused: false,
           pausas: pausasAtualizadas,
         });
       }
-      
+
       return novosCronometros;
     });
 
@@ -298,22 +304,27 @@ const CronometroConsulta: React.FC = () => {
 
   const pararCronometro = (consultaId: string) => {
     const agora = new Date();
-    
+
     setCronometros(prev => {
       const novosCronometros = new Map(prev);
       const cronometro = novosCronometros.get(consultaId);
-      
+
       if (cronometro) {
         const pausasAtualizadas = [...cronometro.pausas];
         const ultimaPausa = pausasAtualizadas[pausasAtualizadas.length - 1];
-        
+
         if (ultimaPausa && !ultimaPausa.fim) {
           ultimaPausa.fim = agora;
-          ultimaPausa.duracao = Math.floor((agora.getTime() - ultimaPausa.inicio.getTime()) / 1000);
+          ultimaPausa.duracao = Math.floor(
+            (agora.getTime() - ultimaPausa.inicio.getTime()) / 1000
+          );
         }
-        
-        const tempoTotalPausado = pausasAtualizadas.reduce((acc, pausa) => acc + pausa.duracao, 0);
-        
+
+        const tempoTotalPausado = pausasAtualizadas.reduce(
+          (acc, pausa) => acc + pausa.duracao,
+          0
+        );
+
         novosCronometros.set(consultaId, {
           ...cronometro,
           isRunning: false,
@@ -322,7 +333,7 @@ const CronometroConsulta: React.FC = () => {
           pausas: pausasAtualizadas,
         });
       }
-      
+
       return novosCronometros;
     });
 
@@ -348,7 +359,7 @@ const CronometroConsulta: React.FC = () => {
     const horas = Math.floor(segundos / 3600);
     const minutos = Math.floor((segundos % 3600) / 60);
     const segs = segundos % 60;
-    
+
     if (horas > 0) {
       return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
     }
@@ -358,17 +369,17 @@ const CronometroConsulta: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'agendada':
-        return <Clock className="h-5 w-5 text-blue-500" />;
+        return <Clock className='h-5 w-5 text-blue-500' />;
       case 'em_andamento':
-        return <Play className="h-5 w-5 text-green-500" />;
+        return <Play className='h-5 w-5 text-green-500' />;
       case 'concluida':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className='h-5 w-5 text-green-500' />;
       case 'cancelada':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className='h-5 w-5 text-red-500' />;
       case 'faltou':
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
+        return <AlertCircle className='h-5 w-5 text-orange-500' />;
       default:
-        return <Clock className="h-5 w-5 text-gray-500" />;
+        return <Clock className='h-5 w-5 text-gray-500' />;
     }
   };
 
@@ -406,21 +417,33 @@ const CronometroConsulta: React.FC = () => {
     let idade = hoje.getFullYear() - nascimento.getFullYear();
     const mesAtual = hoje.getMonth();
     const mesNascimento = nascimento.getMonth();
-    
-    if (mesAtual < mesNascimento || (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())) {
+
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())
+    ) {
       idade--;
     }
-    
+
     return idade;
   };
 
   const consultasFiltradas = consultas.filter(consulta => {
     const matchesStatus = !filtros.status || consulta.status === filtros.status;
-    const matchesProfissional = !filtros.profissional || consulta.profissional_id === filtros.profissional;
-    const matchesBusca = !filtros.busca || 
-      consulta.paciente?.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      consulta.profissional?.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      consulta.servico?.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+    const matchesProfissional =
+      !filtros.profissional ||
+      consulta.profissional_id === filtros.profissional;
+    const matchesBusca =
+      !filtros.busca ||
+      consulta.paciente?.nome
+        .toLowerCase()
+        .includes(filtros.busca.toLowerCase()) ||
+      consulta.profissional?.nome
+        .toLowerCase()
+        .includes(filtros.busca.toLowerCase()) ||
+      consulta.servico?.nome
+        .toLowerCase()
+        .includes(filtros.busca.toLowerCase()) ||
       consulta.observacoes?.toLowerCase().includes(filtros.busca.toLowerCase());
 
     return matchesStatus && matchesProfissional && matchesBusca;
@@ -428,9 +451,16 @@ const CronometroConsulta: React.FC = () => {
 
   // Estatísticas
   const totalConsultas = consultas.length;
-  const consultasEmAndamento = consultas.filter(c => c.status === 'em_andamento').length;
-  const cronometrosAtivos = Array.from(cronometros.values()).filter(c => c.isRunning).length;
-  const tempoTotalDecorrido = Array.from(cronometros.values()).reduce((acc, c) => acc + c.tempoDecorrido, 0);
+  const consultasEmAndamento = consultas.filter(
+    c => c.status === 'em_andamento'
+  ).length;
+  const cronometrosAtivos = Array.from(cronometros.values()).filter(
+    c => c.isRunning
+  ).length;
+  const tempoTotalDecorrido = Array.from(cronometros.values()).reduce(
+    (acc, c) => acc + c.tempoDecorrido,
+    0
+  );
 
   // ============================================================================
   // RENDER
@@ -438,38 +468,41 @@ const CronometroConsulta: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className='flex items-center justify-center min-h-screen'>
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-900 p-6'>
       <Helmet>
         <title>Cronômetro de Consulta - Sistema de Gestão de Clínica</title>
-        <meta name="description" content="Gerencie o tempo das consultas com cronômetro avançado" />
+        <meta
+          name='description'
+          content='Gerencie o tempo das consultas com cronômetro avançado'
+        />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto">
+      <div className='max-w-7xl mx-auto'>
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className='mb-8'>
+          <div className='flex items-center justify-between'>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <Timer className="h-8 w-8 text-blue-600" />
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3'>
+                <Timer className='h-8 w-8 text-blue-600' />
                 Cronômetro de Consulta
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
+              <p className='text-gray-600 dark:text-gray-400 mt-2'>
                 Controle o tempo das consultas com cronômetro avançado
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className='flex items-center gap-4'>
               <button
                 onClick={loadDados}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
               >
-                <RefreshCw className="mr-2" size={16} />
+                <RefreshCw className='mr-2' size={16} />
                 Atualizar
               </button>
             </div>
@@ -477,16 +510,16 @@ const CronometroConsulta: React.FC = () => {
         </div>
 
         {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Calendar className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Calendar className='h-8 w-8 text-blue-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Total de Consultas
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {totalConsultas}
                   </p>
                 </div>
@@ -495,14 +528,14 @@ const CronometroConsulta: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Activity className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Activity className='h-8 w-8 text-green-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Em Andamento
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {consultasEmAndamento}
                   </p>
                 </div>
@@ -511,14 +544,14 @@ const CronometroConsulta: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Timer className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Timer className='h-8 w-8 text-purple-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Cronômetros Ativos
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {cronometrosAtivos}
                   </p>
                 </div>
@@ -527,14 +560,14 @@ const CronometroConsulta: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Clock className="h-8 w-8 text-orange-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Clock className='h-8 w-8 text-orange-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Tempo Total
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {formatarTempo(tempoTotalDecorrido)}
                   </p>
                 </div>
@@ -544,28 +577,32 @@ const CronometroConsulta: React.FC = () => {
         </div>
 
         {/* Filtros */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Filter className="h-5 w-5 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0'>
+              <div className='flex items-center space-x-4'>
+                <div className='flex items-center space-x-2'>
+                  <Filter className='h-5 w-5 text-gray-500' />
+                  <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Filtros:
                   </span>
                 </div>
                 <input
-                  type="date"
+                  type='date'
                   value={filtros.data}
-                  onChange={(e) => setFiltros({ ...filtros, data: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onChange={e =>
+                    setFiltros({ ...filtros, data: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
                 />
                 <select
                   value={filtros.profissional}
-                  onChange={(e) => setFiltros({ ...filtros, profissional: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onChange={e =>
+                    setFiltros({ ...filtros, profissional: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
                 >
-                  <option value="">Todos os profissionais</option>
+                  <option value=''>Todos os profissionais</option>
                   {profissionais.map(profissional => (
                     <option key={profissional.id} value={profissional.id}>
                       {profissional.nome}
@@ -574,26 +611,30 @@ const CronometroConsulta: React.FC = () => {
                 </select>
                 <select
                   value={filtros.status}
-                  onChange={(e) => setFiltros({ ...filtros, status: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onChange={e =>
+                    setFiltros({ ...filtros, status: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
                 >
-                  <option value="">Todos os status</option>
-                  <option value="agendada">Agendada</option>
-                  <option value="em_andamento">Em Andamento</option>
-                  <option value="concluida">Concluída</option>
-                  <option value="cancelada">Cancelada</option>
-                  <option value="faltou">Faltou</option>
+                  <option value=''>Todos os status</option>
+                  <option value='agendada'>Agendada</option>
+                  <option value='em_andamento'>Em Andamento</option>
+                  <option value='concluida'>Concluída</option>
+                  <option value='cancelada'>Cancelada</option>
+                  <option value='faltou'>Faltou</option>
                 </select>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <div className='flex items-center space-x-4'>
+                <div className='relative'>
+                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
                   <input
-                    type="text"
-                    placeholder="Buscar consultas..."
+                    type='text'
+                    placeholder='Buscar consultas...'
                     value={filtros.busca}
-                    onChange={(e) => setFiltros({ ...filtros, busca: e.target.value })}
-                    className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm min-w-[200px]"
+                    onChange={e =>
+                      setFiltros({ ...filtros, busca: e.target.value })
+                    }
+                    className='pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm min-w-[200px]'
                   />
                 </div>
               </div>
@@ -602,112 +643,124 @@ const CronometroConsulta: React.FC = () => {
         </Card>
 
         {/* Lista de Consultas */}
-        <div className="space-y-4">
-          {consultasFiltradas.map((consulta) => {
+        <div className='space-y-4'>
+          {consultasFiltradas.map(consulta => {
             const cronometro = cronometros.get(consulta.id);
             const tempoDecorrido = cronometro ? cronometro.tempoDecorrido : 0;
             const tempoPausado = cronometro ? cronometro.tempoPausado : 0;
             const tempoLiquido = tempoDecorrido - tempoPausado;
-            
+
             return (
-              <Card key={consulta.id} className={`hover:shadow-lg transition-shadow ${
-                consultaAtiva === consulta.id ? 'ring-2 ring-blue-500' : ''
-              }`}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="flex items-center space-x-2">
+              <Card
+                key={consulta.id}
+                className={`hover:shadow-lg transition-shadow ${
+                  consultaAtiva === consulta.id ? 'ring-2 ring-blue-500' : ''
+                }`}
+              >
+                <CardContent className='p-6'>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex-1'>
+                      <div className='flex items-center space-x-4 mb-4'>
+                        <div className='flex items-center space-x-2'>
                           {getStatusIcon(consulta.status)}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(consulta.status)}`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(consulta.status)}`}
+                          >
                             {getStatusLabel(consulta.status)}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4 text-gray-500" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className='flex items-center space-x-2'>
+                          <Clock className='h-4 w-4 text-gray-500' />
+                          <span className='text-sm text-gray-600 dark:text-gray-400'>
                             {formatTime(consulta.hora)}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Target className="h-4 w-4 text-gray-500" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className='flex items-center space-x-2'>
+                          <Target className='h-4 w-4 text-gray-500' />
+                          <span className='text-sm text-gray-600 dark:text-gray-400'>
                             {consulta.duracao_minutos} min
                           </span>
                         </div>
                         {cronometro && (
-                          <div className="flex items-center space-x-2">
-                            <Activity className="h-4 w-4 text-green-500" />
-                            <span className="text-sm font-medium text-green-600">
+                          <div className='flex items-center space-x-2'>
+                            <Activity className='h-4 w-4 text-green-500' />
+                            <span className='text-sm font-medium text-green-600'>
                               {formatarTempo(tempoLiquido)}
                             </span>
                             {cronometro.isPaused && (
-                              <span className="text-xs text-orange-500">(Pausado)</span>
+                              <span className='text-xs text-orange-500'>
+                                (Pausado)
+                              </span>
                             )}
                           </div>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                             Paciente
                           </p>
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className='font-semibold text-gray-900 dark:text-white'>
                             {consulta.paciente?.nome || 'N/A'}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {consulta.paciente?.data_nascimento ? 
-                              `${calcularIdade(consulta.paciente.data_nascimento)} anos` : 'N/A'}
+                          <p className='text-sm text-gray-500 dark:text-gray-400'>
+                            {consulta.paciente?.data_nascimento
+                              ? `${calcularIdade(consulta.paciente.data_nascimento)} anos`
+                              : 'N/A'}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className='text-sm text-gray-500 dark:text-gray-400'>
                             {formatPhone(consulta.paciente?.telefone || '')}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                             Profissional
                           </p>
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className='font-semibold text-gray-900 dark:text-white'>
                             {consulta.profissional?.nome || 'N/A'}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className='text-sm text-gray-500 dark:text-gray-400'>
                             {consulta.profissional?.especialidade || 'N/A'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                             Serviço
                           </p>
-                          <p className="font-semibold text-gray-900 dark:text-white">
+                          <p className='font-semibold text-gray-900 dark:text-white'>
                             {consulta.servico?.nome || 'N/A'}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className='text-sm text-gray-500 dark:text-gray-400'>
                             R$ {consulta.servico?.valor?.toFixed(2) || '0,00'}
                           </p>
                         </div>
                       </div>
 
                       {consulta.observacoes && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        <div className='mb-4'>
+                          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                             Observações
                           </p>
-                          <p className="text-sm text-gray-900 dark:text-white">
+                          <p className='text-sm text-gray-900 dark:text-white'>
                             {consulta.observacoes}
                           </p>
                         </div>
                       )}
 
                       {cronometro && cronometro.pausas.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                        <div className='mb-4'>
+                          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-2'>
                             Pausas ({cronometro.pausas.length})
                           </p>
-                          <div className="space-y-1">
+                          <div className='space-y-1'>
                             {cronometro.pausas.map((pausa, index) => (
-                              <div key={index} className="text-xs text-gray-500 dark:text-gray-400">
-                                Pausa {index + 1}: {formatarTempo(pausa.duracao)}
+                              <div
+                                key={index}
+                                className='text-xs text-gray-500 dark:text-gray-400'
+                              >
+                                Pausa {index + 1}:{' '}
+                                {formatarTempo(pausa.duracao)}
                               </div>
                             ))}
                           </div>
@@ -715,33 +768,35 @@ const CronometroConsulta: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className='flex items-center space-x-2 ml-4'>
                       {!cronometro && consulta.status === 'em_andamento' && (
                         <button
                           onClick={() => iniciarCronometro(consulta.id)}
-                          className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm'
                         >
-                          <Play className="mr-2" size={16} />
+                          <Play className='mr-2' size={16} />
                           Iniciar
                         </button>
                       )}
 
-                      {cronometro && cronometro.isRunning && !cronometro.isPaused && (
-                        <button
-                          onClick={() => pausarCronometro(consulta.id)}
-                          className="flex items-center px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm"
-                        >
-                          <Pause className="mr-2" size={16} />
-                          Pausar
-                        </button>
-                      )}
+                      {cronometro &&
+                        cronometro.isRunning &&
+                        !cronometro.isPaused && (
+                          <button
+                            onClick={() => pausarCronometro(consulta.id)}
+                            className='flex items-center px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm'
+                          >
+                            <Pause className='mr-2' size={16} />
+                            Pausar
+                          </button>
+                        )}
 
                       {cronometro && cronometro.isPaused && (
                         <button
                           onClick={() => retomarCronometro(consulta.id)}
-                          className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm'
                         >
-                          <Play className="mr-2" size={16} />
+                          <Play className='mr-2' size={16} />
                           Retomar
                         </button>
                       )}
@@ -749,9 +804,9 @@ const CronometroConsulta: React.FC = () => {
                       {cronometro && (
                         <button
                           onClick={() => pararCronometro(consulta.id)}
-                          className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm'
                         >
-                          <Square className="mr-2" size={16} />
+                          <Square className='mr-2' size={16} />
                           Parar
                         </button>
                       )}
@@ -759,9 +814,9 @@ const CronometroConsulta: React.FC = () => {
                       {cronometro && (
                         <button
                           onClick={() => resetarCronometro(consulta.id)}
-                          className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                          className='flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm'
                         >
-                          <RotateCcw className="mr-2" size={16} />
+                          <RotateCcw className='mr-2' size={16} />
                           Resetar
                         </button>
                       )}
@@ -775,13 +830,13 @@ const CronometroConsulta: React.FC = () => {
 
         {/* Mensagem quando não há consultas */}
         {consultasFiltradas.length === 0 && (
-          <Card className="text-center py-12">
+          <Card className='text-center py-12'>
             <CardContent>
-              <Timer className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <Timer className='mx-auto h-12 w-12 text-gray-400 mb-4' />
+              <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
                 Nenhuma consulta encontrada
               </h3>
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className='text-gray-500 dark:text-gray-400'>
                 Não há consultas para os filtros selecionados.
               </p>
             </CardContent>

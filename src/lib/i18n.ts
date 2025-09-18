@@ -1,53 +1,17 @@
-import React from 'react'
+import React from 'react';
 
 // Declarações globais para tipos de Event
-declare global {
-  interface EventListener {
-    (evt: Event): void;
-  }
-
-  interface Event {
-    type: string;
-    target?: EventTarget | null;
-    currentTarget?: EventTarget | null;
-    preventDefault(): void;
-    stopPropagation(): void;
-    stopImmediatePropagation(): void;
-    bubbles: boolean;
-    cancelable: boolean;
-    defaultPrevented: boolean;
-    eventPhase: number;
-    isTrusted: boolean;
-    timeStamp: number;
-  }
-
-  interface EventTarget {
-    addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions): void;
-    removeEventListener(type: string, listener: EventListener, options?: boolean | EventListenerOptions): void;
-    dispatchEvent(event: Event): boolean;
-  }
-
-  interface AddEventListenerOptions {
-    capture?: boolean;
-    once?: boolean;
-    passive?: boolean;
-    signal?: AbortSignal;
-  }
-
-  interface EventListenerOptions {
-    capture?: boolean;
-  }
-}
+// Declarações globais já existem no TypeScript
 
 export interface Translation {
-  [key: string]: string | Translation
+  [key: string]: string | Translation;
 }
 
 export interface I18nConfig {
-  defaultLocale: string
-  fallbackLocale: string
-  locales: string[]
-  namespaces: string[]
+  defaultLocale: string;
+  fallbackLocale: string;
+  locales: string[];
+  namespaces: string[];
 }
 
 // Configuração do sistema de internacionalização
@@ -55,8 +19,16 @@ export const i18nConfig: I18nConfig = {
   defaultLocale: 'pt-BR',
   fallbackLocale: 'pt-BR',
   locales: ['pt-BR', 'en-US', 'es-ES'],
-  namespaces: ['common', 'auth', 'dashboard', 'agenda', 'pacientes', 'usuarios', 'configuracoes']
-}
+  namespaces: [
+    'common',
+    'auth',
+    'dashboard',
+    'agenda',
+    'pacientes',
+    'usuarios',
+    'configuracoes',
+  ],
+};
 
 // Traduções em português (padrão)
 export const ptBR: Record<string, Translation> = {
@@ -94,9 +66,9 @@ export const ptBR: Record<string, Translation> = {
     items_per_page: 'Itens por página',
     showing: 'Mostrando',
     of: 'de',
-    to: 'até'
+    to: 'até',
   },
-  
+
   auth: {
     login: 'Entrar',
     logout: 'Sair',
@@ -114,9 +86,9 @@ export const ptBR: Record<string, Translation> = {
     account_created: 'Conta criada com sucesso!',
     email_confirmation_sent: 'Email de confirmação enviado!',
     reset_password_sent: 'Email de redefinição enviado!',
-    password_reset_success: 'Senha redefinida com sucesso!'
+    password_reset_success: 'Senha redefinida com sucesso!',
   },
-  
+
   dashboard: {
     title: 'Dashboard',
     overview: 'Visão Geral',
@@ -130,9 +102,9 @@ export const ptBR: Record<string, Translation> = {
     system_status: 'Status do Sistema',
     last_update: 'Última Atualização',
     active_system: 'Sistema Ativo',
-    system_offline: 'Sistema Offline'
+    system_offline: 'Sistema Offline',
   },
-  
+
   agenda: {
     title: 'Agenda',
     new_appointment: 'Novo Agendamento',
@@ -150,16 +122,16 @@ export const ptBR: Record<string, Translation> = {
       confirmed: 'Confirmado',
       completed: 'Realizado',
       cancelled: 'Cancelado',
-      no_show: 'Ausente'
+      no_show: 'Ausente',
     },
     filters: {
       date_range: 'Período',
       status: 'Status',
       professional: 'Profissional',
-      service: 'Serviço'
-    }
+      service: 'Serviço',
+    },
   },
-  
+
   pacientes: {
     title: 'Pacientes',
     new_patient: 'Novo Paciente',
@@ -176,9 +148,9 @@ export const ptBR: Record<string, Translation> = {
     allergies: 'Alergias',
     medications: 'Medicamentos',
     insurance: 'Convênio',
-    insurance_number: 'Número do Convênio'
+    insurance_number: 'Número do Convênio',
   },
-  
+
   usuarios: {
     title: 'Usuários',
     new_user: 'Novo Usuário',
@@ -197,10 +169,10 @@ export const ptBR: Record<string, Translation> = {
       manager: 'Gerente',
       user: 'Usuário',
       reception: 'Recepcionista',
-      professional: 'Profissional'
-    }
+      professional: 'Profissional',
+    },
   },
-  
+
   configuracoes: {
     title: 'Configurações',
     general: 'Geral',
@@ -219,9 +191,9 @@ export const ptBR: Record<string, Translation> = {
     theme: 'Tema',
     auto_backup: 'Backup Automático',
     email_notifications: 'Notificações por E-mail',
-    sms_notifications: 'Notificações por SMS'
-  }
-}
+    sms_notifications: 'Notificações por SMS',
+  },
+};
 
 // Traduções em inglês
 export const enUS: Record<string, Translation> = {
@@ -259,9 +231,9 @@ export const enUS: Record<string, Translation> = {
     items_per_page: 'Items per page',
     showing: 'Showing',
     of: 'of',
-    to: 'to'
+    to: 'to',
   },
-  
+
   auth: {
     login: 'Login',
     logout: 'Logout',
@@ -279,9 +251,9 @@ export const enUS: Record<string, Translation> = {
     account_created: 'Account created successfully!',
     email_confirmation_sent: 'Email confirmation sent!',
     reset_password_sent: 'Password reset email sent!',
-    password_reset_success: 'Password reset successfully!'
+    password_reset_success: 'Password reset successfully!',
   },
-  
+
   dashboard: {
     title: 'Dashboard',
     overview: 'Overview',
@@ -295,9 +267,9 @@ export const enUS: Record<string, Translation> = {
     system_status: 'System Status',
     last_update: 'Last Update',
     active_system: 'System Active',
-    system_offline: 'System Offline'
+    system_offline: 'System Offline',
   },
-  
+
   agenda: {
     title: 'Schedule',
     new_appointment: 'New Appointment',
@@ -315,16 +287,16 @@ export const enUS: Record<string, Translation> = {
       confirmed: 'Confirmed',
       completed: 'Completed',
       cancelled: 'Cancelled',
-      no_show: 'No Show'
+      no_show: 'No Show',
     },
     filters: {
       date_range: 'Date Range',
       status: 'Status',
       professional: 'Professional',
-      service: 'Service'
-    }
+      service: 'Service',
+    },
   },
-  
+
   pacientes: {
     title: 'Patients',
     new_patient: 'New Patient',
@@ -341,9 +313,9 @@ export const enUS: Record<string, Translation> = {
     allergies: 'Allergies',
     medications: 'Medications',
     insurance: 'Insurance',
-    insurance_number: 'Insurance Number'
+    insurance_number: 'Insurance Number',
   },
-  
+
   usuarios: {
     title: 'Users',
     new_user: 'New User',
@@ -362,11 +334,10 @@ export const enUS: Record<string, Translation> = {
       manager: 'Manager',
       user: 'User',
       reception: 'Receptionist',
-      professional: 'Professional'
-    }
+      professional: 'Professional',
+    },
   },
-  
-  
+
   configuracoes: {
     title: 'Settings',
     general: 'General',
@@ -385,9 +356,9 @@ export const enUS: Record<string, Translation> = {
     theme: 'Theme',
     auto_backup: 'Auto Backup',
     email_notifications: 'Email Notifications',
-    sms_notifications: 'SMS Notifications'
-  }
-}
+    sms_notifications: 'SMS Notifications',
+  },
+};
 
 // Traduções em espanhol
 export const esES: Record<string, Translation> = {
@@ -425,9 +396,9 @@ export const esES: Record<string, Translation> = {
     items_per_page: 'Elementos por página',
     showing: 'Mostrando',
     of: 'de',
-    to: 'a'
+    to: 'a',
   },
-  
+
   auth: {
     login: 'Iniciar Sesión',
     logout: 'Cerrar Sesión',
@@ -445,9 +416,9 @@ export const esES: Record<string, Translation> = {
     account_created: '¡Cuenta creada exitosamente!',
     email_confirmation_sent: '¡Correo de confirmación enviado!',
     reset_password_sent: '¡Correo de restablecimiento enviado!',
-    password_reset_success: '¡Contraseña restablecida exitosamente!'
+    password_reset_success: '¡Contraseña restablecida exitosamente!',
   },
-  
+
   dashboard: {
     title: 'Panel de Control',
     overview: 'Resumen',
@@ -461,9 +432,9 @@ export const esES: Record<string, Translation> = {
     system_status: 'Estado del Sistema',
     last_update: 'Última Actualización',
     active_system: 'Sistema Activo',
-    system_offline: 'Sistema Desconectado'
+    system_offline: 'Sistema Desconectado',
   },
-  
+
   agenda: {
     title: 'Agenda',
     new_appointment: 'Nueva Cita',
@@ -481,16 +452,16 @@ export const esES: Record<string, Translation> = {
       confirmed: 'Confirmada',
       completed: 'Completada',
       cancelled: 'Cancelada',
-      no_show: 'No Presentó'
+      no_show: 'No Presentó',
     },
     filters: {
       date_range: 'Rango de Fechas',
       status: 'Estado',
       professional: 'Profesional',
-      service: 'Servicio'
-    }
+      service: 'Servicio',
+    },
   },
-  
+
   pacientes: {
     title: 'Pacientes',
     new_patient: 'Nuevo Paciente',
@@ -507,9 +478,9 @@ export const esES: Record<string, Translation> = {
     allergies: 'Alergias',
     medications: 'Medicamentos',
     insurance: 'Seguro',
-    insurance_number: 'Número de Seguro'
+    insurance_number: 'Número de Seguro',
   },
-  
+
   configuracoes: {
     title: 'Configuración',
     general: 'General',
@@ -528,32 +499,32 @@ export const esES: Record<string, Translation> = {
     theme: 'Tema',
     auto_backup: 'Respaldo Automático',
     email_notifications: 'Notificaciones por Correo',
-    sms_notifications: 'Notificaciones por SMS'
-  }
-}
+    sms_notifications: 'Notificaciones por SMS',
+  },
+};
 
 // Mapa de traduções por idioma
 const translations: Record<string, Record<string, Translation>> = {
   'pt-BR': ptBR,
   'en-US': enUS,
-  'es-ES': esES
-}
+  'es-ES': esES,
+};
 
 // Classe principal de internacionalização
 class I18n {
-  private currentLocale: string
-  private fallbackLocale: string
+  private currentLocale: string;
+  private fallbackLocale: string;
 
   constructor() {
-    this.currentLocale = this.getStoredLocale() || i18nConfig.defaultLocale
-    this.fallbackLocale = i18nConfig.fallbackLocale
+    this.currentLocale = this.getStoredLocale() || i18nConfig.defaultLocale;
+    this.fallbackLocale = i18nConfig.fallbackLocale;
   }
 
   /**
    * Obtém o idioma atual
    */
   getCurrentLocale(): string {
-    return this.currentLocale
+    return this.currentLocale;
   }
 
   /**
@@ -561,11 +532,13 @@ class I18n {
    */
   setLocale(locale: string): void {
     if (i18nConfig.locales.includes(locale)) {
-      this.currentLocale = locale
-      localStorage.setItem('i18n_locale', locale)
-      
+      this.currentLocale = locale;
+      localStorage.setItem('i18n_locale', locale);
+
       // Disparar evento de mudança de idioma
-      window.dispatchEvent(new CustomEvent('localeChanged', { detail: { locale } }))
+      window.dispatchEvent(
+        new CustomEvent('localeChanged', { detail: { locale } })
+      );
     }
   }
 
@@ -573,85 +546,100 @@ class I18n {
    * Obtém o idioma armazenado
    */
   private getStoredLocale(): string | null {
-    return localStorage.getItem('i18n_locale')
+    return localStorage.getItem('i18n_locale');
   }
 
   /**
    * Traduz uma chave
    */
   t(key: string, namespace: string = 'common'): string {
-    const keys = key.split('.')
-    let translation: any = translations[this.currentLocale]?.[namespace] || 
-                          translations[this.fallbackLocale]?.[namespace]
+    const keys = key.split('.');
+    let translation: any =
+      translations[this.currentLocale]?.[namespace] ||
+      translations[this.fallbackLocale]?.[namespace];
 
     // Navegar pela estrutura de tradução
     for (const k of keys) {
       if (translation && typeof translation === 'object' && k in translation) {
-        translation = translation[k]
+        translation = translation[k];
       } else {
         // Fallback para o idioma padrão
-        translation = translations[this.fallbackLocale]?.[namespace]
+        translation = translations[this.fallbackLocale]?.[namespace];
         for (const fallbackKey of keys) {
-          if (translation && typeof translation === 'object' && fallbackKey in translation) {
-            translation = translation[fallbackKey]
+          if (
+            translation &&
+            typeof translation === 'object' &&
+            fallbackKey in translation
+          ) {
+            translation = translation[fallbackKey];
           } else {
-            return key // Retornar a chave se não encontrar tradução
+            return key; // Retornar a chave se não encontrar tradução
           }
         }
-        break
+        break;
       }
     }
 
-    return typeof translation === 'string' ? translation : key
+    return typeof translation === 'string' ? translation : key;
   }
 
   /**
    * Traduz com parâmetros
    */
-  tWithParams(key: string, params: Record<string, string | number>, namespace: string = 'common'): string {
-    let translation = this.t(key, namespace)
-    
+  tWithParams(
+    key: string,
+    params: Record<string, string | number>,
+    namespace: string = 'common'
+  ): string {
+    let translation = this.t(key, namespace);
+
     // Substituir parâmetros
     for (const [param, value] of Object.entries(params)) {
-      translation = translation.replace(new RegExp(`{{${param}}}`, 'g'), String(value))
+      translation = translation.replace(
+        new RegExp(`{{${param}}}`, 'g'),
+        String(value)
+      );
     }
-    
-    return translation
+
+    return translation;
   }
 
   /**
    * Obtém todas as traduções para um namespace
    */
   getNamespaceTranslations(namespace: string): Translation | null {
-    return translations[this.currentLocale]?.[namespace] || 
-           translations[this.fallbackLocale]?.[namespace] || 
-           null
+    return (
+      translations[this.currentLocale]?.[namespace] ||
+      translations[this.fallbackLocale]?.[namespace] ||
+      null
+    );
   }
 
   /**
    * Verifica se uma chave existe
    */
   hasKey(key: string, namespace: string = 'common'): boolean {
-    const keys = key.split('.')
-    let translation: any = translations[this.currentLocale]?.[namespace] || 
-                          translations[this.fallbackLocale]?.[namespace]
+    const keys = key.split('.');
+    let translation: any =
+      translations[this.currentLocale]?.[namespace] ||
+      translations[this.fallbackLocale]?.[namespace];
 
     for (const k of keys) {
       if (translation && typeof translation === 'object' && k in translation) {
-        translation = translation[k]
+        translation = translation[k];
       } else {
-        return false
+        return false;
       }
     }
 
-    return typeof translation === 'string'
+    return typeof translation === 'string';
   }
 
   /**
    * Obtém a lista de idiomas disponíveis
    */
   getAvailableLocales(): string[] {
-    return i18nConfig.locales
+    return i18nConfig.locales;
   }
 
   /**
@@ -661,39 +649,51 @@ class I18n {
     const localeNames: Record<string, string> = {
       'pt-BR': 'Português (Brasil)',
       'en-US': 'English (US)',
-      'es-ES': 'Español'
-    }
+      'es-ES': 'Español',
+    };
 
     return {
       code: locale,
       name: localeNames[locale] || locale,
-      flag: locale.split('-')[1]?.toLowerCase() || locale
-    }
+      flag: locale.split('-')[1]?.toLowerCase() || locale,
+    };
   }
 }
 
 // Instância global
-export const i18n = new I18n()
+export const i18n = new I18n();
 
 // Hook para React
 export function useTranslation(namespace: string = 'common') {
-  const [locale, setLocale] = React.useState(i18n.getCurrentLocale())
+  const [locale, setLocale] = React.useState(i18n.getCurrentLocale());
 
   React.useEffect(() => {
     const handleLocaleChange = (event: CustomEvent) => {
-      setLocale(event.detail.locale)
-    }
+      setLocale(event.detail.locale);
+    };
 
-    window.addEventListener('localeChanged', handleLocaleChange as EventListener)
-    
+    window.addEventListener(
+      'localeChanged',
+      handleLocaleChange as EventListener
+    );
+
     return () => {
-      window.removeEventListener('localeChanged', handleLocaleChange as EventListener)
-    }
-  }, [])
+      window.removeEventListener(
+        'localeChanged',
+        handleLocaleChange as EventListener
+      );
+    };
+  }, []);
 
-  const t = React.useCallback((key: string) => i18n.t(key, namespace), [namespace])
-  const tWithParams = React.useCallback((key: string, params: Record<string, string | number>) => 
-    i18n.tWithParams(key, params, namespace), [namespace])
+  const t = React.useCallback(
+    (key: string) => i18n.t(key, namespace),
+    [namespace]
+  );
+  const tWithParams = React.useCallback(
+    (key: string, params: Record<string, string | number>) =>
+      i18n.tWithParams(key, params, namespace),
+    [namespace]
+  );
 
   return {
     t,
@@ -701,17 +701,21 @@ export function useTranslation(namespace: string = 'common') {
     locale,
     setLocale: (newLocale: string) => i18n.setLocale(newLocale),
     availableLocales: i18n.getAvailableLocales(),
-    localeInfo: i18n.getLocaleInfo(locale)
-  }
+    localeInfo: i18n.getLocaleInfo(locale),
+  };
 }
 
 // Função de tradução direta (para uso fora de componentes React)
 export function t(key: string, namespace: string = 'common'): string {
-  return i18n.t(key, namespace)
+  return i18n.t(key, namespace);
 }
 
-export function tWithParams(key: string, params: Record<string, string | number>, namespace: string = 'common'): string {
-  return i18n.tWithParams(key, params, namespace)
+export function tWithParams(
+  key: string,
+  params: Record<string, string | number>,
+  namespace: string = 'common'
+): string {
+  return i18n.tWithParams(key, params, namespace);
 }
 
-export default i18n
+export default i18n;

@@ -82,7 +82,11 @@ const Container: React.FC<ContainerProps> = ({
   // RENDERIZAÇÃO
   // ============================================================================
 
-  return <Component className={finalClassName}>{children}</Component>;
+  return React.createElement(
+    Component as any,
+    { className: finalClassName },
+    children
+  );
 };
 
 export default Container;

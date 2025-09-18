@@ -5,33 +5,7 @@
 import React from 'react';
 
 // Declarações de tipos globais para APIs do navegador
-declare global {
-  interface NotificationOptions {
-    body?: string;
-    icon?: string;
-    badge?: string;
-    tag?: string;
-    data?: any;
-    requireInteraction?: boolean;
-    silent?: boolean;
-    timestamp?: number;
-    vibrate?: number[];
-    actions?: NotificationAction[];
-  }
-
-  interface NotificationAction {
-    action: string;
-    title: string;
-    icon?: string;
-  }
-
-  interface ShareData {
-    title?: string;
-    text?: string;
-    url?: string;
-    files?: File[];
-  }
-}
+// Declarações globais já existem em outros arquivos
 
 // ============================================================================
 // TIPOS E INTERFACES

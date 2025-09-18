@@ -18,7 +18,7 @@ declare global {
 }
 
 // Import do NodeJS para resolver erros de tipo
-import { setTimeout, clearTimeout } from 'timers';
+// import { setTimeout, clearTimeout } from 'timers'; // Comentado - não funciona no browser
 
 // ============================================================================
 // FUNÇÃO CN (CLASSNAME MERGER)

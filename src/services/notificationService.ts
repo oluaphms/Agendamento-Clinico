@@ -9,49 +9,7 @@ import React from 'react';
 import { getDatabase } from '@/lib/connectivityManager';
 import toast from 'react-hot-toast';
 
-// Declarações globais para resolver erros de tipo
-declare global {
-  interface NotificationOptions {
-    body?: string;
-    icon?: string;
-    badge?: string;
-    tag?: string;
-    data?: any;
-    requireInteraction?: boolean;
-    silent?: boolean;
-    timestamp?: number;
-    vibrate?: number[];
-    actions?: NotificationAction[];
-  }
-
-  interface NotificationAction {
-    action: string;
-    title: string;
-    icon?: string;
-  }
-
-  interface ShareData {
-    title?: string;
-    text?: string;
-    url?: string;
-    files?: File[];
-  }
-
-  interface IntersectionObserverInit {
-    root?: Element | null;
-    rootMargin?: string;
-    threshold?: number | number[];
-  }
-
-  namespace NodeJS {
-    interface Timeout {
-      ref(): NodeJS.Timeout;
-      unref(): NodeJS.Timeout;
-      refresh(): NodeJS.Timeout;
-      hasRef(): boolean;
-    }
-  }
-}
+// Declarações globais já existem em outros arquivos
 
 // ============================================================================
 // INTERFACES E TIPOS
@@ -61,7 +19,14 @@ export interface Notificacao {
   id: string;
   titulo: string;
   mensagem: string;
-  tipo: 'info' | 'success' | 'warning' | 'error' | 'reminder' | 'payment' | 'appointment';
+  tipo:
+    | 'info'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'reminder'
+    | 'payment'
+    | 'appointment';
   prioridade: 'baixa' | 'media' | 'alta' | 'urgente';
   lida: boolean;
   favorita: boolean;
@@ -125,7 +90,7 @@ export class NotificationService {
   public async loadNotificacoes(): Promise<Notificacao[]> {
     try {
       const db = await getDatabase();
-      
+
       // Buscar notificações do banco de dados
       const { data, error } = await db
         .from('notificacoes')
@@ -159,16 +124,15 @@ export class NotificationService {
     try {
       // Verificar agendamentos próximos
       await this.checkAgendamentosProximos();
-      
+
       // Verificar pagamentos pendentes
       await this.checkPagamentosPendentes();
-      
+
       // Verificar novos pacientes
       await this.checkNovosPacientes();
-      
+
       // Verificar backup
       await this.checkBackupStatus();
-      
     } catch (error) {
       console.error('Erro no monitoramento em tempo real:', error);
     }
@@ -187,12 +151,14 @@ export class NotificationService {
       const db = await getDatabase();
       const { data: agendamentos } = await db
         .from('agendamentos')
-        .select(`
+        .select(
+          `
           *,
           pacientes (nome, telefone),
           profissionais (nome, especialidade),
           servicos (nome, duracao_min)
-        `)
+        `
+        )
         .eq('data', amanha.toISOString().split('T')[0])
         .eq('status', 'agendado');
 
@@ -203,7 +169,7 @@ export class NotificationService {
           tipo: 'reminder',
           prioridade: 'media',
           link: '/app/agenda',
-          dados_relacionados: agendamentos
+          dados_relacionados: agendamentos,
         });
       }
     } catch (error) {
@@ -218,7 +184,10 @@ export class NotificationService {
         .from('pagamentos')
         .select('*')
         .eq('status', 'pendente')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+        .gte(
+          'created_at',
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+        );
 
       if (pagamentos && pagamentos.length > 0) {
         await this.criarNotificacao({
@@ -227,7 +196,7 @@ export class NotificationService {
           tipo: 'payment',
           prioridade: 'alta',
           link: '/app/financeiro',
-          dados_relacionados: pagamentos
+          dados_relacionados: pagamentos,
         });
       }
     } catch (error) {
@@ -241,7 +210,10 @@ export class NotificationService {
       const { data: pacientes } = await db
         .from('pacientes')
         .select('*')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+        .gte(
+          'created_at',
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+        );
 
       if (pacientes && pacientes.length > 0) {
         await this.criarNotificacao({
@@ -250,7 +222,7 @@ export class NotificationService {
           tipo: 'info',
           prioridade: 'baixa',
           link: '/app/pacientes',
-          dados_relacionados: pacientes
+          dados_relacionados: pacientes,
         });
       }
     } catch (error) {
@@ -265,7 +237,10 @@ export class NotificationService {
         .from('logs_sistema')
         .select('*')
         .eq('acao', 'backup')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .gte(
+          'created_at',
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+        )
         .order('created_at', { ascending: false })
         .limit(1);
 
@@ -275,7 +250,7 @@ export class NotificationService {
           mensagem: 'Nenhum backup foi realizado nas últimas 24 horas',
           tipo: 'warning',
           prioridade: 'alta',
-          link: '/app/backup'
+          link: '/app/backup',
         });
       }
     } catch (error) {
@@ -287,7 +262,9 @@ export class NotificationService {
   // CRIAÇÃO DE NOTIFICAÇÕES
   // ============================================================================
 
-  public async criarNotificacao(notificacao: Partial<Notificacao>): Promise<void> {
+  public async criarNotificacao(
+    notificacao: Partial<Notificacao>
+  ): Promise<void> {
     try {
       const novaNotificacao: Notificacao = {
         id: Date.now().toString(),
@@ -303,45 +280,44 @@ export class NotificationService {
         acoes: notificacao.acoes,
         remetente: notificacao.remetente || 'Sistema',
         dados_relacionados: notificacao.dados_relacionados,
-        ...notificacao
+        ...notificacao,
       };
 
       // Adicionar ao array local
       this.notificacoes.unshift(novaNotificacao);
-      
+
       // Salvar no banco de dados
       await this.salvarNotificacaoNoBanco(novaNotificacao);
-      
+
       // Notificar listeners
       this.notifyListeners();
-      
+
       // Mostrar toast
       this.showNotificationToast(novaNotificacao);
-      
     } catch (error) {
       console.error('Erro ao criar notificação:', error);
     }
   }
 
-  private async salvarNotificacaoNoBanco(notificacao: Notificacao): Promise<void> {
+  private async salvarNotificacaoNoBanco(
+    notificacao: Notificacao
+  ): Promise<void> {
     try {
       const db = await getDatabase();
-      const { error } = await db
-        .from('notificacoes')
-        .insert({
-          titulo: notificacao.titulo,
-          mensagem: notificacao.mensagem,
-          tipo: notificacao.tipo,
-          prioridade: notificacao.prioridade,
-          lida: notificacao.lida,
-          favorita: notificacao.favorita,
-          arquivada: notificacao.arquivada,
-          data_criacao: notificacao.dataCriacao,
-          data_leitura: notificacao.dataLeitura,
-          link: notificacao.link,
-          remetente: notificacao.remetente,
-          dados_relacionados: notificacao.dados_relacionados
-        });
+      const { error } = await db.from('notificacoes').insert({
+        titulo: notificacao.titulo,
+        mensagem: notificacao.mensagem,
+        tipo: notificacao.tipo,
+        prioridade: notificacao.prioridade,
+        lida: notificacao.lida,
+        favorita: notificacao.favorita,
+        arquivada: notificacao.arquivada,
+        data_criacao: notificacao.dataCriacao,
+        data_leitura: notificacao.dataLeitura,
+        link: notificacao.link,
+        remetente: notificacao.remetente,
+        dados_relacionados: notificacao.dados_relacionados,
+      });
 
       if (error) {
         console.warn('Erro ao salvar notificação no banco:', error);
@@ -354,7 +330,7 @@ export class NotificationService {
   private showNotificationToast(notificacao: Notificacao): void {
     const toastOptions = {
       duration: 4000,
-      icon: this.getTipoIcon(notificacao.tipo)
+      icon: this.getTipoIcon(notificacao.tipo),
     };
 
     switch (notificacao.tipo) {
@@ -382,10 +358,13 @@ export class NotificationService {
       if (notificacao) {
         notificacao.lida = true;
         notificacao.dataLeitura = new Date().toISOString();
-        
+
         // Atualizar no banco
-        await this.atualizarNotificacaoNoBanco(id, { lida: true, data_leitura: notificacao.dataLeitura });
-        
+        await this.atualizarNotificacaoNoBanco(id, {
+          lida: true,
+          data_leitura: notificacao.dataLeitura,
+        });
+
         this.notifyListeners();
       }
     } catch (error) {
@@ -398,10 +377,12 @@ export class NotificationService {
       const notificacao = this.notificacoes.find(n => n.id === id);
       if (notificacao) {
         notificacao.favorita = !notificacao.favorita;
-        
+
         // Atualizar no banco
-        await this.atualizarNotificacaoNoBanco(id, { favorita: notificacao.favorita });
-        
+        await this.atualizarNotificacaoNoBanco(id, {
+          favorita: notificacao.favorita,
+        });
+
         this.notifyListeners();
       }
     } catch (error) {
@@ -414,10 +395,10 @@ export class NotificationService {
       const notificacao = this.notificacoes.find(n => n.id === id);
       if (notificacao) {
         notificacao.arquivada = true;
-        
+
         // Atualizar no banco
         await this.atualizarNotificacaoNoBanco(id, { arquivada: true });
-        
+
         this.notifyListeners();
       }
     } catch (error) {
@@ -428,10 +409,10 @@ export class NotificationService {
   public async excluir(id: string): Promise<void> {
     try {
       this.notificacoes = this.notificacoes.filter(n => n.id !== id);
-      
+
       // Remover do banco
       await this.removerNotificacaoDoBanco(id);
-      
+
       this.notifyListeners();
     } catch (error) {
       console.error('Erro ao excluir notificação:', error);
@@ -442,13 +423,13 @@ export class NotificationService {
   // OPERAÇÕES NO BANCO DE DADOS
   // ============================================================================
 
-  private async atualizarNotificacaoNoBanco(id: string, updates: any): Promise<void> {
+  private async atualizarNotificacaoNoBanco(
+    id: string,
+    updates: any
+  ): Promise<void> {
     try {
       const db = await getDatabase();
-      await db
-        .from('notificacoes')
-        .update(updates)
-        .eq('id', id);
+      await db.from('notificacoes').update(updates).eq('id', id);
     } catch (error) {
       console.warn('Erro ao atualizar notificação no banco:', error);
     }
@@ -457,10 +438,7 @@ export class NotificationService {
   private async removerNotificacaoDoBanco(id: string): Promise<void> {
     try {
       const db = await getDatabase();
-      await db
-        .from('notificacoes')
-        .delete()
-        .eq('id', id);
+      await db.from('notificacoes').delete().eq('id', id);
     } catch (error) {
       console.warn('Erro ao remover notificação do banco:', error);
     }
@@ -484,19 +462,26 @@ export class NotificationService {
       dataLeitura: data.data_leitura,
       link: data.link,
       remetente: data.remetente,
-      dados_relacionados: data.dados_relacionados
+      dados_relacionados: data.dados_relacionados,
     };
   }
 
   private getTipoIcon(tipo: string): string {
     switch (tipo) {
-      case 'appointment': return '📅';
-      case 'payment': return '💰';
-      case 'reminder': return '⏰';
-      case 'success': return '✅';
-      case 'error': return '❌';
-      case 'warning': return '⚠️';
-      default: return '🔔';
+      case 'appointment':
+        return '📅';
+      case 'payment':
+        return '💰';
+      case 'reminder':
+        return '⏰';
+      case 'success':
+        return '✅';
+      case 'error':
+        return '❌';
+      case 'warning':
+        return '⚠️';
+      default:
+        return '🔔';
     }
   }
 
@@ -512,8 +497,8 @@ export class NotificationService {
         favorita: false,
         arquivada: false,
         dataCriacao: new Date().toISOString(),
-        remetente: 'Sistema'
-      }
+        remetente: 'Sistema',
+      },
     ];
   }
 
@@ -521,7 +506,9 @@ export class NotificationService {
   // LISTENERS E OBSERVADORES
   // ============================================================================
 
-  public subscribe(listener: (notificacoes: Notificacao[]) => void): () => void {
+  public subscribe(
+    listener: (notificacoes: Notificacao[]) => void
+  ): () => void {
     this.listeners.push(listener);
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
@@ -578,7 +565,7 @@ export const criarNotificacaoAgendamento = async (agendamento: any) => {
     tipo: 'appointment',
     prioridade: 'media',
     link: '/app/agenda',
-    dados_relacionados: agendamento
+    dados_relacionados: agendamento,
   });
 };
 
@@ -589,7 +576,7 @@ export const criarNotificacaoPagamento = async (pagamento: any) => {
     tipo: 'payment',
     prioridade: 'alta',
     link: '/app/financeiro',
-    dados_relacionados: pagamento
+    dados_relacionados: pagamento,
   });
 };
 
@@ -600,6 +587,6 @@ export const criarNotificacaoPaciente = async (paciente: any) => {
     tipo: 'info',
     prioridade: 'baixa',
     link: '/app/pacientes',
-    dados_relacionados: paciente
+    dados_relacionados: paciente,
   });
 };

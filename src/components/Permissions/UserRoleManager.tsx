@@ -147,39 +147,75 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
     },
   ]);
 
-  const [users] = useState([
-    { id: '1', name: 'João Silva', email: 'joao@email.com' },
-    { id: '2', name: 'Maria Santos', email: 'maria@email.com' },
-    { id: '3', name: 'Ana Costa', email: 'ana@email.com' },
-    { id: '4', name: 'Carlos Oliveira', email: 'carlos@email.com' },
-    { id: '5', name: 'Lucia Ferreira', email: 'lucia@email.com' },
-    { id: '6', name: 'Pedro Almeida', email: 'pedro@email.com' },
-  ]);
+  // const [users] = useState([ // Comentado - não utilizado
+  //   { id: '1', name: 'João Silva', email: 'joao@email.com' },
+  //   { id: '2', name: 'Maria Santos', email: 'maria@email.com' },
+  //   { id: '3', name: 'Ana Costa', email: 'ana@email.com' },
+  //   { id: '4', name: 'Carlos Oliveira', email: 'carlos@email.com' },
+  //   { id: '5', name: 'Lucia Ferreira', email: 'lucia@email.com' },
+  //   { id: '6', name: 'Pedro Almeida', email: 'pedro@email.com' },
+  // ]);
 
   const [userRoles, setUserRoles] = useState<UserRole[]>([
     {
       id: '1',
-      user_id: '1',
-      role_id: '1',
-      assigned_at: '2025-01-01T00:00:00Z',
+      userId: '1',
+      roleId: '1',
+      role: {
+        id: '1',
+        name: 'Admin',
+        description: 'Administrador',
+        permissions: ['admin'],
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
     },
     {
       id: '2',
-      user_id: '2',
-      role_id: '2',
-      assigned_at: '2025-01-01T00:00:00Z',
+      userId: '2',
+      roleId: '2',
+      role: {
+        id: '2',
+        name: 'Médico',
+        description: 'Médico',
+        permissions: ['medico'],
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
     },
     {
       id: '3',
-      user_id: '3',
-      role_id: '3',
-      assigned_at: '2025-01-01T00:00:00Z',
+      userId: '3',
+      roleId: '3',
+      role: {
+        id: '3',
+        name: 'Enfermeiro',
+        description: 'Enfermeiro',
+        permissions: ['enfermeiro'],
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
     },
     {
       id: '4',
-      user_id: '4',
-      role_id: '4',
-      assigned_at: '2025-01-01T00:00:00Z',
+      userId: '4',
+      roleId: '4',
+      role: {
+        id: '4',
+        name: 'Recepcionista',
+        description: 'Recepcionista',
+        permissions: ['recepcionista'],
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
     },
   ]);
 
@@ -213,9 +249,18 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
     try {
       const newUserRole: UserRole = {
         id: (userRoles.length + 1).toString(),
-        user_id: userId,
-        role_id: roleId,
-        assigned_at: new Date().toISOString(),
+        userId: userId,
+        roleId: roleId,
+        role: {
+          id: roleId,
+          name: 'Role',
+          description: 'Role',
+          permissions: ['role'],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       setUserRoles(prev => [...prev, newUserRole]);
     } catch (error) {
@@ -230,7 +275,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
     setLoading(true);
     try {
       setUserRoles(prev =>
-        prev.filter(ur => !(ur.user_id === userId && ur.role_id === roleId))
+        prev.filter(ur => !(ur.userId === userId && ur.roleId === roleId))
       );
     } catch (error) {
       setError('Erro ao remover role');
@@ -280,12 +325,12 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({
   };
 
   const getUserRoles = (userId: string) => {
-    return userRoles.filter(ur => ur.user_id === userId);
+    return userRoles.filter(ur => ur.userId === userId);
   };
 
   const getAvailableRoles = (userId: string) => {
     const userRolesList = getUserRoles(userId);
-    const assignedRoleIds = userRolesList.map(ur => ur.role_id);
+    const assignedRoleIds = userRolesList.map(ur => ur.roleId);
     return roles.filter(role => !assignedRoleIds.includes(role.id));
   };
 

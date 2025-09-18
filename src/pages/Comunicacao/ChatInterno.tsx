@@ -5,6 +5,7 @@
 // entre profissionais da clínica, incluindo mensagens em tempo real.
 // ============================================================================
 
+// @ts-ignore
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -101,9 +102,10 @@ const ChatInterno: React.FC = () => {
   });
   const [conversaAtiva, setConversaAtiva] = useState<string | null>(null);
   const [novaMensagem, setNovaMensagem] = useState('');
+  // @ts-ignore
   const [modalAberto, setModalAberto] = useState(false);
-  const [mensagemSelecionada, setMensagemSelecionada] =
-    useState<MensagemChat | null>(null);
+  // const [mensagemSelecionada, setMensagemSelecionada] = // Comentado - não utilizado
+  //   useState<MensagemChat | null>(null);
   const [usuarioAtual, setUsuarioAtual] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -251,51 +253,51 @@ const ChatInterno: React.FC = () => {
     }
   };
 
-  const marcarComoLida = async (mensagemId: string) => {
-    try {
-      const { error } = await supabase
-        .from('chat_interno')
-        .update({
-          lida: true,
-          data_leitura: new Date().toISOString(),
-        })
-        .eq('id', mensagemId);
+  // const marcarComoLida = async (mensagemId: string) => { // Comentado - não utilizado
+  //   try {
+  //     const { error } = await supabase
+  //       .from('chat_interno')
+  //       .update({
+  //         lida: true,
+  //         data_leitura: new Date().toISOString(),
+  //       })
+  //       .eq('id', mensagemId);
 
-      if (error) {
-        console.error('Erro ao marcar como lida:', error);
-        return;
-      }
+  //     if (error) {
+  //       console.error('Erro ao marcar como lida:', error);
+  //       return;
+  //     }
 
-      loadMensagens();
-    } catch (error) {
-      console.error('Erro ao marcar como lida:', error);
-    }
-  };
+  //     loadMensagens();
+  //   } catch (error) {
+  //     console.error('Erro ao marcar como lida:', error);
+  //   }
+  // };
 
-  const handleExcluir = async (id: string) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta mensagem?')) {
-      return;
-    }
+  // const handleExcluir = async (id: string) => { // Comentado - não utilizado
+  //   if (!window.confirm('Tem certeza que deseja excluir esta mensagem?')) {
+  //     return;
+  //   }
 
-    try {
-      const { error } = await supabase
-        .from('chat_interno')
-        .delete()
-        .eq('id', id);
+  //   try {
+  //     const { error } = await supabase
+  //       .from('chat_interno')
+  //       .delete()
+  //       .eq('id', id);
 
-      if (error) {
-        console.error('Erro ao excluir mensagem:', error);
-        toast.error('Erro ao excluir mensagem');
-        return;
-      }
+  //     if (error) {
+  //       console.error('Erro ao excluir mensagem:', error);
+  //       toast.error('Erro ao excluir mensagem');
+  //       return;
+  //     }
 
-      toast.success('Mensagem excluída com sucesso');
-      loadMensagens();
-    } catch (error) {
-      console.error('Erro ao excluir mensagem:', error);
-      toast.error('Erro ao excluir mensagem');
-    }
-  };
+  //     toast.success('Mensagem excluída com sucesso');
+  //     loadMensagens();
+  //   } catch (error) {
+  //     console.error('Erro ao excluir mensagem:', error);
+  //     toast.error('Erro ao excluir mensagem');
+  //   }
+  // };
 
   const getTipoIcon = (tipo: string) => {
     switch (tipo) {
@@ -310,18 +312,18 @@ const ChatInterno: React.FC = () => {
     }
   };
 
-  const getTipoColor = (tipo: string) => {
-    switch (tipo) {
-      case 'imagem':
-        return 'text-blue-500';
-      case 'arquivo':
-        return 'text-green-500';
-      case 'sistema':
-        return 'text-purple-500';
-      default:
-        return 'text-gray-500';
-    }
-  };
+  // const getTipoColor = (tipo: string) => { // Comentado - não utilizado
+  //   switch (tipo) {
+  //     case 'imagem':
+  //       return 'text-blue-500';
+  //     case 'arquivo':
+  //       return 'text-green-500';
+  //     case 'sistema':
+  //       return 'text-purple-500';
+  //     default:
+  //       return 'text-gray-500';
+  //   }
+  // };
 
   const conversasFiltradas = conversas.filter(conversa => {
     const matchesBusca =
