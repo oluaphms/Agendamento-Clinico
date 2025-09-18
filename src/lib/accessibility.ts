@@ -4,7 +4,7 @@
 // Funções e constantes para melhorar a acessibilidade da aplicação
 // ============================================================================
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 // ============================================================================
 // CONSTANTES DE ACESSIBILIDADE

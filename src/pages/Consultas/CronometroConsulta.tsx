@@ -5,11 +5,30 @@
 // das consultas, incluindo pausas e controle de duração.
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { 
+  Clock, 
+  Play, 
+  CheckCircle, 
+  XCircle, 
+  AlertCircle, 
+  Timer, 
+  RefreshCw, 
+  Calendar, 
+  Activity, 
+  Filter, 
+  Search, 
+  Target, 
+  Pause, 
+  Square, 
+  RotateCcw 
+} from 'lucide-react';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
+import { formatPhone, formatTime } from '@/lib/utils';
 
 import toast from 'react-hot-toast';
 
@@ -118,7 +137,7 @@ const CronometroConsulta: React.FC = () => {
   // FUNÇÕES
   // ============================================================================
 
-  const loadDados = async () => {
+  const loadDados = useCallback(async () => {
     setLoading(true);
     try {
       await Promise.all([
@@ -131,7 +150,7 @@ const CronometroConsulta: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const loadConsultas = async () => {
     try {

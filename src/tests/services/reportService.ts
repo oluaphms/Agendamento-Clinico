@@ -73,7 +73,16 @@ export interface ReportSummary {
 
 export interface ReportFilter {
   field: string;
-  operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'like' | 'between';
+  operator:
+    | 'eq'
+    | 'neq'
+    | 'gt'
+    | 'gte'
+    | 'lt'
+    | 'lte'
+    | 'in'
+    | 'like'
+    | 'between';
   value: unknown;
   label: string;
 }
@@ -224,7 +233,6 @@ class ReportService {
       }
 
       return (data || []).map((item: any) => item.config as ReportConfig);
-
     } catch (error) {
       console.error('Erro ao carregar relatórios:', error);
       return this.reports;
@@ -254,16 +262,13 @@ class ReportService {
         return;
       }
 
-      await supabase
-        .from('relatorios_config')
-        .upsert({
-          id: report.id,
-          config: report,
-          updated_at: new Date().toISOString(),
-        });
+      await supabase.from('relatorios_config').upsert({
+        id: report.id,
+        config: report,
+        updated_at: new Date().toISOString(),
+      });
 
       devLog('Relatório salvo no banco:', report);
-
     } catch (error) {
       console.error('Erro ao salvar relatório:', error);
       throw error;
@@ -278,13 +283,9 @@ class ReportService {
         return;
       }
 
-      await supabase
-        .from('relatorios_config')
-        .delete()
-        .eq('id', reportId);
+      await supabase.from('relatorios_config').delete().eq('id', reportId);
 
       devLog('Relatório deletado:', reportId);
-
     } catch (error) {
       console.error('Erro ao deletar relatório:', error);
       throw error;
@@ -301,10 +302,10 @@ class ReportService {
     userId: string = 'system'
   ): Promise<ReportData> {
     const startTime = Date.now();
-    
+
     try {
       devLog(`Gerando relatório ${reportId}...`);
-      
+
       const reportConfig = await this.getReport(reportId);
       if (!reportConfig) {
         throw new Error('Relatório não encontrado');
@@ -348,9 +349,10 @@ class ReportService {
       // Salvar relatório gerado
       await this.saveGeneratedReport(reportData);
 
-      devLog(`Relatório ${reportId} gerado em ${reportData.metadata.processingTime}ms`);
+      devLog(
+        `Relatório ${reportId} gerado em ${reportData.metadata.processingTime}ms`
+      );
       return reportData;
-
     } catch (error) {
       console.error('Erro ao gerar relatório:', error);
       throw error;
@@ -368,32 +370,46 @@ class ReportService {
     try {
       let data: unknown[] = [];
       let labels: string[] = [];
-      let datasets: unknown[] = [];
+      const datasets: unknown[] = [];
 
       switch (chart.type) {
-        case 'bar':
-        case 'line':
-        case 'area':
+        case 'bar': {
           const timeSeriesData = await this.getTimeSeriesData(chart, filters);
           data = timeSeriesData.data;
           labels = timeSeriesData.labels;
           break;
+        }
+        case 'line': {
+          const timeSeriesData = await this.getTimeSeriesData(chart, filters);
+          data = timeSeriesData.data;
+          labels = timeSeriesData.labels;
+          break;
+        }
+        case 'area': {
+          const timeSeriesData = await this.getTimeSeriesData(chart, filters);
+          data = timeSeriesData.data;
+          labels = timeSeriesData.labels;
+          break;
+        }
 
-        case 'pie':
+        case 'pie': {
           const pieData = await this.getPieData(chart, filters);
           data = pieData.data;
           labels = pieData.labels;
           break;
+        }
 
-        case 'scatter':
+        case 'scatter': {
           const scatterData = await this.getScatterData(chart, filters);
           data = scatterData.data;
           break;
+        }
 
-        case 'table':
+        case 'table': {
           const tableData = await this.getTableData(chart, filters);
           data = tableData.data;
           break;
+        }
 
         default:
           data = [];
@@ -406,7 +422,6 @@ class ReportService {
         labels,
         datasets,
       };
-
     } catch (error) {
       console.error('Erro ao gerar dados do gráfico:', error);
       return {
@@ -443,7 +458,6 @@ class ReportService {
       // Processar dados para série temporal
       const processedData = this.processTimeSeriesData(data || [], chart);
       return processedData;
-
     } catch (error) {
       console.error('Erro ao buscar dados de série temporal:', error);
       return { data: [], labels: [] };
@@ -474,7 +488,6 @@ class ReportService {
       // Processar dados para gráfico de pizza
       const processedData = this.processPieData(data || [], chart);
       return processedData;
-
     } catch (error) {
       console.error('Erro ao buscar dados de pizza:', error);
       return { data: [], labels: [] };
@@ -505,7 +518,6 @@ class ReportService {
       // Processar dados para gráfico de dispersão
       const processedData = this.processScatterData(data || [], chart);
       return processedData;
-
     } catch (error) {
       console.error('Erro ao buscar dados de dispersão:', error);
       return { data: [] };
@@ -534,7 +546,6 @@ class ReportService {
       }
 
       return { data: data || [] };
-
     } catch (error) {
       console.error('Erro ao buscar dados de tabela:', error);
       return { data: [] };
@@ -593,22 +604,27 @@ class ReportService {
       let key: string;
 
       switch (groupBy) {
-        case 'day':
+        case 'day': {
           key = date.toISOString().split('T')[0];
           break;
-        case 'week':
+        }
+        case 'week': {
           const weekStart = new Date(date);
           weekStart.setDate(date.getDate() - date.getDay());
           key = weekStart.toISOString().split('T')[0];
           break;
-        case 'month':
+        }
+        case 'month': {
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
           break;
-        case 'year':
+        }
+        case 'year': {
           key = String(date.getFullYear());
           break;
-        default:
+        }
+        default: {
           key = date.toISOString().split('T')[0];
+        }
       }
 
       grouped[key] = (grouped[key] || 0) + 1;
@@ -661,7 +677,6 @@ class ReportService {
       }
 
       return summary;
-
     } catch (error) {
       console.error('Erro ao gerar resumo:', error);
       return {
@@ -679,7 +694,10 @@ class ReportService {
   // UTILITÁRIOS
   // ============================================================================
 
-  private getDateFilter(filters: Record<string, unknown>, type: 'start' | 'end'): string {
+  private getDateFilter(
+    filters: Record<string, unknown>,
+    type: 'start' | 'end'
+  ): string {
     const now = new Date();
     const defaultStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -698,15 +716,12 @@ class ReportService {
         return;
       }
 
-      await supabase
-        .from('relatorios_gerados')
-        .insert({
-          id: reportData.id,
-          report_id: reportData.reportId,
-          data: reportData,
-          generated_at: reportData.generatedAt,
-        });
-
+      await supabase.from('relatorios_gerados').insert({
+        id: reportData.id,
+        report_id: reportData.reportId,
+        data: reportData,
+        generated_at: reportData.generatedAt,
+      });
     } catch (error) {
       console.error('Erro ao salvar relatório gerado:', error);
     }
@@ -716,19 +731,27 @@ class ReportService {
   // DADOS MOCK
   // ============================================================================
 
-  private getMockTimeSeriesData(_chart: ChartConfig): { data: number[]; labels: string[] } {
+  private getMockTimeSeriesData(_chart: ChartConfig): {
+    data: number[];
+    labels: string[];
+  } {
     const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
     const data = [65, 59, 80, 81, 56, 55];
     return { data, labels };
   }
 
-  private getMockPieData(_chart: ChartConfig): { data: number[]; labels: string[] } {
+  private getMockPieData(_chart: ChartConfig): {
+    data: number[];
+    labels: string[];
+  } {
     const labels = ['Consulta', 'Exame', 'Procedimento', 'Outros'];
     const data = [40, 30, 20, 10];
     return { data, labels };
   }
 
-  private getMockScatterData(_chart: ChartConfig): { data: Array<{ x: number; y: number }> } {
+  private getMockScatterData(_chart: ChartConfig): {
+    data: Array<{ x: number; y: number }>;
+  } {
     const data = [
       { x: 1, y: 2 },
       { x: 2, y: 3 },
@@ -739,7 +762,9 @@ class ReportService {
     return { data };
   }
 
-  private getMockTableData(_chart: ChartConfig): { data: Record<string, unknown>[] } {
+  private getMockTableData(_chart: ChartConfig): {
+    data: Record<string, unknown>[];
+  } {
     const data = [
       { id: 1, nome: 'Item 1', valor: 100 },
       { id: 2, nome: 'Item 2', valor: 200 },
@@ -778,7 +803,4 @@ export const reportService = new ReportService();
 // EXPORTAÇÕES
 // ============================================================================
 
-export {
-  ReportService,
-  DEFAULT_REPORTS,
-};
+export { ReportService, DEFAULT_REPORTS };

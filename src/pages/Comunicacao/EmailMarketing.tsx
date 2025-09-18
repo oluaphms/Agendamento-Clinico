@@ -7,9 +7,28 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Bell,
+  RefreshCw,
+  Mail,
+  Send,
+  Filter,
+  Search,
+  Plus,
+  Settings,
+  Eye,
+  Edit,
+  Trash2,
+  MousePointer,
+} from 'lucide-react';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
+import { formatDate, formatPhone } from '@/lib/utils';
 
 import toast from 'react-hot-toast';
 
@@ -24,7 +43,13 @@ interface EmailMarketing {
   email_destino: string;
   assunto: string;
   corpo: string;
-  tipo: 'lembrete' | 'confirmacao' | 'cancelamento' | 'reagendamento' | 'marketing' | 'geral';
+  tipo:
+    | 'lembrete'
+    | 'confirmacao'
+    | 'cancelamento'
+    | 'reagendamento'
+    | 'marketing'
+    | 'geral';
   status: 'pendente' | 'enviado' | 'entregue' | 'falhou' | 'aberto' | 'clicado';
   data_envio?: string;
   created_at: string;
@@ -50,7 +75,13 @@ interface CampanhaEmail {
   assunto: string;
   corpo: string;
   segmentacao: any;
-  status: 'rascunho' | 'agendada' | 'enviando' | 'enviada' | 'pausada' | 'cancelada';
+  status:
+    | 'rascunho'
+    | 'agendada'
+    | 'enviando'
+    | 'enviada'
+    | 'pausada'
+    | 'cancelada';
   data_criacao: string;
   data_envio?: string;
   total_envios: number;
@@ -84,7 +115,8 @@ const EmailMarketing: React.FC = () => {
     busca: '',
   });
   const [modalAberto, setModalAberto] = useState(false);
-  const [emailSelecionado, setEmailSelecionado] = useState<EmailMarketing | null>(null);
+  const [emailSelecionado, setEmailSelecionado] =
+    useState<EmailMarketing | null>(null);
   const [viewMode, setViewMode] = useState<'emails' | 'campanhas'>('emails');
   const [configuracao, setConfiguracao] = useState({
     smtp_host: '',
@@ -127,7 +159,8 @@ const EmailMarketing: React.FC = () => {
     try {
       let query = supabase
         .from('emails')
-        .select(`
+        .select(
+          `
           *,
           paciente:pacientes(nome, telefone, email),
           agendamento:agendamentos(
@@ -135,7 +168,8 @@ const EmailMarketing: React.FC = () => {
             hora,
             servico:servicos(nome)
           )
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       // Aplicar filtros
@@ -164,10 +198,11 @@ const EmailMarketing: React.FC = () => {
       let emailsFiltrados = data || [];
       if (filtros.busca) {
         const busca = filtros.busca.toLowerCase();
-        emailsFiltrados = emailsFiltrados.filter(email =>
-          email.paciente?.nome.toLowerCase().includes(busca) ||
-          email.assunto.toLowerCase().includes(busca) ||
-          email.email_destino.toLowerCase().includes(busca)
+        emailsFiltrados = emailsFiltrados.filter(
+          email =>
+            email.paciente?.nome.toLowerCase().includes(busca) ||
+            email.assunto.toLowerCase().includes(busca) ||
+            email.email_destino.toLowerCase().includes(busca)
         );
       }
 
@@ -186,7 +221,8 @@ const EmailMarketing: React.FC = () => {
           id: '1',
           nome: 'Lembretes de Consulta',
           assunto: 'Lembrete: Sua consulta está chegando',
-          corpo: 'Olá {nome}, sua consulta está agendada para {data} às {hora}.',
+          corpo:
+            'Olá {nome}, sua consulta está agendada para {data} às {hora}.',
           segmentacao: { tipo: 'todos' },
           status: 'enviada',
           data_criacao: '2024-01-01',
@@ -241,18 +277,21 @@ const EmailMarketing: React.FC = () => {
     }
   };
 
-  const enviarEmail = async (assunto: string, corpo: string, email: string, tipo: string) => {
+  const enviarEmail = async (
+    assunto: string,
+    corpo: string,
+    email: string,
+    tipo: string
+  ) => {
     try {
-      const { error } = await supabase
-        .from('emails')
-        .insert({
-          email_destino: email,
-          assunto: assunto,
-          corpo: corpo,
-          tipo: tipo,
-          status: 'enviado',
-          data_envio: new Date().toISOString(),
-        });
+      const { error } = await supabase.from('emails').insert({
+        email_destino: email,
+        assunto: assunto,
+        corpo: corpo,
+        tipo: tipo,
+        status: 'enviado',
+        data_envio: new Date().toISOString(),
+      });
 
       if (error) {
         console.error('Erro ao enviar email:', error);
@@ -274,10 +313,7 @@ const EmailMarketing: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('emails')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('emails').delete().eq('id', id);
 
       if (error) {
         console.error('Erro ao excluir email:', error);
@@ -296,19 +332,19 @@ const EmailMarketing: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'enviado':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className='h-5 w-5 text-green-500' />;
       case 'entregue':
-        return <CheckCircle className="h-5 w-5 text-blue-500" />;
+        return <CheckCircle className='h-5 w-5 text-blue-500' />;
       case 'aberto':
-        return <EyeIcon className="h-5 w-5 text-blue-500" />;
+        return <Eye className='h-5 w-5 text-blue-500' />;
       case 'clicado':
-        return <MousePointer className="h-5 w-5 text-purple-500" />;
+        return <MousePointer className='h-5 w-5 text-purple-500' />;
       case 'falhou':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className='h-5 w-5 text-red-500' />;
       case 'pendente':
-        return <Clock className="h-5 w-5 text-yellow-500" />;
+        return <Clock className='h-5 w-5 text-yellow-500' />;
       default:
-        return <Clock className="h-5 w-5 text-gray-500" />;
+        return <Clock className='h-5 w-5 text-gray-500' />;
     }
   };
 
@@ -334,19 +370,19 @@ const EmailMarketing: React.FC = () => {
   const getTipoIcon = (tipo: string) => {
     switch (tipo) {
       case 'lembrete':
-        return <Bell className="h-4 w-4 text-blue-500" />;
+        return <Bell className='h-4 w-4 text-blue-500' />;
       case 'confirmacao':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className='h-4 w-4 text-green-500' />;
       case 'cancelamento':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className='h-4 w-4 text-red-500' />;
       case 'reagendamento':
-        return <RefreshCw className="h-4 w-4 text-orange-500" />;
+        return <RefreshCw className='h-4 w-4 text-orange-500' />;
       case 'marketing':
-        return <Target className="h-4 w-4 text-purple-500" />;
+        return <Target className='h-4 w-4 text-purple-500' />;
       case 'geral':
-        return <Mail className="h-4 w-4 text-gray-500" />;
+        return <Mail className='h-4 w-4 text-gray-500' />;
       default:
-        return <Mail className="h-4 w-4 text-gray-500" />;
+        return <Mail className='h-4 w-4 text-gray-500' />;
     }
   };
 
@@ -365,16 +401,27 @@ const EmailMarketing: React.FC = () => {
   const emailsFiltrados = emails.filter(email => {
     const matchesTipo = !filtros.tipo || email.tipo === filtros.tipo;
     const matchesStatus = !filtros.status || email.status === filtros.status;
-    const matchesDataInicio = !filtros.data_inicio || 
+    const matchesDataInicio =
+      !filtros.data_inicio ||
       new Date(email.created_at) >= new Date(filtros.data_inicio);
-    const matchesDataFim = !filtros.data_fim || 
+    const matchesDataFim =
+      !filtros.data_fim ||
       new Date(email.created_at) <= new Date(filtros.data_fim);
-    const matchesBusca = !filtros.busca || 
-      email.paciente?.nome.toLowerCase().includes(filtros.busca.toLowerCase()) ||
+    const matchesBusca =
+      !filtros.busca ||
+      email.paciente?.nome
+        .toLowerCase()
+        .includes(filtros.busca.toLowerCase()) ||
       email.assunto.toLowerCase().includes(filtros.busca.toLowerCase()) ||
       email.email_destino.toLowerCase().includes(filtros.busca.toLowerCase());
 
-    return matchesTipo && matchesStatus && matchesDataInicio && matchesDataFim && matchesBusca;
+    return (
+      matchesTipo &&
+      matchesStatus &&
+      matchesDataInicio &&
+      matchesDataFim &&
+      matchesBusca
+    );
   });
 
   // Estatísticas
@@ -389,34 +436,37 @@ const EmailMarketing: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className='flex items-center justify-center min-h-screen'>
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-900 p-6'>
       <Helmet>
         <title>Email Marketing - Sistema de Gestão de Clínica</title>
-        <meta name="description" content="Gerencie campanhas de email marketing" />
+        <meta
+          name='description'
+          content='Gerencie campanhas de email marketing'
+        />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto">
+      <div className='max-w-7xl mx-auto'>
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className='mb-8'>
+          <div className='flex items-center justify-between'>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <Mail className="h-8 w-8 text-blue-600" />
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3'>
+                <Mail className='h-8 w-8 text-blue-600' />
                 Email Marketing
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
+              <p className='text-gray-600 dark:text-gray-400 mt-2'>
                 Gerencie campanhas de email marketing e comunicação
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <div className='flex items-center gap-4'>
+              <div className='flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1'>
                 <button
                   onClick={() => setViewMode('emails')}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
@@ -440,23 +490,23 @@ const EmailMarketing: React.FC = () => {
               </div>
               <button
                 onClick={loadDados}
-                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
               >
-                <RefreshCw className="mr-2" size={16} />
+                <RefreshCw className='mr-2' size={16} />
                 Atualizar
               </button>
               <button
                 onClick={() => setModalAberto(true)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
-                <Plus className="mr-2" size={16} />
+                <Plus className='mr-2' size={16} />
                 {viewMode === 'emails' ? 'Novo Email' : 'Nova Campanha'}
               </button>
               <button
                 onClick={() => setModalAberto(true)}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className='flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'
               >
-                <Settings className="mr-2" size={16} />
+                <Settings className='mr-2' size={16} />
                 Configurações
               </button>
             </div>
@@ -464,30 +514,36 @@ const EmailMarketing: React.FC = () => {
         </div>
 
         {/* Status da Integração */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`w-3 h-3 rounded-full ${configuracao.ativo ? 'bg-green-500' : 'bg-red-500'}`} />
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center space-x-4'>
+                <div
+                  className={`w-3 h-3 rounded-full ${configuracao.ativo ? 'bg-green-500' : 'bg-red-500'}`}
+                />
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Status da Integração
                   </p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <p className='text-lg font-semibold text-gray-900 dark:text-white'>
                     {configuracao.ativo ? 'Ativa' : 'Inativa'}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">SMTP Host</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <div className='flex items-center space-x-4'>
+                <div className='text-right'>
+                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                    SMTP Host
+                  </p>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white'>
                     {configuracao.smtp_host ? 'Configurado' : 'Não configurado'}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">SMTP User</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className='text-right'>
+                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                    SMTP User
+                  </p>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white'>
                     {configuracao.smtp_user ? 'Configurado' : 'Não configurado'}
                   </p>
                 </div>
@@ -497,16 +553,16 @@ const EmailMarketing: React.FC = () => {
         </Card>
 
         {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Mail className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Mail className='h-8 w-8 text-blue-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Total de Emails
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {totalEmails}
                   </p>
                 </div>
@@ -515,14 +571,14 @@ const EmailMarketing: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Send className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Send className='h-8 w-8 text-green-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Enviados
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {emailsEnviados}
                   </p>
                 </div>
@@ -531,14 +587,14 @@ const EmailMarketing: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <EyeIcon className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <Eye className='h-8 w-8 text-blue-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Abertos
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {emailsAbertos}
                   </p>
                 </div>
@@ -547,14 +603,14 @@ const EmailMarketing: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <MousePointer className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            <CardContent className='p-6'>
+              <div className='flex items-center'>
+                <MousePointer className='h-8 w-8 text-purple-600' />
+                <div className='ml-4'>
+                  <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                     Clicados
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {emailsClicados}
                   </p>
                 </div>
@@ -564,66 +620,76 @@ const EmailMarketing: React.FC = () => {
         </div>
 
         {/* Filtros */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Filter className="h-5 w-5 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0'>
+              <div className='flex items-center space-x-4'>
+                <div className='flex items-center space-x-2'>
+                  <Filter className='h-5 w-5 text-gray-500' />
+                  <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Filtros:
                   </span>
                 </div>
                 <select
                   value={filtros.tipo}
-                  onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onChange={e =>
+                    setFiltros({ ...filtros, tipo: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
                 >
-                  <option value="">Todos os tipos</option>
-                  <option value="lembrete">Lembrete</option>
-                  <option value="confirmacao">Confirmação</option>
-                  <option value="cancelamento">Cancelamento</option>
-                  <option value="reagendamento">Reagendamento</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="geral">Geral</option>
+                  <option value=''>Todos os tipos</option>
+                  <option value='lembrete'>Lembrete</option>
+                  <option value='confirmacao'>Confirmação</option>
+                  <option value='cancelamento'>Cancelamento</option>
+                  <option value='reagendamento'>Reagendamento</option>
+                  <option value='marketing'>Marketing</option>
+                  <option value='geral'>Geral</option>
                 </select>
                 <select
                   value={filtros.status}
-                  onChange={(e) => setFiltros({ ...filtros, status: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  onChange={e =>
+                    setFiltros({ ...filtros, status: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
                 >
-                  <option value="">Todos os status</option>
-                  <option value="pendente">Pendente</option>
-                  <option value="enviado">Enviado</option>
-                  <option value="entregue">Entregue</option>
-                  <option value="aberto">Aberto</option>
-                  <option value="clicado">Clicado</option>
-                  <option value="falhou">Falhou</option>
+                  <option value=''>Todos os status</option>
+                  <option value='pendente'>Pendente</option>
+                  <option value='enviado'>Enviado</option>
+                  <option value='entregue'>Entregue</option>
+                  <option value='aberto'>Aberto</option>
+                  <option value='clicado'>Clicado</option>
+                  <option value='falhou'>Falhou</option>
                 </select>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className='flex items-center space-x-4'>
                 <input
-                  type="date"
+                  type='date'
                   value={filtros.data_inicio}
-                  onChange={(e) => setFiltros({ ...filtros, data_inicio: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                  placeholder="Data início"
+                  onChange={e =>
+                    setFiltros({ ...filtros, data_inicio: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
+                  placeholder='Data início'
                 />
                 <input
-                  type="date"
+                  type='date'
                   value={filtros.data_fim}
-                  onChange={(e) => setFiltros({ ...filtros, data_fim: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                  placeholder="Data fim"
+                  onChange={e =>
+                    setFiltros({ ...filtros, data_fim: e.target.value })
+                  }
+                  className='px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm'
+                  placeholder='Data fim'
                 />
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <div className='relative'>
+                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
                   <input
-                    type="text"
-                    placeholder="Buscar emails..."
+                    type='text'
+                    placeholder='Buscar emails...'
                     value={filtros.busca}
-                    onChange={(e) => setFiltros({ ...filtros, busca: e.target.value })}
-                    className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm min-w-[200px]"
+                    onChange={e =>
+                      setFiltros({ ...filtros, busca: e.target.value })
+                    }
+                    className='pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm min-w-[200px]'
                   />
                 </div>
               </div>
@@ -634,92 +700,103 @@ const EmailMarketing: React.FC = () => {
         {/* Conteúdo Principal */}
         {viewMode === 'emails' ? (
           /* Lista de Emails */
-          <div className="space-y-4">
-            {emailsFiltrados.map((email) => (
-              <Card key={email.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="flex items-center space-x-2">
+          <div className='space-y-4'>
+            {emailsFiltrados.map(email => (
+              <Card
+                key={email.id}
+                className='hover:shadow-lg transition-shadow'
+              >
+                <CardContent className='p-6'>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex-1'>
+                      <div className='flex items-center space-x-4 mb-4'>
+                        <div className='flex items-center space-x-2'>
                           {getTipoIcon(email.tipo)}
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className='text-sm font-medium text-gray-900 dark:text-white'>
                             {getTipoLabel(email.tipo)}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className='flex items-center space-x-2'>
                           {getStatusIcon(email.status)}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(email.status)}`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(email.status)}`}
+                          >
                             {email.status.toUpperCase()}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4 text-gray-500" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className='flex items-center space-x-2'>
+                          <Clock className='h-4 w-4 text-gray-500' />
+                          <span className='text-sm text-gray-600 dark:text-gray-400'>
                             {formatDate(email.created_at)}
                           </span>
                         </div>
                       </div>
 
-                      <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      <div className='mb-4'>
+                        <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                           Assunto
                         </p>
-                        <p className="text-sm text-gray-900 dark:text-white">
+                        <p className='text-sm text-gray-900 dark:text-white'>
                           {email.assunto}
                         </p>
                       </div>
 
-                      <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      <div className='mb-4'>
+                        <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                           Conteúdo
                         </p>
-                        <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
+                        <p className='text-sm text-gray-900 dark:text-white line-clamp-2'>
                           {email.corpo}
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Destinatário</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Destinatário
+                          </p>
+                          <p className='font-medium text-gray-900 dark:text-white'>
                             {email.paciente?.nome || 'N/A'}
                           </p>
-                          <p className="text-gray-500 dark:text-gray-400">
+                          <p className='text-gray-500 dark:text-gray-400'>
                             {email.email_destino}
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Agendamento</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {email.agendamento?.data ? formatDate(email.agendamento.data) : 'N/A'}
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Agendamento
                           </p>
-                          <p className="text-gray-500 dark:text-gray-400">
+                          <p className='font-medium text-gray-900 dark:text-white'>
+                            {email.agendamento?.data
+                              ? formatDate(email.agendamento.data)
+                              : 'N/A'}
+                          </p>
+                          <p className='text-gray-500 dark:text-gray-400'>
                             {email.agendamento?.hora || 'N/A'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className='flex items-center space-x-2 ml-4'>
                       <button
                         onClick={() => setEmailSelecionado(email)}
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Ver detalhes"
+                        className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
+                        title='Ver detalhes'
                       >
                         <Eye size={16} />
                       </button>
                       <button
                         onClick={() => setEmailSelecionado(email)}
-                        className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                        title="Editar"
+                        className='p-2 text-gray-400 hover:text-green-600 transition-colors'
+                        title='Editar'
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleExcluir(email.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                        title="Excluir"
+                        className='p-2 text-gray-400 hover:text-red-600 transition-colors'
+                        title='Excluir'
                       >
                         <Trash2 size={16} />
                       </button>
@@ -731,78 +808,96 @@ const EmailMarketing: React.FC = () => {
           </div>
         ) : (
           /* Lista de Campanhas */
-          <div className="space-y-4">
-            {campanhas.map((campanha) => (
-              <Card key={campanha.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="flex items-center space-x-2">
-                          <Target className="h-5 w-5 text-purple-500" />
-                          <span className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className='space-y-4'>
+            {campanhas.map(campanha => (
+              <Card
+                key={campanha.id}
+                className='hover:shadow-lg transition-shadow'
+              >
+                <CardContent className='p-6'>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex-1'>
+                      <div className='flex items-center space-x-4 mb-4'>
+                        <div className='flex items-center space-x-2'>
+                          <Target className='h-5 w-5 text-purple-500' />
+                          <span className='text-lg font-semibold text-gray-900 dark:text-white'>
                             {campanha.nome}
                           </span>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          campanha.status === 'enviada' ? 'bg-green-100 text-green-800' :
-                          campanha.status === 'enviando' ? 'bg-blue-100 text-blue-800' :
-                          campanha.status === 'pausada' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            campanha.status === 'enviada'
+                              ? 'bg-green-100 text-green-800'
+                              : campanha.status === 'enviando'
+                                ? 'bg-blue-100 text-blue-800'
+                                : campanha.status === 'pausada'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
                           {campanha.status.toUpperCase()}
                         </span>
                       </div>
 
-                      <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                      <div className='mb-4'>
+                        <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>
                           Assunto
                         </p>
-                        <p className="text-sm text-gray-900 dark:text-white">
+                        <p className='text-sm text-gray-900 dark:text-white'>
                           {campanha.assunto}
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                      <div className='grid grid-cols-1 md:grid-cols-4 gap-4 text-sm'>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Total de Envios</p>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Total de Envios
+                          </p>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-white'>
                             {campanha.total_envios}
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Taxa de Abertura</p>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Taxa de Abertura
+                          </p>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-white'>
                             {campanha.taxa_abertura}%
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Taxa de Clique</p>
-                          <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Taxa de Clique
+                          </p>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-white'>
                             {campanha.taxa_clique}%
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-600 dark:text-gray-400">Data de Envio</p>
-                          <p className="text-sm text-gray-900 dark:text-white">
-                            {campanha.data_envio ? formatDate(campanha.data_envio) : 'N/A'}
+                          <p className='text-gray-600 dark:text-gray-400'>
+                            Data de Envio
+                          </p>
+                          <p className='text-sm text-gray-900 dark:text-white'>
+                            {campanha.data_envio
+                              ? formatDate(campanha.data_envio)
+                              : 'N/A'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 ml-4">
+                    <div className='flex items-center space-x-2 ml-4'>
                       <button
                         onClick={() => setEmailSelecionado(campanha as any)}
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Ver detalhes"
+                        className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
+                        title='Ver detalhes'
                       >
                         <Eye size={16} />
                       </button>
                       <button
                         onClick={() => setEmailSelecionado(campanha as any)}
-                        className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                        title="Editar"
+                        className='p-2 text-gray-400 hover:text-green-600 transition-colors'
+                        title='Editar'
                       >
                         <Edit size={16} />
                       </button>
@@ -815,16 +910,17 @@ const EmailMarketing: React.FC = () => {
         )}
 
         {/* Mensagem quando não há conteúdo */}
-        {((viewMode === 'emails' && emailsFiltrados.length === 0) || 
+        {((viewMode === 'emails' && emailsFiltrados.length === 0) ||
           (viewMode === 'campanhas' && campanhas.length === 0)) && (
-          <Card className="text-center py-12">
+          <Card className='text-center py-12'>
             <CardContent>
-              <Mail className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              <Mail className='mx-auto h-12 w-12 text-gray-400 mb-4' />
+              <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-2'>
                 Nenhum {viewMode === 'emails' ? 'email' : 'campanha'} encontrado
               </h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                Não há {viewMode === 'emails' ? 'emails' : 'campanhas'} que correspondam aos filtros selecionados.
+              <p className='text-gray-500 dark:text-gray-400'>
+                Não há {viewMode === 'emails' ? 'emails' : 'campanhas'} que
+                correspondam aos filtros selecionados.
               </p>
             </CardContent>
           </Card>

@@ -134,7 +134,7 @@ const executarBackup = async (backup: BackupInfo): Promise<void> => {
     // Simular processo de backup
     const tabelas = backup.tabelas;
     let totalRegistros = 0;
-    let dadosBackup: any = {};
+    const dadosBackup: any = {};
 
     // Fazer backup de cada tabela
     for (const tabela of tabelas) {

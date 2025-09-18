@@ -162,10 +162,10 @@ export const usePermissions = (): UsePermissionsReturn => {
   // AÇÕES DE PERMISSÕES
   // ============================================================================
 
-  const createPermission = useCallback(
-    async (
-      _permission: Omit<Permission, 'id' | 'created_at' | 'updated_at'>
-    ) => {
+      const createPermission = useCallback(
+        async (
+          _permission: Omit<Permission, 'id' | 'created_at' | 'updated_at'>
+        ) => {
       try {
         setError(null);
         // const newPermission = await permissionService.createPermission(permission);
@@ -186,8 +186,8 @@ export const usePermissions = (): UsePermissionsReturn => {
     [handleError]
   );
 
-  const updatePermission = useCallback(
-    async (id: string, _permission: Partial<Permission>) => {
+      const updatePermission = useCallback(
+        async (id: string, _permission: Partial<Permission>) => {
       try {
         setError(null);
         // const updatedPermission = await permissionService.updatePermission(id, permission);
@@ -228,8 +228,8 @@ export const usePermissions = (): UsePermissionsReturn => {
   // AÇÕES DE ROLES
   // ============================================================================
 
-  const createRole = useCallback(
-    async (_role: Omit<Role, 'id' | 'created_at' | 'updated_at'>) => {
+      const createRole = useCallback(
+        async (_role: Omit<Role, 'id' | 'created_at' | 'updated_at'>) => {
       try {
         setError(null);
         // const newRole = await permissionService.createRole(role);
@@ -250,8 +250,8 @@ export const usePermissions = (): UsePermissionsReturn => {
     [handleError]
   );
 
-  const updateRole = useCallback(
-    async (id: string, _role: Partial<Role>) => {
+      const updateRole = useCallback(
+        async (id: string, _role: Partial<Role>) => {
       try {
         setError(null);
         // const updatedRole = await permissionService.updateRole(id, role);
@@ -330,8 +330,8 @@ export const usePermissions = (): UsePermissionsReturn => {
   // VERIFICAÇÃO DE PERMISSÕES
   // ============================================================================
 
-  const checkPermission = useCallback(
-    async (_resource: string, _action: string): Promise<PermissionCheck> => {
+      const checkPermission = useCallback(
+        async (_resource: string, _action: string): Promise<PermissionCheck> => {
       if (!user?.id) {
         return { allowed: false, reason: 'Usuário não autenticado' };
       }

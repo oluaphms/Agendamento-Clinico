@@ -2,9 +2,23 @@
 // COMPONENTE: AuditLogManager - Gerenciador de Log de Auditoria
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Shield,
+  XCircle,
+  CheckCircle,
+  AlertTriangle,
+  Download,
+  Search,
+  Clock,
+  User,
+  Eye,
+} from 'lucide-react';
 
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Input } from '@/design-system';
+import { Card, CardContent, Badge, Button, Input } from '@/design-system';
 
 // ============================================================================
 // TIPOS E INTERFACES
@@ -14,7 +28,14 @@ interface AuditLogEntry {
   id: string;
   timestamp: string;
   user: string;
-  action: 'create' | 'update' | 'delete' | 'assign' | 'remove' | 'approve' | 'reject';
+  action:
+    | 'create'
+    | 'update'
+    | 'delete'
+    | 'assign'
+    | 'remove'
+    | 'approve'
+    | 'reject';
   resource: string;
   details: string;
   oldValue?: string;
@@ -61,7 +82,8 @@ const MOCK_AUDIT_LOGS: AuditLogEntry[] = [
     oldValue: 'patients:read, schedule:read',
     newValue: 'patients:read, patients:update, schedule:read',
     ipAddress: '192.168.1.101',
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
   },
   {
     id: '4',
@@ -102,12 +124,14 @@ const MOCK_AUDIT_LOGS: AuditLogEntry[] = [
 // ============================================================================
 
 export const AuditLogManager: React.FC = () => {
-  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(MOCK_AUDIT_LOGS);
+  const [auditLogs] = useState<AuditLogEntry[]>(MOCK_AUDIT_LOGS);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('all');
   const [filterResource, setFilterResource] = useState('all');
   const [filterUser, setFilterUser] = useState('all');
-  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
+    null
+  );
 
   // ============================================================================
   // FUNÇÕES AUXILIARES
@@ -115,56 +139,68 @@ export const AuditLogManager: React.FC = () => {
 
   const getActionIcon = (action: string) => {
     const icons: Record<string, React.ReactNode> = {
-      'create': <Plus className='h-4 w-4' />,
-      'update': <Edit className='h-4 w-4' />,
-      'delete': <Trash2 className='h-4 w-4' />,
-      'assign': <Shield className='h-4 w-4' />,
-      'remove': <XCircle className='h-4 w-4' />,
-      'approve': <CheckCircle className='h-4 w-4' />,
-      'reject': <XCircle className='h-4 w-4' />,
+      create: <Plus className='h-4 w-4' />,
+      update: <Edit className='h-4 w-4' />,
+      delete: <Trash2 className='h-4 w-4' />,
+      assign: <Shield className='h-4 w-4' />,
+      remove: <XCircle className='h-4 w-4' />,
+      approve: <CheckCircle className='h-4 w-4' />,
+      reject: <XCircle className='h-4 w-4' />,
     };
     return icons[action] || <AlertTriangle className='h-4 w-4' />;
   };
 
   const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
-      'create': 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200',
-      'update': 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-200',
-      'delete': 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
-      'assign': 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-200',
-      'remove': 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-200',
-      'approve': 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200',
-      'reject': 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
+      create:
+        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200',
+      update:
+        'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-200',
+      delete: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
+      assign:
+        'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-200',
+      remove:
+        'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-200',
+      approve:
+        'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200',
+      reject: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
     };
-    return colors[action] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-200';
+    return (
+      colors[action] ||
+      'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-200'
+    );
   };
 
   const getActionText = (action: string) => {
     const texts: Record<string, string> = {
-      'create': 'Criou',
-      'update': 'Atualizou',
-      'delete': 'Removeu',
-      'assign': 'Atribuiu',
-      'remove': 'Removeu',
-      'approve': 'Aprovou',
-      'reject': 'Rejeitou',
+      create: 'Criou',
+      update: 'Atualizou',
+      delete: 'Removeu',
+      assign: 'Atribuiu',
+      remove: 'Removeu',
+      approve: 'Aprovou',
+      reject: 'Rejeitou',
     };
     return texts[action] || action;
   };
 
   const filteredLogs = auditLogs.filter(log => {
-    const matchesSearch = log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.resource.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.resource.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesAction = filterAction === 'all' || log.action === filterAction;
-    const matchesResource = filterResource === 'all' || log.resource === filterResource;
+    const matchesResource =
+      filterResource === 'all' || log.resource === filterResource;
     const matchesUser = filterUser === 'all' || log.user === filterUser;
-    
+
     return matchesSearch && matchesAction && matchesResource && matchesUser;
   });
 
   const uniqueUsers = Array.from(new Set(auditLogs.map(log => log.user)));
-  const uniqueResources = Array.from(new Set(auditLogs.map(log => log.resource)));
+  const uniqueResources = Array.from(
+    new Set(auditLogs.map(log => log.resource))
+  );
   const uniqueActions = Array.from(new Set(auditLogs.map(log => log.action)));
 
   // ============================================================================
@@ -203,19 +239,19 @@ export const AuditLogManager: React.FC = () => {
               <Input
                 placeholder='Buscar no log...'
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className='pl-10'
               />
             </div>
           </div>
-          
+
           <div>
             <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Ação
             </label>
             <select
               value={filterAction}
-              onChange={(e) => setFilterAction(e.target.value)}
+              onChange={e => setFilterAction(e.target.value)}
               className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white'
             >
               <option value='all'>Todas as ações</option>
@@ -233,12 +269,14 @@ export const AuditLogManager: React.FC = () => {
             </label>
             <select
               value={filterResource}
-              onChange={(e) => setFilterResource(e.target.value)}
+              onChange={e => setFilterResource(e.target.value)}
               className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white'
             >
               <option value='all'>Todos os recursos</option>
               {uniqueResources.map(resource => (
-                <option key={resource} value={resource}>{resource}</option>
+                <option key={resource} value={resource}>
+                  {resource}
+                </option>
               ))}
             </select>
           </div>
@@ -249,12 +287,14 @@ export const AuditLogManager: React.FC = () => {
             </label>
             <select
               value={filterUser}
-              onChange={(e) => setFilterUser(e.target.value)}
+              onChange={e => setFilterUser(e.target.value)}
               className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white'
             >
               <option value='all'>Todos os usuários</option>
               {uniqueUsers.map(user => (
-                <option key={user} value={user}>{user}</option>
+                <option key={user} value={user}>
+                  {user}
+                </option>
               ))}
             </select>
           </div>
@@ -279,11 +319,13 @@ export const AuditLogManager: React.FC = () => {
               <CardContent className='p-4'>
                 <div className='flex items-start space-x-4'>
                   <div className='flex-shrink-0'>
-                    <div className={`p-2 rounded-full ${getActionColor(log.action)}`}>
+                    <div
+                      className={`p-2 rounded-full ${getActionColor(log.action)}`}
+                    >
                       {getActionIcon(log.action)}
                     </div>
                   </div>
-                  
+
                   <div className='flex-1 min-w-0'>
                     <div className='flex items-center justify-between mb-2'>
                       <div className='flex items-center space-x-2'>
@@ -296,16 +338,18 @@ export const AuditLogManager: React.FC = () => {
                       </div>
                       <div className='flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400'>
                         <Clock className='h-4 w-4' />
-                        <span>{new Date(log.timestamp).toLocaleString('pt-BR')}</span>
+                        <span>
+                          {new Date(log.timestamp).toLocaleString('pt-BR')}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className='mb-2'>
                       <p className='text-sm text-gray-900 dark:text-white'>
                         {log.details}
                       </p>
                     </div>
-                    
+
                     <div className='flex items-center justify-between text-xs text-gray-500 dark:text-gray-400'>
                       <div className='flex items-center space-x-4'>
                         <div className='flex items-center space-x-1'>
@@ -350,14 +394,16 @@ export const AuditLogManager: React.FC = () => {
                 ✕
               </Button>
             </div>
-            
+
             <div className='space-y-4'>
               <div className='grid grid-cols-2 gap-4'>
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Usuário
                   </label>
-                  <p className='text-sm text-gray-900 dark:text-white'>{selectedEntry.user}</p>
+                  <p className='text-sm text-gray-900 dark:text-white'>
+                    {selectedEntry.user}
+                  </p>
                 </div>
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
@@ -379,29 +425,37 @@ export const AuditLogManager: React.FC = () => {
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Recurso
                   </label>
-                  <p className='text-sm text-gray-900 dark:text-white'>{selectedEntry.resource}</p>
+                  <p className='text-sm text-gray-900 dark:text-white'>
+                    {selectedEntry.resource}
+                  </p>
                 </div>
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
                     IP
                   </label>
-                  <p className='text-sm text-gray-900 dark:text-white'>{selectedEntry.ipAddress}</p>
+                  <p className='text-sm text-gray-900 dark:text-white'>
+                    {selectedEntry.ipAddress}
+                  </p>
                 </div>
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
                     User Agent
                   </label>
-                  <p className='text-sm text-gray-900 dark:text-white truncate'>{selectedEntry.userAgent}</p>
+                  <p className='text-sm text-gray-900 dark:text-white truncate'>
+                    {selectedEntry.userAgent}
+                  </p>
                 </div>
               </div>
-              
+
               <div>
                 <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Detalhes
                 </label>
-                <p className='text-sm text-gray-900 dark:text-white'>{selectedEntry.details}</p>
+                <p className='text-sm text-gray-900 dark:text-white'>
+                  {selectedEntry.details}
+                </p>
               </div>
-              
+
               {selectedEntry.oldValue && (
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>
@@ -412,7 +466,7 @@ export const AuditLogManager: React.FC = () => {
                   </p>
                 </div>
               )}
-              
+
               {selectedEntry.newValue && (
                 <div>
                   <label className='block text-sm font-medium text-gray-700 dark:text-gray-300'>

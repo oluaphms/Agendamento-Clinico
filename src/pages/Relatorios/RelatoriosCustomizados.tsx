@@ -174,7 +174,12 @@ const RelatoriosCustomizados: React.FC = () => {
 
   const handleDuplicar = async (relatorio: RelatorioCustomizado) => {
     try {
-      const { id, created_at, updated_at, ...novoRelatorio } = {
+      const {
+        id: _id,
+        created_at: _created_at,
+        updated_at: _updated_at,
+        ...novoRelatorio
+      } = {
         ...relatorio,
         nome: `${relatorio.nome} (Cópia)`,
         publico: false,

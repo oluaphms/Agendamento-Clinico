@@ -4,7 +4,7 @@
 // Hook customizado para gerenciar formulários com validação
 // ============================================================================
 
-import { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 // ============================================================================
 // TIPOS E INTERFACES

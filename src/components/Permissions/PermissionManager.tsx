@@ -5,6 +5,23 @@
 // ============================================================================
 
 import React, { useState } from 'react';
+import {
+  Download,
+  Upload,
+  Users,
+  User,
+  Shield,
+  Clock,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Settings,
+  Eye,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+} from 'lucide-react';
 
 import { usePermissions as useAuthPermissions } from '@/stores/authStore';
 import {
@@ -177,13 +194,13 @@ export const PermissionManager: React.FC = () => {
     'funcoes' | 'users' | 'permissions' | 'pending'
   >('funcoes');
   const [permissions] = useState<Permission[]>(REAL_PERMISSIONS);
-  const [funcaoPermissions, setFuncaoPermissions] = useState<
-    FuncaoPermission[]
-  >(REAL_FUNCAO_PERMISSIONS);
+  const [funcaoPermissions] = useState<FuncaoPermission[]>(
+    REAL_FUNCAO_PERMISSIONS
+  );
   const [users, setUsers] = useState<UserPermission[]>(REAL_USERS);
-  const [pendingUsers, setPendingUsers] = useState(REAL_PENDING_USERS);
+  const [pendingUsers] = useState(REAL_PENDING_USERS);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('all');
+  const [filterRole] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [bulkRole, setBulkRole] = useState('');
@@ -199,7 +216,7 @@ export const PermissionManager: React.FC = () => {
   const hasDirectAccess = isAdmin() || isDesenvolvedor();
 
   // Apenas admin e desenvolvedor podem gerenciar permissões
-  const canManagePermissions = hasDirectAccess;
+  // const canManagePermissions = hasDirectAccess;
 
   if (!hasDirectAccess) {
     return (

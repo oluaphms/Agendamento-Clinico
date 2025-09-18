@@ -6,6 +6,15 @@
 
 import React from 'react';
 
+// Declaração global para JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
@@ -18,7 +27,7 @@ export interface GridProps {
   gap?: GridGap;
   children: React.ReactNode;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
   md?: GridCols;
   lg?: GridCols;
 }
@@ -27,7 +36,7 @@ export interface GridItemProps {
   colSpan?: GridCols;
   className?: string;
   children: React.ReactNode;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
 }
 
 // ============================================================================
@@ -44,7 +53,7 @@ const Grid: React.FC<GridProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE COLUNAS
   // ============================================================================
-  
+
   const colsClasses = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
@@ -58,7 +67,7 @@ const Grid: React.FC<GridProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE GAP
   // ============================================================================
-  
+
   const gapClasses = {
     none: 'gap-0',
     sm: 'gap-2',
@@ -70,26 +79,19 @@ const Grid: React.FC<GridProps> = ({
   // ============================================================================
   // CLASSES FINAIS
   // ============================================================================
-  
+
   const colsClass = colsClasses[cols];
   const gapClass = gapClasses[gap];
-  
-  const finalClassName = [
-    'grid',
-    colsClass,
-    gapClass,
-    className,
-  ].filter(Boolean).join(' ');
+
+  const finalClassName = ['grid', colsClass, gapClass, className]
+    .filter(Boolean)
+    .join(' ');
 
   // ============================================================================
   // RENDERIZAÇÃO
   // ============================================================================
-  
-  return (
-    <Component className={finalClassName}>
-      {children}
-    </Component>
-  );
+
+  return <Component className={finalClassName}>{children}</Component>;
 };
 
 // ============================================================================
@@ -105,7 +107,7 @@ export const GridItem: React.FC<GridItemProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE COLSPAN
   // ============================================================================
-  
+
   const colSpanClasses = {
     1: 'col-span-1',
     2: 'col-span-1 md:col-span-2',
@@ -119,23 +121,16 @@ export const GridItem: React.FC<GridItemProps> = ({
   // ============================================================================
   // CLASSES FINAIS
   // ============================================================================
-  
+
   const colSpanClass = colSpanClasses[colSpan];
-  
-  const finalClassName = [
-    colSpanClass,
-    className,
-  ].filter(Boolean).join(' ');
+
+  const finalClassName = [colSpanClass, className].filter(Boolean).join(' ');
 
   // ============================================================================
   // RENDERIZAÇÃO
   // ============================================================================
-  
-  return (
-    <Component className={finalClassName}>
-      {children}
-    </Component>
-  );
+
+  return <Component className={finalClassName}>{children}</Component>;
 };
 
 export default Grid;

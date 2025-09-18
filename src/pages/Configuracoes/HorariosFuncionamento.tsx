@@ -7,9 +7,33 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import {
+  Clock,
+  Calendar,
+  Settings,
+  RefreshCw,
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  Filter,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Sun,
+  Moon,
+  Sunrise,
+  Sunset,
+  Eye,
+  Save,
+  Coffee,
+  Zap,
+} from 'lucide-react';
 
 import { Card, CardContent } from '@/design-system';
 import { LoadingSpinner } from '@/components/LazyLoading/LazyWrapper';
+import { supabase } from '@/lib/supabase';
+import { formatDate, formatTime } from '@/lib/utils';
 
 import toast from 'react-hot-toast';
 

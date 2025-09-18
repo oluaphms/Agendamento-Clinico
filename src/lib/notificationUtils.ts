@@ -1,6 +1,44 @@
 import toast from 'react-hot-toast';
 import { getDatabase } from './connectivityManager';
 
+// Declarações globais para resolver erros de tipo
+declare global {
+  interface NotificationOptions {
+    body?: string;
+    icon?: string;
+    badge?: string;
+    tag?: string;
+    data?: any;
+    requireInteraction?: boolean;
+    silent?: boolean;
+    timestamp?: number;
+    vibrate?: number[];
+    actions?: NotificationAction[];
+  }
+
+  interface NotificationAction {
+    action: string;
+    title: string;
+    icon?: string;
+  }
+
+  interface ShareData {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: File[];
+  }
+
+  namespace NodeJS {
+    interface Timeout {
+      ref(): NodeJS.Timeout;
+      unref(): NodeJS.Timeout;
+      refresh(): NodeJS.Timeout;
+      hasRef(): boolean;
+    }
+  }
+}
+
 /**
  * Notifica sobre um agendamento cancelado
  */

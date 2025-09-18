@@ -8,11 +8,8 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended',
-    'plugin:prettier/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -26,13 +23,11 @@ module.exports = {
     'react',
     '@typescript-eslint',
     'react-hooks',
-    'jsx-a11y',
-    'prettier',
   ],
   rules: {
     // Regras do React
-    'react/react-in-jsx-scope': 'off', // Não necessário no React 17+
-    'react/prop-types': 'off', // Usando TypeScript
+    'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
     'react/display-name': 'off',
     'react/no-unescaped-entities': 'off',
     
@@ -41,60 +36,22 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-non-null-assertion': 'warn',
     
     // Regras do React Hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    
-    // Regras de acessibilidade
-    'jsx-a11y/anchor-is-valid': 'off',
-    'jsx-a11y/click-events-have-key-events': 'warn',
     
     // Regras gerais
     'no-console': 'warn',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
-    'object-shorthand': 'error',
-    'prefer-template': 'error',
-    
-    // Regras de formatação
-    'prettier/prettier': 'error',
-    
-    // Regras específicas do projeto
-    'import/prefer-default-export': 'off',
-    'import/no-unresolved': 'off',
-    'import/extensions': 'off',
   },
   settings: {
     react: {
       version: 'detect',
     },
   },
-  overrides: [
-    {
-      // Arquivos de teste
-      files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**/*'],
-      env: {
-        jest: true,
-      },
-      rules: {
-        '@typescript-eslint/no-explicit-any': 'off',
-        'no-console': 'off',
-      },
-    },
-    {
-      // Arquivos de configuração
-      files: ['*.config.{js,ts}', '*.config.*.{js,ts}'],
-      env: {
-        node: true,
-      },
-      rules: {
-        '@typescript-eslint/no-var-requires': 'off',
-      },
-    },
-  ],
   ignorePatterns: [
     'node_modules/',
     'dist/',

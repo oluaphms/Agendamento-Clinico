@@ -7,6 +7,15 @@
 import React from 'react';
 // import { designTokens } from '@/lib/design-tokens';
 
+// Declaração global para JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
@@ -19,7 +28,7 @@ export interface ContainerProps {
   padding?: ContainerPadding;
   children: React.ReactNode;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
 }
 
 // ============================================================================
@@ -36,7 +45,7 @@ const Container: React.FC<ContainerProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE TAMANHO
   // ============================================================================
-  
+
   const sizeClasses = {
     sm: 'max-w-2xl',
     md: 'max-w-4xl',
@@ -49,7 +58,7 @@ const Container: React.FC<ContainerProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE PADDING
   // ============================================================================
-  
+
   const paddingClasses = {
     none: 'px-0',
     sm: 'px-4',
@@ -61,26 +70,19 @@ const Container: React.FC<ContainerProps> = ({
   // ============================================================================
   // CLASSES FINAIS
   // ============================================================================
-  
+
   const sizeClass = sizeClasses[size];
   const paddingClass = paddingClasses[padding];
-  
-  const finalClassName = [
-    'mx-auto',
-    sizeClass,
-    paddingClass,
-    className,
-  ].filter(Boolean).join(' ');
+
+  const finalClassName = ['mx-auto', sizeClass, paddingClass, className]
+    .filter(Boolean)
+    .join(' ');
 
   // ============================================================================
   // RENDERIZAÇÃO
   // ============================================================================
-  
-  return (
-    <Component className={finalClassName}>
-      {children}
-    </Component>
-  );
+
+  return <Component className={finalClassName}>{children}</Component>;
 };
 
 export default Container;

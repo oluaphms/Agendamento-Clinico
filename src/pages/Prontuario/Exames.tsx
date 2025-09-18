@@ -202,7 +202,6 @@ const Exames: React.FC = () => {
     }
   };
 
-
   const handleExcluir = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir este exame?')) {
       return;

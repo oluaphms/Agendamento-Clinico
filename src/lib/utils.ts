@@ -5,6 +5,21 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+// Declaração global para NodeJS.Timeout
+declare global {
+  namespace NodeJS {
+    interface Timeout {
+      ref(): NodeJS.Timeout;
+      unref(): NodeJS.Timeout;
+      refresh(): NodeJS.Timeout;
+      hasRef(): boolean;
+    }
+  }
+}
+
+// Import do NodeJS para resolver erros de tipo
+import { setTimeout, clearTimeout } from 'timers';
+
 // ============================================================================
 // FUNÇÃO CN (CLASSNAME MERGER)
 // ============================================================================

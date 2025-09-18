@@ -3,7 +3,8 @@
 // ============================================================================
 
 import React, { useState, useEffect } from 'react';
-import { usePermissions } from '../../hooks/usePermissions';
+// Imports removidos - não utilizados no componente
+// import { usePermissions } from '../../hooks/usePermissions';
 // import { useAuthStore } from '../../stores/authStore';
 // import { UserRole, Role } from '../../types/permissions';
 

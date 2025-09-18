@@ -6,13 +6,28 @@
 
 import React from 'react';
 
+// Declaração global para JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
 
 export type FlexDirection = 'row' | 'col' | 'row-reverse' | 'col-reverse';
 export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
-export type FlexJustify = 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
+export type FlexJustify =
+  | 'start'
+  | 'end'
+  | 'center'
+  | 'between'
+  | 'around'
+  | 'evenly';
 export type FlexAlign = 'start' | 'end' | 'center' | 'baseline' | 'stretch';
 export type FlexGap = 'none' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -24,7 +39,7 @@ export interface FlexProps {
   gap?: FlexGap;
   children: React.ReactNode;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
 }
 
 // ============================================================================
@@ -44,7 +59,7 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE DIREÇÃO
   // ============================================================================
-  
+
   const directionClasses = {
     row: 'flex-row',
     col: 'flex-col',
@@ -55,7 +70,7 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE WRAP
   // ============================================================================
-  
+
   const wrapClasses = {
     nowrap: 'flex-nowrap',
     wrap: 'flex-wrap',
@@ -65,7 +80,7 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE JUSTIFY
   // ============================================================================
-  
+
   const justifyClasses = {
     start: 'justify-start',
     end: 'justify-end',
@@ -78,7 +93,7 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE ALIGN
   // ============================================================================
-  
+
   const alignClasses = {
     start: 'items-start',
     end: 'items-end',
@@ -90,7 +105,7 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CONFIGURAÇÕES DE GAP
   // ============================================================================
-  
+
   const gapClasses = {
     none: 'gap-0',
     sm: 'gap-2',
@@ -102,13 +117,13 @@ const Flex: React.FC<FlexProps> = ({
   // ============================================================================
   // CLASSES FINAIS
   // ============================================================================
-  
+
   const directionClass = directionClasses[direction];
   const wrapClass = wrapClasses[wrap];
   const justifyClass = justifyClasses[justify];
   const alignClass = alignClasses[align];
   const gapClass = gapClasses[gap];
-  
+
   const finalClassName = [
     'flex',
     directionClass,
@@ -117,17 +132,15 @@ const Flex: React.FC<FlexProps> = ({
     alignClass,
     gapClass,
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // ============================================================================
   // RENDERIZAÇÃO
   // ============================================================================
-  
-  return (
-    <Component className={finalClassName}>
-      {children}
-    </Component>
-  );
+
+  return <Component className={finalClassName}>{children}</Component>;
 };
 
 export default Flex;

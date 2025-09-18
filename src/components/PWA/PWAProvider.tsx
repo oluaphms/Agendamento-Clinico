@@ -5,6 +5,35 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { PWAManager, initializePWA } from '../../utils/pwa';
 
+// Declarações de tipos globais para APIs do navegador
+declare global {
+  interface NotificationOptions {
+    body?: string;
+    icon?: string;
+    badge?: string;
+    tag?: string;
+    data?: any;
+    requireInteraction?: boolean;
+    silent?: boolean;
+    timestamp?: number;
+    vibrate?: number[];
+    actions?: NotificationAction[];
+  }
+
+  interface NotificationAction {
+    action: string;
+    title: string;
+    icon?: string;
+  }
+
+  interface ShareData {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: File[];
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
@@ -15,13 +44,16 @@ interface PWAContextType {
   canInstall: boolean;
   isInstalled: boolean;
   updateAvailable: boolean;
-  
+
   // PWA Manager
   pwaManager: PWAManager;
-  
+
   // Funções
   showInstallPrompt: () => Promise<boolean>;
-  showNotification: (title: string, options?: NotificationOptions) => Promise<void>;
+  showNotification: (
+    title: string,
+    options?: NotificationOptions
+  ) => Promise<void>;
   share: (data: ShareData) => Promise<boolean>;
   copyToClipboard: (text: string) => Promise<boolean>;
   applyUpdate: () => Promise<void>;
@@ -57,14 +89,16 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   // ============================================================================
   // ESTADOS
   // ============================================================================
-  
-  const [pwaManager] = useState(() => initializePWA({
-    enableNotifications: config.enableNotifications ?? true,
-    enableBackgroundSync: config.enableBackgroundSync ?? true,
-    enableOfflineMode: config.enableOfflineMode ?? true,
-    enableInstallPrompt: config.enableInstallPrompt ?? true,
-    updateCheckInterval: config.updateCheckInterval ?? 300000,
-  }));
+
+  const [pwaManager] = useState(() =>
+    initializePWA({
+      enableNotifications: config.enableNotifications ?? true,
+      enableBackgroundSync: config.enableBackgroundSync ?? true,
+      enableOfflineMode: config.enableOfflineMode ?? true,
+      enableInstallPrompt: config.enableInstallPrompt ?? true,
+      updateCheckInterval: config.updateCheckInterval ?? 300000,
+    })
+  );
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(
@@ -75,7 +109,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   // ============================================================================
   // EFEITOS
   // ============================================================================
-  
+
   useEffect(() => {
     // Detectar mudanças de conectividade
     const handleOnline = () => {
@@ -122,7 +156,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
 
     // Escutar mensagens do service worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (event) => {
+      navigator.serviceWorker.addEventListener('message', event => {
         if (event.data.type === 'UPDATE_AVAILABLE') {
           handleUpdateAvailable();
         }
@@ -140,7 +174,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   // ============================================================================
   // FUNÇÕES
   // ============================================================================
-  
+
   const showInstallPrompt = async (): Promise<boolean> => {
     const result = await pwaManager.showInstallPrompt();
     if (result) {
@@ -149,7 +183,10 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
     return result;
   };
 
-  const showNotification = async (title: string, options?: NotificationOptions): Promise<void> => {
+  const showNotification = async (
+    title: string,
+    options?: NotificationOptions
+  ): Promise<void> => {
     await pwaManager.showNotification(title, options);
   };
 
@@ -177,7 +214,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   // ============================================================================
   // CONTEXTO
   // ============================================================================
-  
+
   const contextValue: PWAContextType = {
     isOnline,
     canInstall,
@@ -194,9 +231,7 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
   };
 
   return (
-    <PWAContext.Provider value={contextValue}>
-      {children}
-    </PWAContext.Provider>
+    <PWAContext.Provider value={contextValue}>{children}</PWAContext.Provider>
   );
 };
 
@@ -206,11 +241,11 @@ export const PWAProvider: React.FC<PWAProviderProps> = ({
 
 export const usePWA = (): PWAContextType => {
   const context = useContext(PWAContext);
-  
+
   if (!context) {
     throw new Error('usePWA must be used within a PWAProvider');
   }
-  
+
   return context;
 };
 
@@ -265,28 +300,32 @@ export const UpdateNotification: React.FC<{
   };
 
   return (
-    <div className="fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm">
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
-          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+    <div className='fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm'>
+      <div className='flex items-start space-x-3'>
+        <div className='flex-shrink-0'>
+          <svg className='h-5 w-5' fill='currentColor' viewBox='0 0 20 20'>
+            <path
+              fillRule='evenodd'
+              d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z'
+              clipRule='evenodd'
+            />
           </svg>
         </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-medium">Atualização Disponível</h3>
-          <p className="text-sm mt-1">
+        <div className='flex-1'>
+          <h3 className='text-sm font-medium'>Atualização Disponível</h3>
+          <p className='text-sm mt-1'>
             Uma nova versão do sistema está disponível.
           </p>
-          <div className="mt-3 flex space-x-2">
+          <div className='mt-3 flex space-x-2'>
             <button
               onClick={handleUpdate}
-              className="bg-white text-blue-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100"
+              className='bg-white text-blue-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100'
             >
               Atualizar
             </button>
             <button
               onClick={handleDismiss}
-              className="text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-600"
+              className='text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-600'
             >
               Depois
             </button>
@@ -305,12 +344,16 @@ export const OfflineIndicator: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-      <div className="flex items-center space-x-2">
-        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
+    <div className='fixed bottom-4 left-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50'>
+      <div className='flex items-center space-x-2'>
+        <svg className='h-4 w-4' fill='currentColor' viewBox='0 0 20 20'>
+          <path
+            fillRule='evenodd'
+            d='M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z'
+            clipRule='evenodd'
+          />
         </svg>
-        <span className="text-sm font-medium">Offline</span>
+        <span className='text-sm font-medium'>Offline</span>
       </div>
     </div>
   );
@@ -320,11 +363,13 @@ export const ConnectionStatus: React.FC = () => {
   const { isOnline } = usePWA();
 
   return (
-    <div className={`flex items-center space-x-2 ${isOnline ? 'text-green-500' : 'text-red-500'}`}>
-      <div className={`h-2 w-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-      <span className="text-sm">
-        {isOnline ? 'Online' : 'Offline'}
-      </span>
+    <div
+      className={`flex items-center space-x-2 ${isOnline ? 'text-green-500' : 'text-red-500'}`}
+    >
+      <div
+        className={`h-2 w-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}
+      />
+      <span className='text-sm'>{isOnline ? 'Online' : 'Offline'}</span>
     </div>
   );
 };

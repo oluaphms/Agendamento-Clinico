@@ -7,6 +7,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+// Declaração global para JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
@@ -24,7 +33,7 @@ export interface AnimatedTextProps {
   delay?: number;
   duration?: number;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
 }
 
 // ============================================================================

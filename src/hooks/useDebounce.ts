@@ -6,6 +6,18 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Declaração global para NodeJS.Timeout
+declare global {
+  namespace NodeJS {
+    interface Timeout {
+      ref(): NodeJS.Timeout;
+      unref(): NodeJS.Timeout;
+      refresh(): NodeJS.Timeout;
+      hasRef(): boolean;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================

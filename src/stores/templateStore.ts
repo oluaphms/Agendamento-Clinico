@@ -483,7 +483,11 @@ export const useTemplateStore = create<TemplateState>()(
             localStorage.setItem('templates', JSON.stringify(templates));
           }
 
-          instances = storedInstances ? JSON.parse(storedInstances) : [];
+          if (storedInstances) {
+            instances = JSON.parse(storedInstances);
+          } else {
+            instances = [];
+          }
 
           set({
             templates,

@@ -8,6 +8,15 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeVariants, slideVariants, scaleVariants, staggerContainer } from '@/lib/animations';
 
+// Declaração global para JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
+
 // ============================================================================
 // TIPOS E INTERFACES
 // ============================================================================
@@ -23,7 +32,7 @@ export interface AnimatedContainerProps {
   duration?: number;
   stagger?: boolean;
   className?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: string;
 }
 
 // ============================================================================

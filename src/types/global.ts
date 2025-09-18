@@ -4,11 +4,19 @@
 // Definições de tipos compartilhados em toda a aplicação
 // ============================================================================
 
+import React from 'react';
+
 // ============================================================================
 // TIPOS DE USUÁRIO E AUTENTICAÇÃO
 // ============================================================================
 
-export type UserRole = 'admin' | 'recepcao' | 'profissional' | 'usuario' | 'gerente' | 'desenvolvedor';
+export type UserRole =
+  | 'admin'
+  | 'recepcao'
+  | 'profissional'
+  | 'usuario'
+  | 'gerente'
+  | 'desenvolvedor';
 
 export interface User {
   id: string;
@@ -94,7 +102,17 @@ export interface Servico {
 // TIPOS DE AGENDAMENTO
 // ============================================================================
 
-export type AgendamentoStatus = 'Agendado' | 'Confirmado' | 'Realizado' | 'Cancelado' | 'Falta' | 'agendado' | 'confirmado' | 'realizado' | 'cancelado' | 'falta';
+export type AgendamentoStatus =
+  | 'Agendado'
+  | 'Confirmado'
+  | 'Realizado'
+  | 'Cancelado'
+  | 'Falta'
+  | 'agendado'
+  | 'confirmado'
+  | 'realizado'
+  | 'cancelado'
+  | 'falta';
 
 export interface Agendamento {
   id: number;
@@ -237,7 +255,15 @@ export interface ApiError {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'date' | 'select' | 'textarea';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'tel'
+    | 'date'
+    | 'select'
+    | 'textarea';
   required?: boolean;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -374,7 +400,12 @@ export interface ValidationResult {
 // TIPOS DE GAMIFICAÇÃO
 // ============================================================================
 
-export type AchievementCategory = 'agendamentos' | 'pacientes' | 'profissionais' | 'sistema' | 'consecutivo';
+export type AchievementCategory =
+  | 'agendamentos'
+  | 'pacientes'
+  | 'profissionais'
+  | 'sistema'
+  | 'consecutivo';
 
 export interface Achievement {
   id: string;
@@ -429,13 +460,26 @@ export interface LeaderboardEntry {
 // TIPOS DE TEMPLATES
 // ============================================================================
 
-export type TemplateType = 'relatorio' | 'formulario' | 'email' | 'whatsapp' | 'sms' | 'documento';
+export type TemplateType =
+  | 'relatorio'
+  | 'formulario'
+  | 'email'
+  | 'whatsapp'
+  | 'sms'
+  | 'documento';
 
 export interface TemplateField {
   id: string;
   name: string;
   label: string;
-  type: 'text' | 'number' | 'date' | 'select' | 'textarea' | 'boolean' | 'image';
+  type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'select'
+    | 'textarea'
+    | 'boolean'
+    | 'image';
   required: boolean;
   defaultValue?: unknown;
   options?: Array<{ value: string; label: string }>;

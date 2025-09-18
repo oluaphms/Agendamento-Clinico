@@ -211,7 +211,7 @@ export const localDb = {
         const cpfLimpoUsuario = usuario.cpf.replace(/[.\-\s]/g, '');
         const senhaPadrao = cpfLimpoUsuario.substring(0, 3);
         const isSenhaPadrao = credentials.password === senhaPadrao;
-        
+
         // Determinar se precisa trocar senha
         const precisaTrocarSenha = usuario.primeiro_acesso || isSenhaPadrao;
 
@@ -221,7 +221,7 @@ export const localDb = {
           senhaDigitada: credentials.password,
           isSenhaPadrao,
           primeiro_acesso: usuario.primeiro_acesso,
-          precisaTrocarSenha
+          precisaTrocarSenha,
         });
 
         // Criar objeto de usuário compatível
@@ -301,9 +301,9 @@ export const localDb = {
     // Criar um objeto que suporta encadeamento de métodos
     const createChainableQuery = (): QueryChain => {
       // Usar referência direta aos dados originais para que as modificações sejam persistentes
-      let currentData =
+      const currentData =
         (mockData as unknown as Record<string, unknown[]>)[table] || [];
-      let currentFilters: Record<string, unknown> = {};
+      const currentFilters: Record<string, unknown> = {};
       let currentRange: { from: number; to: number } | null = null;
       let currentCount: number | null = null;
 
